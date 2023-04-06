@@ -32,7 +32,7 @@ public class Employee extends Person {
         this.employeeID = value;
     }
 
-    String getEmail() {
+    public String getCorp_email() {
         return this.corp_email;
     }
 
@@ -48,7 +48,7 @@ public class Employee extends Person {
         this.active = value;
     }
 
-    String getPassword() {
+    public String getPassword() {
         return this.password;
     }
 

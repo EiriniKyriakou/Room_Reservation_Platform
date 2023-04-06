@@ -2,7 +2,7 @@ package mainClasses;
 
 public class Person {
 
-    private int personID;
+//    private int personID;
     private String firstName, lastName, email;
 
     public Person(String firstName, String lastName, String email) {
@@ -11,7 +11,7 @@ public class Person {
         this.email = email;
     }
 
-    String getFirstName() {
+    public String getFirstName() {
         return this.firstName;
     }
 
@@ -19,13 +19,13 @@ public class Person {
         this.firstName = value;
     }
 
-    int getPersonID() {
-        return this.personID;
-    }
-
-    void setPersonID(int value) {
-        this.personID = value;
-    }
+//    int getPersonID() {
+//        return this.personID;
+//    }
+//
+//    void setPersonID(int value) {
+//        this.personID = value;
+//    }
 
     String getLastName() {
         return this.lastName;

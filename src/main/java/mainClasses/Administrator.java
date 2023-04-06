@@ -24,7 +24,7 @@ public class Administrator extends Person {
         this.adminID = value;
     }
 
-    String getEmail() {
+    public String getCorp_email() {
         return this.corp_email;
     }
 
@@ -40,7 +40,7 @@ public class Administrator extends Person {
         this.phone = value;
     }
 
-    String getPassword() {
+    public String getPassword() {
         return this.password;
     }
 

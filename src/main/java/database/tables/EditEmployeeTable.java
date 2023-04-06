@@ -1,11 +1,14 @@
 package database.tables;
 
+import com.google.gson.Gson;
 import database.DB_Connection;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mainClasses.Employee;
 
 /**
  *
@@ -59,5 +62,26 @@ public class EditEmployeeTable {
         } catch (SQLException ex) {
             Logger.getLogger(EditEmployeeTable.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public Employee databaseToEmployee(String corp_email, String password) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM employees WHERE corp_email = '" + corp_email + "' AND password='" + password + "'");
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            Gson gson = new Gson();
+            Employee empl = gson.fromJson(json, Employee.class);
+            return empl;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
     }
 }

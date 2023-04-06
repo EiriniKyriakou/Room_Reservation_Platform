@@ -1,17 +1,29 @@
+html body{
+    background-color: white;
+}
+
 #notification{
     display: none;
     border-radius: 5px;
     border-style: solid;
     border-color: black;
     padding: 5px;
+    background-color: white;
 }
 
 #login_form{
     display: flex;
     flex-direction: column;
-    max-width: 500px;
+    max-width: 400px;
     width: 80%;
-    padding:10px;
+    padding:20px 10px;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: white;
+}
+
+.container-fluid{
+    padding: 20px 15px;
 }
 
 .box {
