@@ -1,5 +1,5 @@
-html body{
-    background-color: white;
+#body{
+    height: 100vh;
 }
 
 #notification{
@@ -28,5 +28,6 @@ html body{
 
 .box {
   display: flex;
+  align-items: center;
   justify-content: center;
 }

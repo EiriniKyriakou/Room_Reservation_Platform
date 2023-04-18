@@ -14,7 +14,7 @@
         <title>Room Reservation</title>
     </head>
 
-    <body>
+    <body id="body">
         <!--Notification-->
         <div id="notification" class="toast" style="position: absolute; bottom: 10px; right: 10px; width: 200px;">
             <div class="toast-header">
@@ -28,7 +28,7 @@
         </div>
 
         <!--Guest Content-->
-        <div id="content_guest">
+        <div id="content_guest" style="display: none">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <a class="navbar-brand" href="#">Room Reservation</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,8 +50,7 @@
                         <input type="text" id="login_email" name="login_email" value=""><br>
                         <label for="login_pass">Password</label>
                         <input type="password" id="login_pass" name="login_pass" value=""><br>
-                        <!--<button  >Login</button>-->
-                        <input class="btn btn-dark" type="submit" value="Confirm">
+                        <input class="btn btn-dark" type="submit" value="Login">
                     </form>
                 </div>
             </div>
@@ -68,6 +67,7 @@
                     <div class="navbar-nav">
                         <a class="nav-item nav-link" onclick="creat_database()">Create Database</a>
                         <a class="nav-item nav-link" onclick="drop_database()">Drop Database</a>
+                        <a class="nav-item nav-link" onclick="logout()">Logout</a>
                     </div>
                 </div>
             </nav>
@@ -88,6 +88,7 @@
                     <div class="navbar-nav">
                         <a class="nav-item nav-link" onclick="creat_database()">Create Database</a>
                         <a class="nav-item nav-link" onclick="drop_database()">Drop Database</a>
+                        <a class="nav-item nav-link" onclick="logout()">Logout</a>
                     </div>
                 </div>
             </nav>

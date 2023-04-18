@@ -14,8 +14,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import mainClasses.Administrator;
 import mainClasses.Employee;
-import mainClasses.Person;
-
 
 /**
  * REST Web Service

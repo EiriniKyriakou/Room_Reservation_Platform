@@ -2,17 +2,17 @@ const Content = {
     guest: "content_guest",
     admin_home: "content_admin_home",
     employee_home: "content_employee_home"
-}
+};
 
 function displayContent(id) {
-    for (i in Content){
+    for (let i in Content) {
         document.getElementById(Content[i]).style.display = "none";
     }
     document.getElementById(id).style.display = "";
 }
 
-window.onload = (event) => {
-  displayContent(Content.guest);
+window.onload = () => {
+    isLoggedIn();
 };
 
 function creat_database() {
@@ -41,7 +41,7 @@ function drop_database() {
     xhr.send();
 }
 
-function send_notification(text){
+function send_notification(text) {
     document.getElementById("info_span").innerHTML = text;
     document.getElementById("notification").style.display = "block";
 }
@@ -50,16 +50,28 @@ function hide_notification() {
     document.getElementById("notification").style.display = "none";
 }
 
-window.addEventListener("load", (event) => {
-    document.getElementById("login_form").addEventListener("submit",
-            (event) => {
+window.addEventListener("load", () => {
+    document.getElementById("login_form").addEventListener("submit", (event) => {
         //prevent the default form submission behavior
         event.preventDefault();
         login();
-    }
-    );
+    });
 });
 
+function isLoggedIn() {
+    if (localStorage.getItem("logedIn") !== "null") {
+        const obj = JSON.parse(localStorage.getItem("logedIn"));
+        if (obj["employeeID"] !== undefined) {
+            displayContent(Content.employee_home);
+        } else if (obj["adminID"] !== undefined){
+            displayContent(Content.admin_home);
+        }
+        send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
+    }else {
+        hide_notification();
+        displayContent(Content.guest);
+    }
+}
 
 function login() {
     var jsonData = JSON.stringify(
@@ -73,11 +85,12 @@ function login() {
     xhr.onload = function () {
         const obj = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
+            localStorage.setItem("logedIn", xhr.responseText);
             send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
-            if(obj["employeeID"]!==undefined){
-                displayContent(Content.employee_home)
+            if (obj["employeeID"] !== undefined) {
+                displayContent(Content.employee_home);
             } else {
-                displayContent(Content.admin_home)
+                displayContent(Content.admin_home);
             }
         } else {
             send_notification("Wrong Credantials");
@@ -92,5 +105,9 @@ function login() {
     //clear the values
     document.getElementById("login_email").value = "";
     document.getElementById("login_pass").value = "";
+}
 
+function logout(){
+    localStorage.setItem("logedIn", null);
+    isLoggedIn();
 }
