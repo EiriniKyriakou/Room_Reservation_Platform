@@ -4,6 +4,8 @@ const Content = {
     employee_home: "content_employee_home"
 };
 
+var login_attemts = ["email", 0];
+
 function displayContent(id) {
     for (let i in Content) {
         document.getElementById(Content[i]).style.display = "none";
@@ -63,12 +65,11 @@ function isLoggedIn() {
         const obj = JSON.parse(localStorage.getItem("logedIn"));
         if (obj["employeeID"] !== undefined) {
             displayContent(Content.employee_home);
-        } else if (obj["adminID"] !== undefined){
+        } else if (obj["adminID"] !== undefined) {
             displayContent(Content.admin_home);
         }
         send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
-    }else {
-        hide_notification();
+    } else {
         displayContent(Content.guest);
     }
 }
@@ -81,23 +82,44 @@ function login() {
             }
     );
 
+    //if first attempt to login with this email 
+    if (document.getElementById("login_email").value !== login_attemts[0]) {
+        login_attemts[0] = document.getElementById("login_email").value;
+        login_attemts[1] = 0;
+    }
+
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const obj = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
-            localStorage.setItem("logedIn", xhr.responseText);
-            send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
-            if (obj["employeeID"] !== undefined) {
+            if (obj["adminID"] !== undefined) {
+                localStorage.setItem("logedIn", xhr.responseText);
+                login_attemts = ["email", 0];
+                send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
+                displayContent(Content.admin_home);
+            } else if (obj["employeeID"] !== undefined && obj["active"] === 1) {
+                localStorage.setItem("logedIn", xhr.responseText);
+                login_attemts = ["email", 0];
+                send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
                 displayContent(Content.employee_home);
             } else {
-                displayContent(Content.admin_home);
+                send_notification("Your account is locked");
             }
         } else {
-            send_notification("Wrong Credantials");
+            send_notification(obj["msg"]);
+            //If password is wrong +1 on login atempts
+            if (obj["msg"] === "Wrong Credantials." && obj["type"] === "employee") {
+                login_attemts[1]++;
+                console.log(login_attemts);
+            }
         }
     };
 
-    xhr.open("POST", "http://localhost:8080/room_reservation/api/login");
+    if (login_attemts[1] > 4) {
+        xhr.open("PUT", "http://localhost:8080/room_reservation/api/lock_account");
+    } else {
+        xhr.open("POST", "http://localhost:8080/room_reservation/api/login");
+    }
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonData);
@@ -107,7 +129,8 @@ function login() {
     document.getElementById("login_pass").value = "";
 }
 
-function logout(){
+function logout() {
     localStorage.setItem("logedIn", null);
+    send_notification("Logout completed successfully");
     isLoggedIn();
 }

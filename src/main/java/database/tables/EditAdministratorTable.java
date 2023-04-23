@@ -83,4 +83,25 @@ public class EditAdministratorTable {
         con.close();
         return null;
     }
+    
+    public Administrator databaseToAdministratorCorpEmail(String corp_email) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM administrators WHERE corp_email = '" + corp_email + "'");
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            Gson gson = new Gson();
+            Administrator admin = gson.fromJson(json, Administrator.class);
+            return admin;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
+    }
 }

@@ -84,4 +84,33 @@ public class EditEmployeeTable {
         con.close();
         return null;
     }
+    
+    public Employee databaseToEmployeeCorpEmail(String corp_email) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM employees WHERE corp_email = '" + corp_email + "'");
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            Gson gson = new Gson();
+            Employee empl = gson.fromJson(json, Employee.class);
+            return empl;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
+    }
+    
+    public void updateEmployee(String corp_email, String key, String value) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        String update = "UPDATE employees SET " + key + "='" + value + "' WHERE corp_email = '" + corp_email + "'";
+        stmt.executeUpdate(update);
+        stmt.close();
+        con.close();
+    }
 }

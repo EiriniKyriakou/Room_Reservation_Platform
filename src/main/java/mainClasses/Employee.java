@@ -40,7 +40,7 @@ public class Employee extends Person {
         this.corp_email = value;
     }
 
-    int isActive() {
+    public int isActive() {
         return this.active;
     }
 
