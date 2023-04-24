@@ -23,24 +23,28 @@ public class EditRoomTable {
                 + "    roomName VARCHAR(30) not null unique,"
                 + "    roomType VARCHAR(30) not null,"
                 + "    capacity INTEGER not null,"
-                + " PRIMARY KEY ( roomID))";
+                + "    depID INTEGER not NULL,"
+                + " PRIMARY KEY (roomID),"
+                + " FOREIGN KEY (depID) REFERENCES departments(depID))";
+                
         stmt.execute(query);
         stmt.close();
         con.close();
     }
 
-    public void addNewRoom(String roomName, String roomType, int capacity) throws ClassNotFoundException {
+    public void addNewRoom(String roomName, String roomType, int capacity, int depID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
 
             Statement stmt = con.createStatement();
 
             String insertQuery = "INSERT INTO "
-                    + " rooms (roomName,roomType,capacity)"
+                    + " rooms (roomName,roomType,capacity,depID)"
                     + " VALUES ("
                     + "'" + roomName + "',"
                     + "'" + roomType + "',"
-                    + "'" + capacity + "'"
+                    + "'" + capacity + "',"
+                    + "'" + depID + "'"
                     + ")";
             System.out.println(insertQuery);
             stmt.executeUpdate(insertQuery);

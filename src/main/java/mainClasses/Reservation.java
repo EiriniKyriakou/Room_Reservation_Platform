@@ -9,15 +9,15 @@ public class Reservation {
     private int reservationID;
     private Date reservationDate;
     private String start_time, end_time;
-    private int roomID, personID;
+    private int roomID, employeeID;
     private int tmp, accepted;
 
-    public Reservation(Date reservationDate, String start_time, String end_time, int roomID, int personID, int tmp, int accepted) {
+    public Reservation(Date reservationDate, String start_time, String end_time, int roomID, int employeeID, int tmp, int accepted) {
         this.reservationDate = reservationDate;
         this.start_time = start_time;
         this.end_time = end_time;
         this.roomID = roomID;
-        this.personID = personID;
+        this.employeeID = employeeID;
         this.tmp = tmp;
     }
 
@@ -69,12 +69,12 @@ public class Reservation {
         this.roomID = value;
     }
 
-    int getPersonID() {
-        return this.personID;
+    int getEmployeeID() {
+        return this.employeeID;
     }
 
-    void setPersonID(int value) {
-        this.personID = value;
+    void setEmployeeID(int value) {
+        this.employeeID = value;
     }
 
     int isTmp() {

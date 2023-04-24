@@ -18,27 +18,30 @@ public class EditDepartmentTable {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
 
-        String query = "CREATE TABLE departmants"
+        String query = "CREATE TABLE departments"
                 + "(depID INTEGER not NULL AUTO_INCREMENT, "
                 + "    name VARCHAR(30) not null unique,"
                 + "    location VARCHAR(30) not null unique,"
-                + " PRIMARY KEY ( depID))";
+                + "    compID INTEGER not NULL,"
+                + " PRIMARY KEY (depID),"
+                + " FOREIGN KEY (compID) REFERENCES companies(compID))";
         stmt.execute(query);
         stmt.close();
         con.close();
     }
 
-    public void addNewDepartment(String name, String location) throws ClassNotFoundException {
+    public void addNewDepartment(String name, String location, int compID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
 
             Statement stmt = con.createStatement();
 
             String insertQuery = "INSERT INTO "
-                    + " departmants (name,location)"
+                    + " departments (name,location,compID)"
                     + " VALUES ("
                     + "'" + name + "',"
-                    + "'" + location + "'"
+                    + "'" + location + "',"
+                    + "'" + compID + "'"
                     + ")";
             System.out.println(insertQuery);
             stmt.executeUpdate(insertQuery);

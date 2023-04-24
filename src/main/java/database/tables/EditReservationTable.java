@@ -24,29 +24,31 @@ public class EditReservationTable {
                 + "    start_time VARCHAR(30) not null,"
                 + "    end_time VARCHAR(30) not null,"
                 + "    roomID INTEGER not null,"
-                + "    personID INTEGER not null,"
+                + "    employeeID INTEGER not null,"
                 + "    tmp BOOLEAN not null,"
                 + "    accepted BOOLEAN not null,"
-                + " PRIMARY KEY ( reservationID))";
+                + " PRIMARY KEY (reservationID),"
+                + " FOREIGN KEY (roomID) REFERENCES rooms(roomID),"
+                + " FOREIGN KEY (employeeID) REFERENCES employees(employeeID))";
         stmt.execute(query);
         stmt.close();
         con.close();
     }
 
-    public void addNewReservation(Date reservationDate, String start_time, String end_time, int roomID, int personID, int tmp, int accepted) throws ClassNotFoundException {
+    public void addNewReservation(Date reservationDate, String start_time, String end_time, int roomID, int employeeID, int tmp, int accepted) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
 
             Statement stmt = con.createStatement();
 
             String insertQuery = "INSERT INTO "
-                    + " reservations (reservationDate,start_time,end_time,roomID,personID,tmp,accepted)"
+                    + " reservations (reservationDate,start_time,end_time,roomID,employeeID,tmp,accepted)"
                     + " VALUES ("
                     + "'" + reservationDate + "',"
                     + "'" + start_time + "',"
                     + "'" + end_time + "',"
                     + "'" + roomID + "',"
-                    + "'" + personID + "',"
+                    + "'" + employeeID + "',"
                     + "'" + tmp + "',"
                     + "'" + accepted + "'"
                     + ")";

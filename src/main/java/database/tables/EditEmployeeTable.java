@@ -29,20 +29,22 @@ public class EditEmployeeTable {
                 + "    phone VARCHAR(40) not null unique,"
                 + "    password VARCHAR(32) not null,"
                 + "    active BOOLEAN,"
-                + " PRIMARY KEY ( employeeID))";
+                + "    depID INTEGER not NULL,"
+                + " PRIMARY KEY (employeeID),"
+                + " FOREIGN KEY (depID) REFERENCES departments(depID))";
         stmt.execute(query);
         stmt.close();
         con.close();
     }
 
-    public void addNewEmployee(String firstName, String lastName, String email, String corp_email, String phone, String password, int active) throws ClassNotFoundException {
+    public void addNewEmployee(String firstName, String lastName, String email, String corp_email, String phone, String password, int active, int depID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
 
             Statement stmt = con.createStatement();
 
             String insertQuery = "INSERT INTO "
-                    + " employees (firstName,lastName,email,corp_email,phone,password,active)"
+                    + " employees (firstName,lastName,email,corp_email,phone,password,active,depID)"
                     + " VALUES ("
                     + "'" + firstName + "',"
                     + "'" + lastName + "',"
@@ -50,7 +52,8 @@ public class EditEmployeeTable {
                     + "'" + corp_email + "',"
                     + "'" + phone + "',"
                     + "'" + password + "',"
-                    + "'" + active + "'"
+                    + "'" + active + "',"
+                    + "'" + depID + "'"
                     + ")";
             System.out.println(insertQuery);
             stmt.executeUpdate(insertQuery);

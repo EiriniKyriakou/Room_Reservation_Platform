@@ -29,27 +29,30 @@ public class EditAdministratorTable {
                 + "    corp_email VARCHAR(40) not null unique,"
                 + "    phone VARCHAR(40) not null unique,"
                 + "    password VARCHAR(32) not null,"
-                + " PRIMARY KEY ( adminID))";
+                + "    depID INTEGER not NULL,"
+                + " PRIMARY KEY (adminID),"
+                + " FOREIGN KEY (depID) REFERENCES departments(depID))";
         stmt.execute(query);
         stmt.close();
         con.close();
     }
 
-    public void addNewAdministrator(String firstName, String lastName, String email, String corp_email, String phone, String password) throws ClassNotFoundException {
+    public void addNewAdministrator(String firstName, String lastName, String email, String corp_email, String phone, String password, int depID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
 
             Statement stmt = con.createStatement();
 
             String insertQuery = "INSERT INTO "
-                    + " administrators (firstName,lastName,email,corp_email,phone,password)"
+                    + " administrators (firstName,lastName,email,corp_email,phone,password,depID)"
                     + " VALUES ("
                     + "'" + firstName + "',"
                     + "'" + lastName + "',"
                     + "'" + email + "',"
                     + "'" + corp_email + "',"
                     + "'" + phone + "',"
-                    + "'" + password + "'"
+                    + "'" + password + "',"
+                    + "'" + depID + "'"
                     + ")";
             System.out.println(insertQuery);
             stmt.executeUpdate(insertQuery);
