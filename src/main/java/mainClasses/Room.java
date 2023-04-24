@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Room {
 
-    private int roomID;
+    private int roomID, depID;
     private String roomName, roomType;
     private int capacity;
 
@@ -19,6 +19,14 @@ public class Room {
 
     void setRoomID(int value) {
         this.roomID = value;
+    }
+    
+    int getDepID() {
+        return this.depID;
+    }
+
+    void setDepID(int value) {
+        this.depID = value;
     }
 
     String getRoomName() {

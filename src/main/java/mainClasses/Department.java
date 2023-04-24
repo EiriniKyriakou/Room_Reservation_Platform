@@ -2,7 +2,7 @@ package mainClasses;
 
 public class Department {
 
-    private int depID;
+    private int depID, compID;
     private String name, location;
 
     public Department(String name, String location) {
@@ -16,6 +16,14 @@ public class Department {
 
     void setDepID(int value) {
         this.depID = value;
+    }
+    
+    int getCompID() {
+        return this.compID;
+    }
+
+    void setCompID(int value) {
+        this.compID = value;
     }
 
     String getName() {

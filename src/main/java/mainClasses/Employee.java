@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Employee extends Person {
 
-    private int employeeID;
+    private int employeeID, depID;
     private String corp_email, phone, password;
     private int active;
 
@@ -30,6 +30,14 @@ public class Employee extends Person {
 
     void setEmployeeID(int value) {
         this.employeeID = value;
+    }
+    
+    int getDepID() {
+        return this.depID;
+    }
+
+    void setDepID(int value) {
+        this.depID = value;
     }
 
     public String getCorp_email() {

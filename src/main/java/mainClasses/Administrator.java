@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Administrator extends Person {
 
-    private int adminID;
+    private int adminID, depID;
     private String corp_email;
     private String phone;
     private String password;
@@ -22,6 +22,14 @@ public class Administrator extends Person {
 
     void setAdminID(int value) {
         this.adminID = value;
+    }
+    
+    int getDepID() {
+        return this.depID;
+    }
+
+    void setDepID(int value) {
+        this.depID = value;
     }
 
     public String getCorp_email() {
