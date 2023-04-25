@@ -7,6 +7,9 @@
     background-color: #7D6E83 !important;
 }
 
+.purple-light {
+    background-color: #A191A8;
+}
 #notification{
     display: none;
     border-radius: 5px;
@@ -69,7 +72,6 @@
 
 #search {
     height: 45vh;
-    width: 100vw;
     background-image: url('img/background.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -131,4 +133,25 @@ select{
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 5px;
     border: none;
+}
+
+.search_bar{
+    padding: 20px 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.back_button{
+    padding: 5px 30px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    border: none; 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search_container{
+    padding: 25px 70px;
 }

@@ -1,7 +1,8 @@
 const Content = {
     guest: "content_guest",
     admin_home: "content_admin_home",
-    employee_home: "content_employee_home"
+    employee_home: "content_employee_home",
+    employee_search: "content_employee_search"
 };
 
 var login_attemts = ["email", 0];
@@ -10,15 +11,18 @@ function displayContent(id) {
     for (let i in Content) {
         document.getElementById(Content[i]).style.display = "none";
     }
+    
     document.getElementById(id).style.display = "";
+    
     const user = JSON.parse(localStorage.getItem("logedIn"));
     document.getElementById("navbarDropdownMenuLink").innerHTML = user["firstName"] + " " + user["lastName"];
+    
     if (id === "content_employee_home") {
         topCapacity();
     }
 }
 
-function reserveCard(name, type, number) {
+function reserveRoomCard(name, type, number) {
     return        `<div class="card">
                         <h6 style="font-weight: bolder"> ${name} </h6>
                         <div class="inner-card"> 
@@ -172,4 +176,15 @@ function topCapacity() {
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send();
+}
+
+function search(){
+    displayContent(Content.employee_search);
+    $('#search_title').html("Rooms");
+    $('#search_results').html("");
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
 }
