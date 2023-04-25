@@ -11,6 +11,28 @@ function displayContent(id) {
         document.getElementById(Content[i]).style.display = "none";
     }
     document.getElementById(id).style.display = "";
+    const user = JSON.parse(localStorage.getItem("logedIn"));
+    document.getElementById("navbarDropdownMenuLink").innerHTML = user["firstName"] + " " + user["lastName"];
+    if (id === "content_employee_home") {
+        topCapacity();
+    }
+}
+
+function reserveCard(name, type, number) {
+    return        `<div class="card">
+                        <h6 style="font-weight: bolder"> ${name} </h6>
+                        <div class="inner-card"> 
+                            <div>
+                                <h6>Type:</h6>
+                                <h6>Capacity:</h6>
+                            </div>
+                            <div>
+                                <h6 style="font-weight: 400">${type}</h6>
+                                <h6 style="font-weight: 400">${number}</h6>
+                            </div>
+                        </div>
+                        <button class="btn-dark purple-dark full_button"> <img src="img/icon-reserve.png" width="25" height="25"> Reserve</button>
+                    </div>`;
 }
 
 window.onload = () => {
@@ -133,4 +155,21 @@ function logout() {
     localStorage.setItem("logedIn", null);
     send_notification("Logout completed successfully");
     isLoggedIn();
+}
+
+function topCapacity() {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        console.log(data);
+        $('#top_capacity').html("");
+        for (let i = 0; i < Object.keys(data).length; i++) {
+            $('#top_capacity').append(reserveCard(data[i].roomName, data[i].roomType, data[i].capacity));
+        }
+    };
+
+    xhr.open("GET", "http://localhost:8080/room_reservation/api/top_capacity");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send();
 }

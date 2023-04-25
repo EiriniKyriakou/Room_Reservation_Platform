@@ -1,12 +1,16 @@
 package database.tables;
 
+import com.google.gson.Gson;
 import database.DB_Connection;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mainClasses.Room;
 
 /**
  *
@@ -56,5 +60,35 @@ public class EditRoomTable {
         } catch (SQLException ex) {
             Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public ArrayList<Room> getTopCapacityRooms() throws ClassNotFoundException{
+        try {
+            Connection con = DB_Connection.getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+            ArrayList<Room> rooms = new ArrayList<Room>();
+
+            rs = stmt.executeQuery("SELECT * FROM rooms ORDER BY capacity DESC");
+            System.out.println(rs);
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                System.out.println(json);
+                Gson gson = new Gson();
+                Room room = gson.fromJson(json, Room.class);
+                rooms.add(room);
+            }
+            System.out.println("# Top Capacity");
+
+            stmt.close();
+            con.close();
+            return rooms;
+
+        } catch (SQLException ex) {
+            System.err.println("Got an exception! ");
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+        
     }
 }

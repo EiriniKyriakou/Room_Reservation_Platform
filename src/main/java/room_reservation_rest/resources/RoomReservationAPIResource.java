@@ -4,9 +4,14 @@ import com.google.gson.Gson;
 import database.init.InitDatabase;
 import database.tables.EditAdministratorTable;
 import database.tables.EditEmployeeTable;
+import database.tables.EditRoomTable;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -15,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import mainClasses.Administrator;
 import mainClasses.Employee;
+import mainClasses.Room;
 
 /**
  * REST Web Service
@@ -126,6 +132,32 @@ public class RoomReservationAPIResource {
 
             }
         } catch (SQLException | ClassNotFoundException ex) {
+            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
+        }
+    }
+
+    @GET
+    @Path("/top_capacity")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response top_capacity(){
+        try {
+            EditRoomTable edt = new EditRoomTable();
+            ArrayList<Room> rooms = new ArrayList<Room>();
+            rooms = edt.getTopCapacityRooms();
+            
+            if (rooms != null) {
+                Gson gson = new Gson();
+                Response.Status status = Response.Status.OK;
+                return Response.status(status).type("application/json").entity(gson.toJson(rooms)).build();
+            } else {
+                Response.Status status = Response.Status.UNAUTHORIZED;
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No rooms.\"}").build();
+                
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
             Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
         }
