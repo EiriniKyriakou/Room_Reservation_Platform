@@ -70,7 +70,7 @@
     justify-content: center;
 }
 
-#search {
+#search_home {
     height: 45vh;
     background-image: url('img/background.png');
     background-repeat: no-repeat;
@@ -91,14 +91,14 @@ select{
     background-color: white;
 }
 
-#search_bar_form{
+.search_bar_form{
     display: flex;
     flex-flow: row wrap;
     gap: 0;
 
 }
 
-#search_button{
+.search_button{
     padding-left: 30px;
     padding-right: 30px;
     border: solid 1px black;

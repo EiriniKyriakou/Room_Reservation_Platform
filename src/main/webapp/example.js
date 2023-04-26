@@ -11,12 +11,51 @@ function displayContent(id) {
     for (let i in Content) {
         document.getElementById(Content[i]).style.display = "none";
     }
-    
     document.getElementById(id).style.display = "";
     
-    if (id === "content_employee_home") {
+    const user = JSON.parse(localStorage.getItem("logedIn"));
+    if (id === "content_guest"){
+//        Nav Bar
+        let options = ["Create Database", "Drop Database"];
+        let actions = ["creat_database()", "drop_database()"];
+        $('#navbar-options').html(navBarOptions(options, actions, null));
+    }
+    else if (id === "content_employee_home") {
+//        Nav Bar
+        let options = ["Active Reservations", "Past Reservations"];
+        let actions = ["", ""];
+        $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
+        
+//        Top Capacity Rooms
         topCapacity();
     }
+    else if (id === "content_admin_home") {
+//        Nav Bar
+        let options = ["Reactivate Employee", "Add Employee", "Pending Requests", "Active Reservations", "Past Reservations"];
+        let actions = ["", "", "", "", ""];
+        $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
+    }
+}
+
+function navBarOptions(options, actions, name) {
+    let html ="";
+    for (let i = 0; i < Object.keys(options).length; i++){
+        html += `   <li class="nav-item">
+                        <a class="nav-item nav-link" onclick="${actions[i]}">${options[i]}</a>
+                    </li>`;
+    }
+    if (name!==null){
+        html += `   <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            ${name}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" onclick="">My Account</a>
+                            <a class="dropdown-item" onclick="logout()">Logout</a>
+                        </div>
+                    </li>`;
+    }
+    return html;             
 }
 
 function reserveRoomCard(name, type, number) {
@@ -121,11 +160,13 @@ function login() {
                 login_attemts = ["email", 0];
                 send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
                 displayContent(Content.admin_home);
+                document.getElementById("navbarDropdownMenuLink").innerHTML = obj["firstName"] + " " + obj["lastName"];
             } else if (obj["employeeID"] !== undefined && obj["active"] === 1) {
                 localStorage.setItem("logedIn", xhr.responseText);
                 login_attemts = ["email", 0];
                 send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
                 displayContent(Content.employee_home);
+                document.getElementById("navbarDropdownMenuLink").innerHTML = obj["firstName"] + " " + obj["lastName"];
             } else {
                 send_notification("Your account is locked");
             }
