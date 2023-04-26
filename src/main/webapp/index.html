@@ -15,6 +15,7 @@
     </head>
 
     <body id="body">
+        
         <!--Nav Bar for All-->
         <nav class="navbar navbar-expand-lg navbar-dark purple-dark">
             <a class="navbar-brand" href="#">Room Reservation</a>
@@ -23,108 +24,30 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup" style="justify-content: flex-end;">
                 <ul class="navbar-nav" id="navbar-options">
-
+                    <!--Filled From JavaScript (function displayContent()) depending on type of user-->
                 </ul>
             </div>
         </nav>
 
-        <!--Guest Content-->
-        <div id="content_guest" style="display: none">
-            <!--login form-->
-            <div class="container-fluid">
-                <div class="box">
-                    <form id="login_form">
-                        <h5 style="text-align: center; font-weight: bolder !important">Login</h5>
-                        <label for="login_email">Corporate Email</label>
-                        <input type="text" id="login_email" name="login_email" value=""><br>
-                        <label for="login_pass">Password</label>
-                        <input type="password" id="login_pass" name="login_pass" value=""><br><br>
-                        <input class="btn btn-dark purple-dark" type="submit" value="Login">
-                    </form>
-                </div>
+        
+        
+        <div id="main_content">
+            <!--Filled From JavaScript (function displayContent()) depending on current page-->
+        </div>
+
+        
+        
+        <!--Notification-->
+        <div id="notification" class="toast" style="position: fixed; bottom: 10px; right: 10px; width: 200px;">
+            <div class="toast-header">
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onclick="hide_notification()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                <span id="info_span"></span>
             </div>
         </div>
 
-        <!--Admin Homepage-->
-        <div id="content_admin_home" style="display: none">
-            <div class="container-fluid">
-                <h3> Welcome Back Admin</h3>
-            </div>
-        </div>
-
-        <!--Employee Homepage-->
-        <div id="content_employee_home" style="display: none">
-            <!--Search Section-->
-            <div id="search_home" class="box">
-                <div>
-                    <h5 style="text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); padding-bottom: 10px">Search Rooms</h5>
-                    <div class="search_bar_form" >
-                        <input style="border-top-left-radius: 5px; border-bottom-left-radius: 5px;" class="search_element" type="text" id="room_name_home" name="room_name_home" placeholder="Room Name" value="">
-                        <select class="search_element" name="room_type_home" id="room_type_home">
-                            <option value="" disabled selected hidden style="background-image: url('room_type.png')"> Type of Room</option>
-                            <option value="Amphitheater">Amphitheater</option>
-                        </select>
-                        <select class="search_element" name="room_capacity_home" id="room_capacity_home">
-                            <option value="" disabled selected hidden>Capacity</option>
-                            <option value="100">100</option>
-                        </select>
-                        <input class="search_element" type="date" id="date_home" name="date_home">
-                        <input class="search_element" type="time" id="start_time_home" name="start_time_home">
-                        <button class="btn-dark purple-dark search_button" onclick="search()"> <img src="img/search.png" width="25" height="25"> Search</button>
-                    </div>
-                </div>
-            </div>
-
-            <!--Top Capacity Section-->
-            <div class="container-fluid">
-                <h5>Top Capacity Rooms</h5>
-                <div id="top_capacity" class="inner-container-fluid">
-                    <!--filled from JavaScript-->
-                </div>
-            </div>
-        </div>
-
-        <!--Employee Search Result-->
-        <div id="content_employee_search" style="display: none">
-            <div class="purple-light search_bar"> 
-                <button class="back_button btn-dark purple-dark" onclick="displayContent('content_employee_home')"> <img src="img/icon-back.png" width="25" height="25"> Back</button> 
-                <div class="search_bar_form" >
-                    <input style="border-top-left-radius: 5px; border-bottom-left-radius: 5px;" class="search_element" type="text" id="room_name_search" name="room_name_search" placeholder="Room Name" value="">
-                    <select class="search_element" name="room_type_search" id="room_type_search">
-                        <option value="" disabled selected hidden style="background-image: url('room_type.png')"> Type of Room</option>
-                        <option value="Amphitheater">Amphitheater</option>
-                    </select>
-                    <select class="search_element" name="room_capacity_search" id="room_capacity_search">
-                        <option value="" disabled selected hidden>Capacity</option>
-                        <option value="100">100</option>
-                    </select>
-                    <input class="search_element" type="date" id="date_search" name="date_search">
-                    <input class="search_element" type="time" id="start_time_search" name="start_time_search">
-                    <button class="btn-dark purple-dark search_button"> <img src="img/search.png" width="25" height="25"> Search</button>
-                </div>
-            </div>
-
-            <div class="search_container">
-                <h5 id="search_title"> </h5>
-                <div class="inner-container-fluid" id='search_results'>
-                    <div>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <!--Notification-->
-            <div id="notification" class="toast" style="position: fixed; bottom: 10px; right: 10px; width: 200px;">
-                <div class="toast-header">
-                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onclick="hide_notification()">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="toast-body">
-                    <span id="info_span"></span>
-                </div>
-            </div>
-            
     </body>
 </html>

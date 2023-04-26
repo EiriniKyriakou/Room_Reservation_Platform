@@ -8,43 +8,67 @@ const Content = {
 var login_attemts = ["email", 0];
 
 function displayContent(id) {
-    for (let i in Content) {
-        document.getElementById(Content[i]).style.display = "none";
-    }
-    document.getElementById(id).style.display = "";
-    
+    $('#main_content').html("");
+
     const user = JSON.parse(localStorage.getItem("logedIn"));
-    if (id === "content_guest"){
+    let options, actions;
+    
+    switch (id) {
+        case "content_guest":
 //        Nav Bar
-        let options = ["Create Database", "Drop Database"];
-        let actions = ["creat_database()", "drop_database()"];
-        $('#navbar-options').html(navBarOptions(options, actions, null));
-    }
-    else if (id === "content_employee_home") {
+            options = ["Create Database", "Drop Database"];
+            actions = ["creat_database()", "drop_database()"];
+            $('#navbar-options').html(navBarOptions(options, actions, null));
+//        Login From
+            $('#main_content').html(loginForm());
+            break;
+
+        case "content_employee_home":
 //        Nav Bar
-        let options = ["Active Reservations", "Past Reservations"];
-        let actions = ["", ""];
-        $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
-        
+            options = ["Active Reservations", "Past Reservations"];
+            actions = ["", ""];
+            $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
+//        Search Seaction
+            $('#main_content').html(searchBarHome());
 //        Top Capacity Rooms
-        topCapacity();
-    }
-    else if (id === "content_admin_home") {
+            $('#main_content').append(topCapacityRooms());
+            break;
+
+        case "content_employee_search":
+//        Search Seaction   
+            $('#main_content').html(`<div class="purple-light search_bar"> 
+                <button class="back_button btn-dark purple-dark" onclick="displayContent('content_employee_home')"> <img src="img/icon-back.png" width="25" height="25"> Back</button> 
+                ${searchBarForm()}
+            </div>`);
+//        Search Results  
+            $('#main_content').append(`<div class="search_container">
+                <h5 id="search_title"> </h5>
+                <div class="inner-container-fluid" id='search_results'>                 
+                </div>
+            </div>`);
+            break;
+
+        case "content_admin_home":
 //        Nav Bar
-        let options = ["Reactivate Employee", "Add Employee", "Pending Requests", "Active Reservations", "Past Reservations"];
-        let actions = ["", "", "", "", ""];
-        $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
+            options = ["Reactivate Employee", "Add Employee", "Pending Requests", "Active Reservations", "Past Reservations"];
+            actions = ["", "", "", "", ""];
+            $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
+//        Main
+            $('#main_content').html(`<div class="container-fluid">
+                <h5> Welcome Back Admin</h5>
+            </div>`);
+            break;
     }
 }
 
 function navBarOptions(options, actions, name) {
-    let html ="";
-    for (let i = 0; i < Object.keys(options).length; i++){
+    let html = "";
+    for (let i = 0; i < Object.keys(options).length; i++) {
         html += `   <li class="nav-item">
                         <a class="nav-item nav-link" onclick="${actions[i]}">${options[i]}</a>
                     </li>`;
     }
-    if (name!==null){
+    if (name !== null) {
         html += `   <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             ${name}
@@ -55,24 +79,75 @@ function navBarOptions(options, actions, name) {
                         </div>
                     </li>`;
     }
-    return html;             
+    return html;
+}
+
+function loginForm() {
+    return `<div class="container-fluid">
+                <div class="box">
+                    <div id="login_form">
+                        <h5 style="text-align: center; font-weight: bolder !important">Login</h5>
+                        <label for="login_email">Corporate Email</label>
+                        <input type="text" id="login_email" name="login_email" value=""><br>
+                        <label for="login_pass">Password</label>
+                        <input type="password" id="login_pass" name="login_pass" value=""><br><br>
+                        <button class="btn btn-dark purple-dark" onclick="login();">Login</button>
+                    </div>
+                </div>
+            </div>`;
+}
+
+function searchBarHome() {
+    return  `<div id="search_home" class="box">
+                <div>
+                    <h5 style="text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); padding-bottom: 10px">Search Rooms</h5>
+                    ${searchBarForm()}
+                    </div>
+                </div>
+            </div>`;
+}
+
+function searchBarForm() {
+    return  `<div class="search_bar_form" >
+                <input style="border-top-left-radius: 5px; border-bottom-left-radius: 5px;" class="search_element" type="text" id="room_name" name="room_name" placeholder="Room Name" value="">
+                <select class="search_element" name="room_type" id="room_type">
+                    <option value="" disabled selected hidden style="background-image: url('room_type.png')"> Type of Room</option>
+                    <option value="Amphitheater">Amphitheater</option>
+                </select>
+                <select class="search_element" name="room_capacity" id="room_capacity">
+                    <option value="" disabled selected hidden>Capacity</option>
+                    <option value="100">100</option>
+                </select>
+                <input class="search_element" type="date" id="date" name="date">
+                <input class="search_element" type="time" id="start_time" name="start_time">
+                <button class="btn-dark purple-dark search_button" onclick="search()"> <img src="img/search.png" width="25" height="25"> Search</button>
+            </div>`;
+}
+
+function topCapacityRooms() {
+    return `<div class="container-fluid">
+                <h5>Top Capacity Rooms</h5>
+                <div id="top_capacity" class="inner-container-fluid">
+                    ${topCapacity()}
+                </div>
+            </div>`;
 }
 
 function reserveRoomCard(name, type, number) {
-    return        `<div class="cards">
-                        <h6 style="font-weight: bolder"> ${name} </h6>
-                        <div class="inner-card"> 
-                            <div>
-                                <h6>Type:</h6>
-                                <h6>Capacity:</h6>
-                            </div>
-                            <div>
-                                <h6 style="font-weight: 400">${type}</h6>
-                                <h6 style="font-weight: 400">${number}</h6>
-                            </div>
-                        </div>
-                        <button class="btn-dark purple-dark full_button"> <img src="img/icon-reserve.png" width="25" height="25"> Reserve</button>
-                    </div>`;
+    return  `<div class="cards">
+                <h6 style="font-weight: bolder"> ${name} </h6>
+                <div class="inner-card"> 
+                    <div>
+                        <h6>Type:</h6>
+                        <h6>Capacity:</h6>
+                    </div>
+                    <div>
+                        <h6 style="font-weight: 400">${type}</h6>
+                        <h6 style="font-weight: 400">${number}</h6>
+                    </div>
+                </div>
+                <button class="btn-dark purple-dark full_button"> <img src="img/icon-reserve.png" width="25" height="25"> Reserve</button>
+            </div>`;
 }
 
 window.onload = () => {
@@ -113,14 +188,6 @@ function send_notification(text) {
 function hide_notification() {
     document.getElementById("notification").style.display = "none";
 }
-
-window.addEventListener("load", () => {
-    document.getElementById("login_form").addEventListener("submit", (event) => {
-        //prevent the default form submission behavior
-        event.preventDefault();
-        login();
-    });
-});
 
 function isLoggedIn() {
     const user = JSON.parse(localStorage.getItem("logedIn"));
@@ -217,7 +284,7 @@ function topCapacity() {
     xhr.send();
 }
 
-function search(){
+function search() {
     displayContent(Content.employee_search);
     $('#search_title').html("Rooms");
     $('#search_results').html("");
