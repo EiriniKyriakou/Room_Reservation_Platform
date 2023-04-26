@@ -14,16 +14,13 @@ function displayContent(id) {
     
     document.getElementById(id).style.display = "";
     
-    const user = JSON.parse(localStorage.getItem("logedIn"));
-    document.getElementById("navbarDropdownMenuLink").innerHTML = user["firstName"] + " " + user["lastName"];
-    
     if (id === "content_employee_home") {
         topCapacity();
     }
 }
 
 function reserveRoomCard(name, type, number) {
-    return        `<div class="card">
+    return        `<div class="cards">
                         <h6 style="font-weight: bolder"> ${name} </h6>
                         <div class="inner-card"> 
                             <div>
@@ -87,14 +84,15 @@ window.addEventListener("load", () => {
 });
 
 function isLoggedIn() {
-    if (localStorage.getItem("logedIn") !== "null") {
-        const obj = JSON.parse(localStorage.getItem("logedIn"));
-        if (obj["employeeID"] !== undefined) {
+    const user = JSON.parse(localStorage.getItem("logedIn"));
+    if (user !== null) {
+        if (user["employeeID"] !== undefined) {
             displayContent(Content.employee_home);
-        } else if (obj["adminID"] !== undefined) {
+        } else if (user["adminID"] !== undefined) {
             displayContent(Content.admin_home);
         }
-        send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
+        send_notification("Welcome back " + user["firstName"] + " " + user["lastName"]);
+        document.getElementById("navbarDropdownMenuLink").innerHTML = user["firstName"] + " " + user["lastName"];
     } else {
         displayContent(Content.guest);
     }
@@ -168,7 +166,7 @@ function topCapacity() {
         console.log(data);
         $('#top_capacity').html("");
         for (let i = 0; i < Object.keys(data).length; i++) {
-            $('#top_capacity').append(reserveCard(data[i].roomName, data[i].roomType, data[i].capacity));
+            $('#top_capacity').append(reserveRoomCard(data[i].roomName, data[i].roomType, data[i].capacity));
         }
     };
 
