@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import database.init.InitDatabase;
 import database.tables.EditAdministratorTable;
 import database.tables.EditEmployeeTable;
+import database.tables.EditReservationTable;
 import database.tables.EditRoomTable;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import mainClasses.Administrator;
 import mainClasses.Employee;
+import mainClasses.Reservation;
 import mainClasses.Room;
 
 /**
@@ -162,5 +164,29 @@ public class RoomReservationAPIResource {
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
         }
     }
+    
+    @GET
+    @Path("/pending_requests")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response pending_requests(){
+        try {
+            EditReservationTable edt = new EditReservationTable();
+            ArrayList<Reservation> pendReqs = new ArrayList<Reservation>();
+            pendReqs = edt.getPendingRequests();
 
+            if (pendReqs != null) {
+                Gson gson = new Gson();
+                Response.Status status = Response.Status.OK;
+                return Response.status(status).type("application/json").entity(gson.toJson(pendReqs)).build();
+            } else {
+                Response.Status status = Response.Status.UNAUTHORIZED;
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No rooms.\"}").build();  
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
+            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
+        }
+    }
 }

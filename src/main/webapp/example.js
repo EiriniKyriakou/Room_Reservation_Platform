@@ -55,8 +55,9 @@ function displayContent(id) {
             $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
 //        Main
             $('#main_content').html(`<div class="container-fluid">
-                <h5> Welcome Back Admin</h5>
+                <h5> Pending Requests </h5>
             </div>`);
+            $('#main_content').append(PendingEmployeeRequests());
             break;
     }
 }
@@ -133,6 +134,15 @@ function topCapacityRooms() {
             </div>`;
 }
 
+function pendingEmployeeRequests() {
+    return `<div class="container-fluid">
+                <h5>Pending Requests</h5>
+                <div id="pending_requests" class="inner-container-fluid">
+                    ${pendingRequests()}
+                </div>
+            </div>`;
+}
+
 function reserveRoomCard(name, type, number) {
     return  `<div class="cards">
                 <h6 style="font-weight: bolder"> ${name} </h6>
@@ -149,6 +159,30 @@ function reserveRoomCard(name, type, number) {
                 <button class="btn-dark purple-dark full_button"> <img src="img/icon-reserve.png" width="25" height="25"> Reserve</button>
             </div>`;
 }
+
+
+function pendingRoomReservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time) {
+    return  `<div class="cards">
+                <h6 style="font-weight: bolder"> Reservation ID: ${reservationID} </h6>
+                <div class="inner-card"> 
+                    <div>
+                        <h6>Type:</h6>
+                        <h6>Capacity:</h6>
+                    </div>
+                    <div>
+                        <h6 style="font-weight: 400"> Employee ID: ${employeeID}</h6>
+                        <h6 style="font-weight: 400"> Employee ID: ${roomID}</h6>
+                        <h6 style="font-weight: 400"> Date: ${reservationDate}</h6>
+                        <h6 style="font-weight: 400"> Employee ID: ${employeeID}</h6>
+                        <h6 style="font-weight: 400"> Start time: ${employeeID}</h6>
+                        <h6 style="font-weight: 400"> End time: ${employeeID}</h6>
+                        <h6 style="font-weight: 400"> Status: Pending</h6>
+                </div>
+                </div>
+                <button class="btn-dark purple-dark full_button"> <img src="img/icon-review.png" width="25" height="25"> Review</button>
+            </div>`;
+}
+
 
 window.onload = () => {
     isLoggedIn();
@@ -279,6 +313,25 @@ function topCapacity() {
     };
 
     xhr.open("GET", "http://localhost:8080/room_reservation/api/top_capacity");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send();
+}
+
+function pendingRequests() {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+       if(xhr.readyState === 4 && xhr.status === 200){
+            const data = JSON.parse(xhr.responseText);
+            console.log(data);
+            $('#pending_requests').html("");
+            for (let i = 0; i < Object.keys(data).length; i++) {
+                $('#pending_requests').append(pendingRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate,  data[i].start_time,  data[i].end_time));
+            }
+        }
+    };
+
+    xhr.open("GET", "http://localhost:8080/room_reservation/api/pending_requests");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send();

@@ -1,12 +1,16 @@
 package database.tables;
 
+import com.google.gson.Gson;
 import database.DB_Connection;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mainClasses.Reservation;
 
 /**
  *
@@ -62,5 +66,36 @@ public class EditReservationTable {
         } catch (SQLException ex) {
             Logger.getLogger(EditReservationTable.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    // Get reservations that have neither been accepted nor rejected
+    public ArrayList<Reservation> getPendingRequests() throws ClassNotFoundException{
+        try {
+            Connection con = DB_Connection.getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+            ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+
+            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 0");
+            System.out.println(rs);
+            
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                System.out.println(json);
+                Gson gson = new Gson();
+                Reservation reservation = gson.fromJson(json, Reservation.class);
+                reservations.add(reservation);
+            }
+            System.out.println("# Pending Requests");
+
+            stmt.close();
+            con.close();
+            return reservations;
+
+        } catch (SQLException ex) {
+            System.err.println("Got an exception!here ");
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null; 
     }
 }
