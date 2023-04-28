@@ -1,3 +1,10 @@
+window.onload = () => {
+    isLoggedIn();
+};
+
+//Global Variables
+
+//This are the pages that we have in the platform
 const Content = {
     guest: "content_guest",
     admin_home: "content_admin_home",
@@ -7,12 +14,14 @@ const Content = {
 
 var login_attemts = ["email", 0];
 
+//Depending on the page we want to desplay, this function chooses what to insert in the html code
+//The main idea is that we have a NavBar, and the main_content div, in which we put the content
 function displayContent(id) {
     $('#main_content').html("");
 
     const user = JSON.parse(localStorage.getItem("logedIn"));
     let options, actions;
-    
+
     switch (id) {
         case "content_guest":
 //        Nav Bar
@@ -32,7 +41,7 @@ function displayContent(id) {
             $('#main_content').html(searchBarHome());
 //        Top Capacity Rooms
             $('#main_content').append(topCapacityRooms());
-            topCapacity()
+            topCapacity();
             break;
 
         case "content_employee_search":
@@ -61,6 +70,7 @@ function displayContent(id) {
     }
 }
 
+//HTML Components
 function navBarOptions(options, actions, name) {
     let html = "";
     for (let i = 0; i < Object.keys(options).length; i++) {
@@ -157,7 +167,6 @@ function reserveRoomCard(name, type, number) {
             </div>`;
 }
 
-
 function pendingRoomReservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time) {
     return  `<div class="big-cards">
                 <h6 style="font-weight: bolder"> Reservation ID: ${reservationID} </h6>
@@ -183,11 +192,7 @@ function pendingRoomReservation(reservationID, employeeID, roomID, reservationDa
             </div>`;
 }
 
-
-window.onload = () => {
-    isLoggedIn();
-};
-
+//Requests
 function creat_database() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -214,6 +219,117 @@ function drop_database() {
     xhr.send();
 }
 
+function login() {
+    var jsonData = JSON.stringify(
+            {
+                corp_email: document.getElementById("login_email").value,
+                password: document.getElementById("login_pass").value
+            }
+    );
+
+    //if first attempt to login with this email 
+    if (document.getElementById("login_email").value !== login_attemts[0]) {
+        login_attemts[0] = document.getElementById("login_email").value;
+        login_attemts[1] = 0;
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const obj = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            if (obj["adminID"] !== undefined) {
+                localStorage.setItem("logedIn", xhr.responseText);
+                login_attemts = ["email", 0];
+                send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
+                displayContent(Content.admin_home);
+                document.getElementById("navbarDropdownMenuLink").innerHTML = obj["firstName"] + " " + obj["lastName"];
+            } else if (obj["employeeID"] !== undefined && obj["active"] === 1) {
+                localStorage.setItem("logedIn", xhr.responseText);
+                login_attemts = ["email", 0];
+                send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
+                displayContent(Content.employee_home);
+                document.getElementById("navbarDropdownMenuLink").innerHTML = obj["firstName"] + " " + obj["lastName"];
+            } else {
+                send_notification("Your account is locked");
+            }
+        } else {
+            send_notification(obj["msg"]);
+            //If password is wrong, +1 on login atempts
+            if (obj["msg"] === "Wrong Credantials." && obj["type"] === "employee") {
+                login_attemts[1]++;
+            }
+        }
+    };
+
+    //If 5 wrong attempts lock account
+    if (login_attemts[1] > 4) {
+        xhr.open("PUT", "http://localhost:8080/room_reservation/api/lock_account");
+
+        //Login request
+    } else {
+        xhr.open("POST", "http://localhost:8080/room_reservation/api/login");
+    }
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(jsonData);
+
+    //clear the values
+    document.getElementById("login_email").value = "";
+    document.getElementById("login_pass").value = "";
+}
+
+function topCapacity() {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            $('#top_capacity').html("");
+            for (let i = 0; i < Object.keys(data).length; i++) {
+                $('#top_capacity').append(reserveRoomCard(data[i].roomName, data[i].roomType, data[i].capacity));
+            }
+        } else {
+            $('#top_capacity').html(data["msg"]);
+        }
+    };
+
+    xhr.open("GET", "http://localhost:8080/room_reservation/api/top_capacity");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send();
+}
+
+function pendingRequests() {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            $('#pending_requests').html("");
+            for (let i = 0; i < Object.keys(data).length; i++) {
+                $('#pending_requests').append(pendingRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time));
+            }
+        } else {
+            $('#pending_requests').html(data["msg"]);
+        }
+    };
+
+    xhr.open("GET", "http://localhost:8080/room_reservation/api/pending_requests");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send();
+}
+
+function search() {
+    displayContent(Content.employee_search);
+    $('#search_title').html("Rooms");
+    $('#search_results').html("");
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+}
+
+//Helpful Functions
 function send_notification(text) {
     document.getElementById("info_span").innerHTML = text;
     document.getElementById("notification").style.display = "block";
@@ -238,115 +354,8 @@ function isLoggedIn() {
     }
 }
 
-function login() {
-    var jsonData = JSON.stringify(
-            {
-                corp_email: document.getElementById("login_email").value,
-                password: document.getElementById("login_pass").value
-            }
-    );
-
-    //if first attempt to login with this email 
-    if (document.getElementById("login_email").value !== login_attemts[0]) {
-        login_attemts[0] = document.getElementById("login_email").value;
-        login_attemts[1] = 0;
-    }
-
-    var xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        const obj = JSON.parse(xhr.responseText);
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            if (obj["adminID"] !== undefined) {
-                localStorage.setItem("logedIn", xhr.responseText);
-                login_attemts = ["email", 0];
-                send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
-                displayContent(Content.admin_home);
-                document.getElementById("navbarDropdownMenuLink").innerHTML = obj["firstName"] + " " + obj["lastName"];
-            } else if (obj["employeeID"] !== undefined && obj["active"] === 1) {
-                localStorage.setItem("logedIn", xhr.responseText);
-                login_attemts = ["email", 0];
-                send_notification("Welcome back " + obj["firstName"] + " " + obj["lastName"]);
-                displayContent(Content.employee_home);
-                document.getElementById("navbarDropdownMenuLink").innerHTML = obj["firstName"] + " " + obj["lastName"];
-            } else {
-                send_notification("Your account is locked");
-            }
-        } else {
-            send_notification(obj["msg"]);
-            //If password is wrong +1 on login atempts
-            if (obj["msg"] === "Wrong Credantials." && obj["type"] === "employee") {
-                login_attemts[1]++;
-                console.log(login_attemts);
-            }
-        }
-    };
-
-    if (login_attemts[1] > 4) {
-        xhr.open("PUT", "http://localhost:8080/room_reservation/api/lock_account");
-    } else {
-        xhr.open("POST", "http://localhost:8080/room_reservation/api/login");
-    }
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(jsonData);
-
-    //clear the values
-    document.getElementById("login_email").value = "";
-    document.getElementById("login_pass").value = "";
-}
-
 function logout() {
-    localStorage.setItem("logedIn", null);
+    localStorage.clear();
     send_notification("Logout completed successfully");
     isLoggedIn();
-}
-
-function topCapacity() {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        const data = JSON.parse(xhr.responseText);
-        console.log(data);
-        $('#top_capacity').html("");
-        for (let i = 0; i < Object.keys(data).length; i++) {
-            $('#top_capacity').append(reserveRoomCard(data[i].roomName, data[i].roomType, data[i].capacity));
-        }
-    };
-
-    xhr.open("GET", "http://localhost:8080/room_reservation/api/top_capacity");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send();
-}
-
-function pendingRequests() {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        console.log(xhr.status)
-        const data = JSON.parse(xhr.responseText);
-       if(xhr.readyState === 4 && xhr.status === 200){
-            console.log(data);
-            $('#pending_requests').html("");
-            for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#pending_requests').append(pendingRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate,  data[i].start_time,  data[i].end_time));
-            }
-        } else{
-            $('#pending_requests').html(data["msg"]);
-        }
-    };
-
-    xhr.open("GET", "http://localhost:8080/room_reservation/api/pending_requests");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send();
-}
-
-function search() {
-    displayContent(Content.employee_search);
-    $('#search_title').html("Rooms");
-    $('#search_results').html("");
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
 }
