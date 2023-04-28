@@ -8,8 +8,17 @@ window.onload = () => {
 const Content = {
     guest: "content_guest",
     admin_home: "content_admin_home",
+    admin_active_reservations: "content_admin_active_reservations",
+    admin_review_reservation: "content_admin_review_reservation",
+    admin_edit_reservation: "content_admin_edit_reservation",
+    admin_past_reservations: "content_admin_past_reservations",
     employee_home: "content_employee_home",
-    employee_search: "content_employee_search"
+    employee_search: "content_employee_search",
+    employee_make_reservation: "content_employee_make_reservation",
+    employee_active_reservations: "content_employee_active_reservations",
+    employee_review_reservation: "content_employee_review_reservation",
+    employee_edit_reservation: "content_employee_edit_reservation",
+    employee_past_reservations: "content_employee_past_reservations"
 };
 
 var login_attemts = ["email", 0];
