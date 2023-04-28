@@ -167,29 +167,38 @@ function reserveRoomCard(name, type, number) {
             </div>`;
 }
 
-function pendingRoomReservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time) {
-    return  `<div class="big-cards">
+
+function cardRoomReservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status, button, img_src) {
+    const user = JSON.parse(localStorage.getItem("logedIn"));
+    let html = `<div class="big-cards">
                 <h6 style="font-weight: bolder"> Reservation ID: ${reservationID} </h6>
                 <div class="inner-card"> 
-                    <div>
-                        <h6>Employee ID:</h6>
-                        <h6>Room ID:</h6>
+                    <div>`;
+    if (user["employeeID"] === undefined) {
+        html += `<h6>Employee ID:</h6>`;
+    }
+    html += `<h6>Room ID:</h6>
                         <h6>Date</h6>
                         <h6>Start Time</h6>
                         <h6>End Time</h6>
                         <h6>Status</h6>
                     </div>
-                    <div>
-                        <h6 style="font-weight: 400"> ${employeeID}</h6>
-                        <h6 style="font-weight: 400"> ${roomID}</h6>
+                    <div>`
+    if (user["employeeID"] === undefined) {
+        html += `<h6 style="font-weight: 400"> ${employeeID}</h6>`;
+    }
+    html += `<h6 style="font-weight: 400"> ${roomID}</h6>
                         <h6 style="font-weight: 400"> ${reservationDate}</h6>
                         <h6 style="font-weight: 400"> ${start_time}</h6>
                         <h6 style="font-weight: 400"> ${end_time}</h6>
-                        <h6 style="font-weight: 400"> Pending</h6>
+                        <h6 style="font-weight: 400"> ${status}</h6>
                 </div>
-                </div>
-                <button class="btn-dark purple-dark full_button"> <img src="img/icon-review.png" width="25" height="25"> Review</button>
-            </div>`;
+                </div>`
+    if (button !== null) {
+        html += `<button class="btn-dark purple-dark full_button"> <img src=${img_src} width="25" height="25"> ${button}</button>`
+    }
+    html += `</div>`;
+    return html;
 }
 
 //Requests
@@ -305,7 +314,7 @@ function pendingRequests() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#pending_requests').html("");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#pending_requests').append(pendingRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time));
+                $('#pending_requests').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Pending", "Review", "img/icon-review.png"));
             }
         } else {
             $('#pending_requests').html(data["msg"]);
