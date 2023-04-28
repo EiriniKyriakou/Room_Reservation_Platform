@@ -149,7 +149,7 @@ public class RoomReservationAPIResource {
             ArrayList<Room> rooms = new ArrayList<Room>();
             rooms = edt.getTopCapacityRooms();
             
-            if (rooms != null) {
+            if (rooms.size() != 0) {
                 Gson gson = new Gson();
                 Response.Status status = Response.Status.OK;
                 return Response.status(status).type("application/json").entity(gson.toJson(rooms)).build();
@@ -174,14 +174,16 @@ public class RoomReservationAPIResource {
             EditReservationTable edt = new EditReservationTable();
             ArrayList<Reservation> pendReqs = new ArrayList<Reservation>();
             pendReqs = edt.getPendingRequests();
-
-            if (pendReqs != null) {
-                Gson gson = new Gson();
+            Gson gson = new Gson();
+            System.out.println(gson.toJson(pendReqs));
+            if (pendReqs.size() != 0) {
+                System.out.println("ok");
                 Response.Status status = Response.Status.OK;
                 return Response.status(status).type("application/json").entity(gson.toJson(pendReqs)).build();
             } else {
+                System.out.println("ok2");
                 Response.Status status = Response.Status.UNAUTHORIZED;
-                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No rooms.\"}").build();  
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No pending reservations.\"}").build();  
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
