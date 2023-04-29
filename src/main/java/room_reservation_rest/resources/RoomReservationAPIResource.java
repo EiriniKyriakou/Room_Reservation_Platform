@@ -1,6 +1,7 @@
 package room_reservation_rest.resources;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import database.init.InitDatabase;
 import database.tables.EditAdministratorTable;
 import database.tables.EditEmployeeTable;
@@ -216,13 +217,31 @@ public class RoomReservationAPIResource {
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
         }
     }
-//
-//    @GET
-//    @Path("/employee_active_reservations")
-//    @Consumes({MediaType.APPLICATION_JSON})
-//    @Produces({MediaType.APPLICATION_JSON})
-//    public Response employee_active_reservations(int employee_id) {
-//    }
+
+    @POST
+    @Path("/employee_active_reservations")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response employee_active_reservations(String employee_id) {
+        try {
+            EditReservationTable edt = new EditReservationTable();
+            ArrayList<Reservation> active_reservations = new ArrayList<Reservation>();
+            Gson gson = new Gson();
+            JsonObject jobj = new Gson().fromJson(employee_id, JsonObject.class);
+            active_reservations = edt.getEmployeeActiveReservations(jobj.get("employeeID").toString());
+            if (active_reservations != null || !active_reservations.isEmpty()) {
+                Response.Status status = Response.Status.OK;
+                return Response.status(status).type("application/json").entity(gson.toJson(active_reservations)).build();
+            } else {
+                Response.Status status = Response.Status.UNAUTHORIZED;
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No active reservations.\"}").build();
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
+            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
+        }
+    }
 
     @GET
     @Path("/all_past_reservations")
@@ -248,12 +267,30 @@ public class RoomReservationAPIResource {
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
         }
     }
-//
-//    @GET
-//    @Path("/employee_past_reservations")
-//    @Consumes({MediaType.APPLICATION_JSON})
-//    @Produces({MediaType.APPLICATION_JSON})
-//    public Response employee_past_reservations(int employee_id) {
-//    }
+
+    @POST
+    @Path("/employee_past_reservations")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response employee_past_reservations(String employee_id) {
+        try {
+            EditReservationTable edt = new EditReservationTable();
+            ArrayList<Reservation> past_reservations = new ArrayList<Reservation>();
+            Gson gson = new Gson();
+            JsonObject jobj = new Gson().fromJson(employee_id, JsonObject.class);
+            past_reservations = edt.getEmployeePastReservations(jobj.get("employeeID").toString());
+            if (past_reservations != null || !past_reservations.isEmpty()) {
+                Response.Status status = Response.Status.OK;
+                return Response.status(status).type("application/json").entity(gson.toJson(past_reservations)).build();
+            } else {
+                Response.Status status = Response.Status.UNAUTHORIZED;
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No active reservations.\"}").build();
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
+            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
+        }
+    }
 
 }

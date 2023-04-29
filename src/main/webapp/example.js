@@ -42,14 +42,14 @@ function displayContent(id) {
             break;
         case Content.admin_home:
             options = ["Reactivate Employee", "Add Employee", "Pending Requests", "Active Reservations", "Past Reservations"];
-            actions = ["", "",  "displayContent(Content.admin_home)", "displayContent(Content.admin_active_reservations)", "displayContent(Content.admin_past_reservations)"];
+            actions = ["", "", "displayContent(Content.admin_home)", "displayContent(Content.admin_active_reservations)", "displayContent(Content.admin_past_reservations)"];
             $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
             $('#main_content').html(pageTitle("Pending Requests", "pending_requests"));
             pendingRequests();
             break;
         case Content.admin_active_reservations:
             options = ["Reactivate Employee", "Add Employee", "Pending Requests", "Active Reservations", "Past Reservations"];
-            actions = ["", "",  "displayContent(Content.admin_home)", "displayContent(Content.admin_active_reservations)", "displayContent(Content.admin_past_reservations)"];
+            actions = ["", "", "displayContent(Content.admin_home)", "displayContent(Content.admin_active_reservations)", "displayContent(Content.admin_past_reservations)"];
             $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
             $('#main_content').html(pageTitle("Active Reservations", "admin_active_reservations"));
             allActiveReservations();
@@ -90,6 +90,7 @@ function displayContent(id) {
             actions = ["displayContent(Content.employee_active_reservations)", "displayContent(Content.employee_past_reservations)"];
             $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
             $('#main_content').html(pageTitle("Active Reservations", "employee_active_reservations"));
+            employeeActiveReservations();
             break;
         case Content.employee_review_reservation:
             break;
@@ -100,6 +101,7 @@ function displayContent(id) {
             actions = ["displayContent(Content.employee_active_reservations)", "displayContent(Content.employee_past_reservations)"];
             $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
             $('#main_content').html(pageTitle("Past Reservations", "employee_past_reservations"));
+            employeePastReservations();
             break;
 
     }
@@ -356,6 +358,61 @@ function pendingRequests() {
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send();
+}
+
+function employeeActiveReservations() {
+    const xhr = new XMLHttpRequest();
+    const user = JSON.parse(localStorage.getItem("logedIn"));
+    var jsonData = JSON.stringify(
+            {
+                employeeID: user["employeeID"]
+            }
+    );
+
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            $('#employee_active_reservations').html("");
+            for (let i = 0; i < Object.keys(data).length; i++) {
+                $('#employee_active_reservations').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Edit", "img/icon-edit.png"));
+            }
+        } else {
+            $('#employee_active_reservations').html(data["msg"]);
+        }
+    };
+    
+    xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_active_reservations");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    console.log(JSON.parse(jsonData));
+    xhr.send(jsonData);
+}
+
+function employeePastReservations() {
+    const xhr = new XMLHttpRequest();
+    const user = JSON.parse(localStorage.getItem("logedIn"));
+    var jsonData = JSON.stringify(
+            {
+                employeeID: "1"
+            }
+    );
+
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            $('#employee_past_reservations').html("");
+            for (let i = 0; i < Object.keys(data).length; i++) {
+                $('#employee_past_reservations').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Edit", "img/icon-edit.png"));
+            }
+        } else {
+            $('#employee_past_reservations').html(data["msg"]);
+        }
+    };
+    xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_past_reservations");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    console.log(JSON.parse(jsonData));
+    xhr.send(jsonData);
 }
 
 function allActiveReservations() {

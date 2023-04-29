@@ -24,7 +24,7 @@ public class Employee extends Person {
         this.phone = value;
     }
 
-    int getEmployeeID() {
+    public int getEmployeeID() {
         return this.employeeID;
     }
 
