@@ -204,11 +204,9 @@ public class RoomReservationAPIResource {
             Gson gson = new Gson();
 
             if (!active_reservations.isEmpty() || active_reservations != null) {
-                System.out.println("ok");
                 Response.Status status = Response.Status.OK;
                 return Response.status(status).type("application/json").entity(gson.toJson(active_reservations)).build();
             } else {
-                System.out.println("ok2");
                 Response.Status status = Response.Status.UNAUTHORIZED;
                 return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No active reservations.\"}").build();
             }
@@ -231,28 +229,24 @@ public class RoomReservationAPIResource {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response all_past_reservations() {
-//        try {
-//            EditReservationTable edt = new EditReservationTable();
-//            ArrayList<Reservation> pendReqs = new ArrayList<Reservation>();
-//            pendReqs = edt.getPendingRequests();
-//            System.out.print(pendReqs);
-//            Gson gson = new Gson();
-//            System.out.println(gson.toJson(pendReqs));
-//            if (pendReqs.size() != 0) {
-//                System.out.println("ok");
-//                Response.Status status = Response.Status.OK;
-//                return Response.status(status).type("application/json").entity(gson.toJson(pendReqs)).build();
-//            } else {
-//                System.out.println("ok2");
-//                Response.Status status = Response.Status.UNAUTHORIZED;
-//                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No pending reservations.\"}").build();
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
-//            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
-//            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
-//        }
-        return null;
+        try {
+            EditReservationTable edt = new EditReservationTable();
+            ArrayList<Reservation> past_reservations = new ArrayList<Reservation>();
+            past_reservations = edt.getAllPastReservations();
+            Gson gson = new Gson();
+
+            if (!past_reservations.isEmpty() || past_reservations != null) {
+                Response.Status status = Response.Status.OK;
+                return Response.status(status).type("application/json").entity(gson.toJson(past_reservations)).build();
+            } else {
+                Response.Status status = Response.Status.UNAUTHORIZED;
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No active reservations.\"}").build();
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
+            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
+        }
     }
 //
 //    @GET

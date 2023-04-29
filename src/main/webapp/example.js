@@ -377,6 +377,25 @@ function allActiveReservations() {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send();
 }
+function allPastReservations() {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            $('#admin_past_reservations').html("");
+            for (let i = 0; i < Object.keys(data).length; i++) {
+                $('#admin_past_reservations').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Edit", "img/icon-edit.png"));
+            }
+        } else {
+            $('#admin_past_reservations').html(data["msg"]);
+        }
+    };
+
+    xhr.open("GET", "http://localhost:8080/room_reservation/api/all_past_reservations");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send();
+}
 
 function search() {
     displayContent(Content.employee_search);

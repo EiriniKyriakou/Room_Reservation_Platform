@@ -62,11 +62,12 @@ public class InitDatabase {
         
         EditReservationTable ert = new EditReservationTable();
         ert.createReservationTable();
-        Date date= Date.valueOf("2025-03-31");
-        ert.addNewReservation(date, "11:00", "13:00", 1, 1, 0, 1);
-        ert.addNewReservation(date, "11:00", "13:00", 1, 1, 0, 0);
-        ert.addNewReservation(date, "11:00", "13:00", 1, 1, 0, 0);
-        ert.addNewReservation(date, "11:00", "13:00", 1, 1, 0, 0);
+        Date upcoming_date = Date.valueOf("2025-03-31");
+        Date expired_date = Date.valueOf("2007-03-31");
+        ert.addNewReservation(upcoming_date, "11:00", "13:00", 1, 1, 0, 1);
+        ert.addNewReservation(upcoming_date, "11:00", "13:00", 1, 1, 0, 0);
+        ert.addNewReservation(expired_date, "11:00", "13:00", 1, 1, 0, 1);
+        ert.addNewReservation(expired_date, "11:00", "13:00", 1, 1, 0, 1);
         
         
     }
