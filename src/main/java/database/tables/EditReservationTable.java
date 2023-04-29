@@ -102,14 +102,15 @@ public class EditReservationTable {
     }
 
     // Get reservations that have been accepted and their date >= current_date
-    public ArrayList<Reservation> getAllActiveReservations(Date current_date) throws ClassNotFoundException {
+    public ArrayList<Reservation> getAllActiveReservations() throws ClassNotFoundException {
+          System.out.println("In getAllActiveReservations");
         try {
             Connection con = DB_Connection.getConnection();
             Statement stmt = con.createStatement();
             ResultSet rs;
             ArrayList<Reservation> reservations = new ArrayList<Reservation>();
 
-            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = '1' AND date >='" + current_date + "'");
+            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 AND reservationDate >= CURDATE()");
             System.out.println(rs);
 
             while (rs.next()) {
@@ -133,91 +134,91 @@ public class EditReservationTable {
     // Get reservations  for specific employee that have been accepted and their date >= current_date
 
     public ArrayList<Reservation> getEmployeeActiveReservations(Date current_date, int employeeID) throws ClassNotFoundException {
-        try {
-            Connection con = DB_Connection.getConnection();
-            Statement stmt = con.createStatement();
-            ResultSet rs;
-            ArrayList<Reservation> reservations = new ArrayList<Reservation>();
-
-            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = '1' AND date >= '" + current_date + " and employeeID = " + employeeID);
-            System.out.println(rs);
-
-            while (rs.next()) {
-                String json = DB_Connection.getResultsToJSON(rs);
-                System.out.println(json);
-                Gson gson = new Gson();
-                Reservation reservation = gson.fromJson(json, Reservation.class);
-                reservations.add(reservation);
-            }
-            System.out.println("# Employee Active Reservations");
-            stmt.close();
-            con.close();
-            return reservations;
-
-        } catch (SQLException ex) {
-            System.err.println("Got an exception! ");
-            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            Connection con = DB_Connection.getConnection();
+//            Statement stmt = con.createStatement();
+//            ResultSet rs;
+//            ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+//
+//            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = '1' AND date >= '" + current_date + " and employeeID = " + employeeID);
+//            System.out.println(rs);
+//
+//            while (rs.next()) {
+//                String json = DB_Connection.getResultsToJSON(rs);
+//                System.out.println(json);
+//                Gson gson = new Gson();
+//                Reservation reservation = gson.fromJson(json, Reservation.class);
+//                reservations.add(reservation);
+//            }
+//            System.out.println("# Employee Active Reservations");
+//            stmt.close();
+//            con.close();
+//            return reservations;
+//
+//        } catch (SQLException ex) {
+//            System.err.println("Got an exception! ");
+//            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         return null;
     }
     // Get reservations that have been accepted and their date < current_date
 
     public ArrayList<Reservation> getAllPastReservations(Date current_date) throws ClassNotFoundException {
-        try {
-            Connection con = DB_Connection.getConnection();
-            Statement stmt = con.createStatement();
-            ResultSet rs;
-            ArrayList<Reservation> reservations = new ArrayList<Reservation>();
-
-            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 and date < " + current_date);
-            System.out.println(rs);
-
-            while (rs.next()) {
-                String json = DB_Connection.getResultsToJSON(rs);
-                System.out.println(json);
-                Gson gson = new Gson();
-                Reservation reservation = gson.fromJson(json, Reservation.class);
-                reservations.add(reservation);
-            }
-            System.out.println("# All Past Reservations");
-            stmt.close();
-            con.close();
-            return reservations;
-
-        } catch (SQLException ex) {
-            System.err.println("Got an exception! ");
-            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            Connection con = DB_Connection.getConnection();
+//            Statement stmt = con.createStatement();
+//            ResultSet rs;
+//            ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+//
+//            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 and date < " + current_date);
+//            System.out.println(rs);
+//
+//            while (rs.next()) {
+//                String json = DB_Connection.getResultsToJSON(rs);
+//                System.out.println(json);
+//                Gson gson = new Gson();
+//                Reservation reservation = gson.fromJson(json, Reservation.class);
+//                reservations.add(reservation);
+//            }
+//            System.out.println("# All Past Reservations");
+//            stmt.close();
+//            con.close();
+//            return reservations;
+//
+//        } catch (SQLException ex) {
+//            System.err.println("Got an exception! ");
+//            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         return null;
     }
     // Get reservations for specific employee that have been accepted and their date < current_date
 
     public ArrayList<Reservation> getEmployeePastReservations(Date current_date, int employeeID) throws ClassNotFoundException {
-        try {
-            Connection con = DB_Connection.getConnection();
-            Statement stmt = con.createStatement();
-            ResultSet rs;
-            ArrayList<Reservation> reservations = new ArrayList<Reservation>();
-
-            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 and date < " + current_date + "and date < " + current_date);
-            System.out.println(rs);
-
-            while (rs.next()) {
-                String json = DB_Connection.getResultsToJSON(rs);
-                System.out.println(json);
-                Gson gson = new Gson();
-                Reservation reservation = gson.fromJson(json, Reservation.class);
-                reservations.add(reservation);
-            }
-            System.out.println("# Employee Past Reservations");
-            stmt.close();
-            con.close();
-            return reservations;
-
-        } catch (SQLException ex) {
-            System.err.println("Got an exception! ");
-            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            Connection con = DB_Connection.getConnection();
+//            Statement stmt = con.createStatement();
+//            ResultSet rs;
+//            ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+//
+//            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 and date < " + current_date + "and date < " + current_date);
+//            System.out.println(rs);
+//
+//            while (rs.next()) {
+//                String json = DB_Connection.getResultsToJSON(rs);
+//                System.out.println(json);
+//                Gson gson = new Gson();
+//                Reservation reservation = gson.fromJson(json, Reservation.class);
+//                reservations.add(reservation);
+//            }
+//            System.out.println("# Employee Past Reservations");
+//            stmt.close();
+//            con.close();
+//            return reservations;
+//
+//        } catch (SQLException ex) {
+//            System.err.println("Got an exception! ");
+//            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         return null;
     }
 

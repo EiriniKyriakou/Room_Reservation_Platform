@@ -363,12 +363,12 @@ function allActiveReservations() {
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
-            $('#active_reservations').html("");
+            $('#admin_active_reservations').html("");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#active_reservations').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Edit", "img/icon-edit.png"));
+                $('#admin_active_reservations').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Edit", "img/icon-edit.png"));
             }
         } else {
-            $('#active_reservations').html(data["msg"]);
+            $('#admin_active_reservations').html(data["msg"]);
         }
     };
 
