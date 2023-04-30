@@ -89,7 +89,7 @@ function displayContent(id) {
             options = ["Active Reservations", "Past Reservations"];
             actions = ["displayContent(Content.employee_active_reservations)", "displayContent(Content.employee_past_reservations)"];
             $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
-            $('#main_content').html(pageTitle("Active Reservations", "employee_active_reservations",'content_employee_home'));
+            $('#main_content').html(pageTitle("Active Reservations", "employee_active_reservations", 'content_employee_home'));
             employeeActiveReservations();
             break;
         case Content.employee_review_reservation:
@@ -162,6 +162,7 @@ function searchBarForm() {
                 <select class="search_element" name="room_type" id="room_type">
                     <option value="" disabled selected hidden style="background-image: url('room_type.png')"> Type of Room</option>
                     <option value="Amphitheater">Amphitheater</option>
+                    <option value="Meeting Room">Meeting Room</option>
                 </select>
                 <select class="search_element" name="room_capacity" id="room_capacity">
                     <option value="" disabled selected hidden>Capacity</option>
@@ -463,12 +464,31 @@ function allPastReservations() {
 function search() {
     displayContent(Content.employee_search);
     $('#search_title').html("Rooms");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            $('#employee_search_rooms').html("");
+            for (let i = 0; i < Object.keys(data).length; i++) {
+                $('#employee_search_rooms').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Reserve", "img/icon-reserve.png"));
+            }
+        } else {
+            $('#employee_search_rooms').html(data["msg"]);
+        }
+    };
+
+    xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_active_reservations");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    console.log(JSON.parse(jsonData));
+    xhr.send();
+
     $('#search_results').html("");
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
 }
 
 //Helpful Functions

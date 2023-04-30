@@ -36,30 +36,34 @@ public class InitDatabase {
         conn.close();
     }
 
-    public void initTables() throws SQLException, ClassNotFoundException {   
+    public void initTables() throws SQLException, ClassNotFoundException {
         EditCompanyTable ect = new EditCompanyTable();
         ect.createCompanyTable();
         ect.addNewCompany("UOC", "Crete");
-        
+
         EditDepartmentTable edt = new EditDepartmentTable();
         edt.createDepartmentTable();
         edt.addNewDepartment("CSD", "Voutes", 1);
-        
+
         EditRoomTable erot = new EditRoomTable();
         erot.createRoomTable();
         erot.addNewRoom("Amf A", "Amphitheater", 150, 1);
         erot.addNewRoom("Amf B", "Amphitheater", 100, 1);
-        erot.addNewRoom("A.111", "Meeting Room", 10, 1);
+        erot.addNewRoom("A.101", "Meeting Room", 20, 1);
         erot.addNewRoom("A.110", "Meeting Room", 20, 1);
-        
+        erot.addNewRoom("H.207", "Meeting Room", 15, 1);
+        erot.addNewRoom("H.211", "Meeting Room", 15, 1);
+        erot.addNewRoom("B.201", "Meeting Room", 10, 1);
+        erot.addNewRoom("B.211", "Meeting Room", 10, 1);
+
         EditAdministratorTable eat = new EditAdministratorTable();
         eat.createAdministratorTable();
         eat.addNewAdministrator("Eirini", "Kyriakou", "e@email.com", "csdXXXX@csd.uoc.gr", "69", "eirini", 1);
-        
+
         EditEmployeeTable eet = new EditEmployeeTable();
         eet.createEmployeeTable();
         eet.addNewEmployee("Ast", "Sel", "a@email.com", "csd@email.com", "69", "eirini", 1, 1);
-        
+
         EditReservationTable ert = new EditReservationTable();
         ert.createReservationTable();
         Date upcoming_date = Date.valueOf("2025-03-31");
@@ -68,7 +72,6 @@ public class InitDatabase {
         ert.addNewReservation(upcoming_date, "11:00", "13:00", 1, 1, 0, 0);
         ert.addNewReservation(expired_date, "11:00", "13:00", 1, 1, 0, 1);
         ert.addNewReservation(expired_date, "11:00", "13:00", 1, 1, 0, 1);
-        
-        
+
     }
 }
