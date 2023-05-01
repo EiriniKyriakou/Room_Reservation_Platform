@@ -21,7 +21,7 @@ public class Reservation {
         this.tmp = tmp;
     }
 
-    int getReservationID() {
+    public int getReservationID() {
         return this.reservationID;
     }
 
@@ -29,7 +29,7 @@ public class Reservation {
         this.reservationID = value;
     }
 
-    int isAccepted() {
+    public int isAccepted() {
         return this.accepted;
     }
 
@@ -37,7 +37,7 @@ public class Reservation {
         this.accepted = value;
     }
 
-    Date getReservationDate() {
+    public Date getReservationDate() {
         return this.reservationDate;
     }
 
@@ -45,7 +45,7 @@ public class Reservation {
         this.reservationDate = value;
     }
 
-    String getStart_time() {
+    public String getStart_time() {
         return this.start_time;
     }
 
@@ -53,7 +53,7 @@ public class Reservation {
         this.start_time = value;
     }
 
-    String getEnd_time() {
+    public String getEnd_time() {
         return this.end_time;
     }
 
@@ -84,17 +84,4 @@ public class Reservation {
     void setTmp(int value) {
         this.tmp = value;
     }
-
-    public Reservation make_reservation(String date, String start_time, String end_time) {
-        return null;
-    }
-
-    public boolean update_reservation(int reservationID) {
-        return false;
-    }
-
-    public boolean cancel_reservation(int reservationID) {
-        return false;
-    }
-
 }

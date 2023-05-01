@@ -55,33 +55,4 @@ public class Administrator extends Person {
     void setPassword(String value) {
         this.password = value;
     }
-
-    public Reservation search_reservation_request(int reservationID) {
-        return null;
-    }
-
-    public boolean accept_reservation_request(int reservationID) {
-        return false;
-    }
-
-    public boolean reject_reservation_request(int resrvationID) {
-        return false;
-    }
-
-    public List<Reservation> see_reservations() {
-        return null;
-    }
-
-    public List<Reservation> see_reservation_requests(boolean accepted) {
-        return null;
-    }
-
-    public Administrator login(String email, String password) {
-        return null;
-    }
-
-    public boolean logout() {
-        return false;
-    }
-
 }

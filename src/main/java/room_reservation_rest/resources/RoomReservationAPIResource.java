@@ -173,7 +173,6 @@ public class RoomReservationAPIResource {
     @Produces({MediaType.APPLICATION_JSON})
     public Response pending_requests() {
         try {
-            assert (false);
             EditReservationTable edt = new EditReservationTable();
             ArrayList<Reservation> pendReqs = new ArrayList<Reservation>();
             pendReqs = edt.getPendingRequests();
@@ -243,6 +242,42 @@ public class RoomReservationAPIResource {
         }
     }
 
+
+    @POST
+    @Path("/employee_search")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response employee_search(String search_options) {
+        try {
+            EditRoomTable ert = new EditRoomTable();
+            ArrayList<String> search_results = new ArrayList<String>();
+            ArrayList<Room> room_results = new ArrayList<Room>();
+            Gson gson = new Gson();
+            Room _room = gson.fromJson(search_options, Room.class);
+            Reservation _reservation = gson.fromJson(search_options, Reservation.class);
+            //Add all info for the query
+            search_results.add(_room.getRoomName());
+            search_results.add(_room.getRoomType());
+            search_results.add(""+_room.getCapacity());
+            search_results.add(_reservation.getReservationDate().toString());
+            search_results.add(_reservation.getStart_time());
+            
+            room_results = ert.getEmployeeSearchResults(search_results);
+
+            if (room_results != null || !room_results.isEmpty()) {
+                Response.Status status = Response.Status.OK;
+                return Response.status(status).type("application/json").entity(gson.toJson(search_options)).build();
+            } else {
+                Response.Status status = Response.Status.UNAUTHORIZED;
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No available rooms.\"}").build();
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
+            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
+        }
+    }
+
     @GET
     @Path("/all_past_reservations")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -259,7 +294,7 @@ public class RoomReservationAPIResource {
                 return Response.status(status).type("application/json").entity(gson.toJson(past_reservations)).build();
             } else {
                 Response.Status status = Response.Status.UNAUTHORIZED;
-                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No active reservations.\"}").build();
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No past reservations.\"}").build();
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
@@ -272,7 +307,8 @@ public class RoomReservationAPIResource {
     @Path("/employee_past_reservations")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response employee_past_reservations(String employee_id) {
+    public Response employee_past_reservations(String employee_id
+    ) {
         try {
             EditReservationTable edt = new EditReservationTable();
             ArrayList<Reservation> past_reservations = new ArrayList<Reservation>();
@@ -284,7 +320,7 @@ public class RoomReservationAPIResource {
                 return Response.status(status).type("application/json").entity(gson.toJson(past_reservations)).build();
             } else {
                 Response.Status status = Response.Status.UNAUTHORIZED;
-                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No active reservations.\"}").build();
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No past reservations.\"}").build();
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);

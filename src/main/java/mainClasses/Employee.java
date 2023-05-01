@@ -63,16 +63,4 @@ public class Employee extends Person {
     void setPassword(String value) {
         this.password = value;
     }
-
-    public List<Reservation> reservations(int personID) {
-        return null;
-    }
-
-    public Employee login(String email, String password) {
-        return null;
-    }
-
-    public void logout(boolean p1) {
-    }
-
 }

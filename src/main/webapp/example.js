@@ -166,7 +166,11 @@ function searchBarForm() {
                 </select>
                 <select class="search_element" name="room_capacity" id="room_capacity">
                     <option value="" disabled selected hidden>Capacity</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
                     <option value="100">100</option>
+                    <option value="150">150</option>
                 </select>
                 <input class="search_element" type="date" id="date" name="date">
                 <input class="search_element" type="time" id="start_time" name="start_time">
@@ -400,7 +404,7 @@ function employeePastReservations() {
     const user = JSON.parse(localStorage.getItem("logedIn"));
     var jsonData = JSON.stringify(
             {
-                employeeID: "1"
+                employeeID: user["employeeID"]
             }
     );
 
@@ -418,7 +422,6 @@ function employeePastReservations() {
     xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_past_reservations");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
-    console.log(JSON.parse(jsonData));
     xhr.send(jsonData);
 }
 
@@ -462,33 +465,33 @@ function allPastReservations() {
 }
 
 function search() {
-    displayContent(Content.employee_search);
-    $('#search_title').html("Rooms");
+    var jsonData = JSON.stringify({
+        roomName: document.getElementById("room_name").value,
+        roomType: document.getElementById("room_type").value,
+        capacity: document.getElementById("room_capacity").value,
+        date: document.getElementById("date").value,
+        start_time: document.getElementById("start_time").value
+    });
+    console.log(jsonData)
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#employee_search_rooms').html("");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#employee_search_rooms').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Reserve", "img/icon-reserve.png"));
+                $('#employee_search_rooms').append(reserveRoomCard(data[i].roomName, data[i].roomType, data[i].capacity));
             }
         } else {
             $('#employee_search_rooms').html(data["msg"]);
         }
     };
 
-    xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_active_reservations");
+    xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_search");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
-    console.log(JSON.parse(jsonData));
-    xhr.send();
-
-    $('#search_results').html("");
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    xhr.send(jsonData);
+    displayContent(Content.employee_search);
+    $('#search_title').html("Rooms");
 }
 
 //Helpful Functions
