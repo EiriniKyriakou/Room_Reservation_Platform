@@ -7,12 +7,12 @@ import java.util.List;
 public class Reservation {
 
     private int reservationID;
-    private Date reservationDate;
+    private String reservationDate;
     private String start_time, end_time;
     private int roomID, employeeID;
     private int tmp, accepted;
 
-    public Reservation(Date reservationDate, String start_time, String end_time, int roomID, int employeeID, int tmp, int accepted) {
+    public Reservation(String reservationDate, String start_time, String end_time, int roomID, int employeeID, int tmp, int accepted) {
         this.reservationDate = reservationDate;
         this.start_time = start_time;
         this.end_time = end_time;
@@ -21,7 +21,7 @@ public class Reservation {
         this.tmp = tmp;
     }
 
-    int getReservationID() {
+    public int getReservationID() {
         return this.reservationID;
     }
 
@@ -29,7 +29,7 @@ public class Reservation {
         this.reservationID = value;
     }
 
-    int isAccepted() {
+    public int isAccepted() {
         return this.accepted;
     }
 
@@ -37,15 +37,16 @@ public class Reservation {
         this.accepted = value;
     }
 
-    Date getReservationDate() {
-        return this.reservationDate;
+    public Date getReservationDate() {
+        Date reservationDate = java.sql.Date.valueOf(this.reservationDate);
+        return reservationDate;
     }
 
-    void setReservationDate(Date value) {
+    void setReservationDate(String value) {
         this.reservationDate = value;
     }
 
-    String getStart_time() {
+    public String getStart_time() {
         return this.start_time;
     }
 
@@ -53,7 +54,7 @@ public class Reservation {
         this.start_time = value;
     }
 
-    String getEnd_time() {
+    public String getEnd_time() {
         return this.end_time;
     }
 
@@ -61,7 +62,7 @@ public class Reservation {
         this.end_time = value;
     }
 
-    int getRoomID() {
+    public int getRoomID() {
         return this.roomID;
     }
 
@@ -69,7 +70,7 @@ public class Reservation {
         this.roomID = value;
     }
 
-    int getEmployeeID() {
+    public int getEmployeeID() {
         return this.employeeID;
     }
 
@@ -77,7 +78,7 @@ public class Reservation {
         this.employeeID = value;
     }
 
-    int isTmp() {
+    public int isTmp() {
         return this.tmp;
     }
 

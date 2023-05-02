@@ -219,4 +219,33 @@ public class EditReservationTable {
         return null;
     }
 
+    public ArrayList<Reservation> chechAvailability(Date reservationDate, String start_time, String end_time, int roomID) throws ClassNotFoundException {
+        try {
+            Connection con = DB_Connection.getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+            ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+
+            rs = stmt.executeQuery("SELECT * FROM reservations WHERE roomID=" + roomID + " AND reservationDate='" + reservationDate + "' AND start_time='" + start_time + "'");
+            System.out.println(rs);
+
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                System.out.println(json);
+                Gson gson = new Gson();
+                Reservation reservation = gson.fromJson(json, Reservation.class);
+                reservations.add(reservation);
+            }
+            System.out.println("# Ckech Availability");
+
+            stmt.close();
+            con.close();
+            return reservations;
+
+        } catch (SQLException ex) {
+            System.err.println("Got an exception! ");
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }
