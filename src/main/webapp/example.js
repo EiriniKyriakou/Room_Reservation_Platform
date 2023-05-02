@@ -34,6 +34,12 @@ var reserve_form = {
 
 var reservations_count = 0;
 
+var now = new Date();
+// minimum date the user can choose, in this case now and in the future
+var minDate = now.toISOString().substring(0,10);
+
+
+
 //Depending on the page we want to desplay, this function chooses what to insert in the html code
 //The main idea is that we have a NavBar, and the main_content div, in which we put the content
 function displayContent(id) {
@@ -254,7 +260,7 @@ function cardRoomReservation(reservationID, employeeID, roomID, reservationDate,
                         <h6>End Time</h6>
                         <h6>Status</h6>
                     </div>
-                    <div>`
+                    <div>`;
     if (user["employeeID"] === undefined) {
         html += `<h6 style="font-weight: 400"> ${employeeID}</h6>`;
     }
@@ -264,9 +270,9 @@ function cardRoomReservation(reservationID, employeeID, roomID, reservationDate,
                         <h6 style="font-weight: 400"> ${end_time}</h6>
                         <h6 style="font-weight: 400"> ${status}</h6>
                 </div>
-                </div>`
+                </div>`;
     if (button !== null) {
-        html += `<button class="btn-dark purple-dark full_button"> <img src=${img_src} width="25" height="25"> ${button}</button>`
+        html += `<button class="btn-dark purple-dark full_button"> <img src=${img_src} width="25" height="25"> ${button}</button>`;
     }
     html += `</div>`;
     return html;
@@ -276,7 +282,7 @@ function reservationForm(i){
     $('#reserve_from').append(`<table>
             <tr>
               <td><h6>Date:</h6></td>
-              <td><input class="search_element" type="date" id="date_${i}" name="date"></td>
+              <td><input class="search_element" type="date" id="date_${i}" min="2014-05-11" name="date"></td>
             </tr>
             <tr>
               <td style="padding-right: 25px;"><h6>Start time:</h6></td>
@@ -290,14 +296,15 @@ function reservationForm(i){
         const StarttimeInput = document.getElementById('start_time_'+i);
         const EndtimeInput = document.getElementById('end_time_'+i);
         StarttimeInput.addEventListener('input', (e) => {
-          let hour = e.target.value.split(':')[0]
-          e.target.value = `${hour}:00`
+          let hour = e.target.value.split(':')[0];
+          e.target.value = `${hour}:00`;
           document.getElementById('end_time_'+i).value = `${parseInt(hour)+1}:00`;
-        })
+        });
         EndtimeInput.addEventListener('input', (e) => {
           let hour = document.getElementById('start_time_'+i).value;
-          e.target.value = `${parseInt(hour)+1}:00`
-        })
+          e.target.value = `${parseInt(hour)+1}:00`;
+        });
+        document.getElementById('date_'+i).min = minDate;
 }
 
 function add_reservation_from(){
@@ -312,7 +319,7 @@ function makeReservationForm(){
                 <img src="img/button-plus-deep-purple.png" width="25" height="25" onclick="add_reservation_from()">
                 <h6>add more reservations</h6>
             </div></div>
-            <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="make_reservation()">Complete Reservation</button>`;
+            <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="multy_reservations()">Complete Reservation</button>`;
     
     return html;
 }
@@ -407,7 +414,6 @@ function topCapacity() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
-        console.log(data)
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#top_capacity').html("<div class='cards-container' id='top_capacity_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
@@ -468,7 +474,6 @@ function employeeActiveReservations() {
     xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_active_reservations");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
-    console.log(JSON.parse(jsonData));
     xhr.send(jsonData);
 }
 
@@ -495,7 +500,6 @@ function employeePastReservations() {
     xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_past_reservations");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
-    console.log(JSON.parse(jsonData));
     xhr.send(jsonData);
 }
 
@@ -568,24 +572,22 @@ function search() {
 //    $('#search_results').append(reserveRoomCard("name", "type", "number"));
 }
 
-function make_reservation(){
+function make_reservation(i){
     const user = JSON.parse(localStorage.getItem("logedIn"));
     var jsonData = JSON.stringify(
             {
                 roomID: reserve_form.roomID,
                 employeeID: user["employeeID"],
-                reservationDate: document.getElementById("date_1").value,
-                start_time: document.getElementById("start_time_1").value,
-                end_time: document.getElementById("end_time_1").value
+                reservationDate: document.getElementById("date_"+i).value,
+                start_time: document.getElementById("start_time_"+i).value,
+                end_time: document.getElementById("end_time_"+i).value
             }
     );
-    console.log(jsonData);
     
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log(data);
             send_notification(data["msg"]);
         } else {
             send_notification(data["msg"]);
@@ -631,13 +633,14 @@ function logout() {
 }
 
 function fill_reserve_form_vars(id, name, type, number){
-    console.log(id)
-    console.log(name)
-    console.log(type)
-    console.log(number)
     reserve_form.roomID = id;
     reserve_form.roomName = name;
     reserve_form.roomType = type;
     reserve_form.roomCapacity = number;
-    console.log(reserve_form);
+}
+
+function multy_reservations(){
+    for (let i=1; i<=reservations_count; i++){
+        make_reservation(i);
+    }
 }
