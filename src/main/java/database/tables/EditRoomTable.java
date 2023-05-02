@@ -17,6 +17,7 @@ import mainClasses.Room;
  * @author eirin
  */
 public class EditRoomTable {
+
     public void createRoomTable() throws SQLException, ClassNotFoundException {
 
         Connection con = DB_Connection.getConnection();
@@ -30,7 +31,7 @@ public class EditRoomTable {
                 + "    depID INTEGER not NULL,"
                 + " PRIMARY KEY (roomID),"
                 + " FOREIGN KEY (depID) REFERENCES departments(depID))";
-                
+
         stmt.execute(query);
         stmt.close();
         con.close();
@@ -61,8 +62,8 @@ public class EditRoomTable {
             Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public ArrayList<Room> getTopCapacityRooms() throws ClassNotFoundException{
+
+    public ArrayList<Room> getTopCapacityRooms() throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
             Statement stmt = con.createStatement();
@@ -89,6 +90,94 @@ public class EditRoomTable {
             Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-        
     }
+
+    // Get reservations that have been accepted and their date < current_date
+    // For search options we have (indexes) 0: roomName, 1: roomType, 2: roomCapacity, 3: reservationDate, 4: reservationStartTime
+    public ArrayList<Room> getEmployeeSearchResults(ArrayList<String> search_options) throws ClassNotFoundException {
+        try {
+            System.out.println(search_options);
+            Connection con = DB_Connection.getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs, rs1;
+            ArrayList<Room> rooms = new ArrayList<Room>();
+            // We will build the query using key-value pair style
+            ArrayList<String> keys = new ArrayList<String>();
+            keys.add("roomName");
+            keys.add("roomType");
+            keys.add("roomCapacity");
+            keys.add("reservationDate");
+            keys.add("start_time");
+
+            String reservation_query = "SELECT * FROM reservations WHERE ";
+            String room_query = "SELECT * FROM rooms WHERE ";
+
+            String query = "";
+            //we start by building the room query
+            //limit: keys.size() - 2(= 3) because we then have to build the reservation query
+            for (int i = 0; i < 3; ++i) {
+                if (!search_options.get(i).equals("")) {
+                    query += keys.get(i) + "='" + search_options.get(i) + "'";
+                }
+
+                if (!search_options.get(i + 1).equals("") && (i < 2)) { // i = 2 means we are in the last concatenation before the reservation query (which we don't know if it is empty)
+                    query += " AND ";
+                }
+            }
+            System.out.println(room_query + query);
+
+            if (!query.equals("")) {
+                rs = stmt.executeQuery(room_query + query);
+                System.out.println("Result set is " + rs);
+                while (rs.next()) {
+                    String json = DB_Connection.getResultsToJSON(rs);
+                    System.out.println(json);
+                    Gson gson = new Gson();
+                    Room room = gson.fromJson(json, Room.class);
+                    rooms.add(room);
+                }
+            }
+
+            if (search_options.get(3).equals("") && search_options.get(4).equals("")) {
+                //do nothing(room only query)
+                System.out.println("# Employee Search Results");
+                stmt.close();
+                con.close();
+                return rooms;
+            }
+            String rest_of_reservation_query;
+            ArrayList<Room> rooms_to_remove = new ArrayList<Room>();
+            for (int i = 0; i < rooms.size(); ++i) {
+                rest_of_reservation_query = "";
+                if (search_options.get(3).equals("")) { // we don't care about reservationDate
+                    rest_of_reservation_query += " start_time NOT IN (SELECT start_time FROM reservations WHERE roomID ="
+                   + rooms.get(i).getRoomID() +")";
+                } else if (search_options.get(4).equals("")) { // we don't care about reservationStart_time
+                    rest_of_reservation_query += " reservationDate NOT IN (SELECT reservationDate FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
+                } else { // we care about both
+                    rest_of_reservation_query = " (reservationDate NOT IN (SELECT reservationDate FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + " AND "
+                            + " start_time NOT IN (SELECT start_time FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + "))";
+                }
+                System.out.println(reservation_query + rest_of_reservation_query);
+                rs1 = stmt.executeQuery(reservation_query + rest_of_reservation_query); // search for rooms that have not been reserved for the date+time user has chosen
+                if (!rs1.next())
+                    rooms_to_remove.add(rooms.get(i)); // so as not to show it as a result (does not match user options)
+                    continue;
+                }
+            
+            //remove it here so as not to change initial structure of arraylist
+            for (Room r : rooms_to_remove) {
+                rooms.remove(r);
+            }
+            System.out.println("# Employee Search Results");
+            stmt.close();
+            con.close();
+            return rooms;
+        } catch (SQLException ex) {
+            System.err.println("Got an exception! ");
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
 }

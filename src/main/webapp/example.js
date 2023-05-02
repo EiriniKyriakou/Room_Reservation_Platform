@@ -36,7 +36,7 @@ var reservations_count = 0;
 
 var now = new Date();
 // minimum date the user can choose, in this case now and in the future
-var minDate = now.toISOString().substring(0,10);
+var minDate = now.toISOString().substring(0, 10);
 
 
 
@@ -87,8 +87,8 @@ function displayContent(id) {
             $('#main_content').html(searchBarHome());
             const StarttimeInput = document.getElementById('start_time');
             StarttimeInput.addEventListener('input', (e) => {
-              let hour = e.target.value.split(':')[0];
-              e.target.value = `${hour}:00`;
+                let hour = e.target.value.split(':')[0];
+                e.target.value = `${hour}:00`;
             });
             $('#main_content').append(pageTitle("Top Capacity Rooms", "top_capacity", null));
             topCapacity();
@@ -100,8 +100,8 @@ function displayContent(id) {
             </div>`);
             const StarttimeInput1 = document.getElementById('start_time');
             StarttimeInput1.addEventListener('input', (e) => {
-              let hour = e.target.value.split(':')[0];
-              e.target.value = `${hour}:00`;
+                let hour = e.target.value.split(':')[0];
+                e.target.value = `${hour}:00`;
             });
 //        Search Results  
             $('#main_content').append(`<div class="search_container">
@@ -116,7 +116,7 @@ function displayContent(id) {
             $('#employee_make_reservation').append(makeReservationForm());
             reservations_count++;
             reservationForm(reservations_count);
-            
+
             break;
         case Content.employee_active_reservations:
             options = ["Active Reservations", "Past Reservations"];
@@ -198,8 +198,12 @@ function searchBarForm() {
                     <option value="Meeting Room">Meeting Room</option>
                 </select>
                 <select class="search_element" name="room_capacity" id="room_capacity">
-                    <option value="" disabled selected hidden>Capacity</option>
+                    <option value="" disabled selected hidden>Capacity</option>s
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
                     <option value="100">100</option>
+                    <option value="150">150</option>
                 </select>
                 <input class="search_element" type="date" id="date" name="date">
                 <input class="search_element" type="time" id="start_time" name="start_time" min="09:00" max="17:00">
@@ -224,7 +228,7 @@ function pageTitle(title, div_id, back) {
 
 
 function reserveRoomCard(id, name, type, number, button) {
-    html =  `<div class="cards">
+    html = `<div class="cards">
                 <h6 style="font-weight: bolder"> ${name} </h6>
                 <div class="inner-card"> 
                     <div>
@@ -236,11 +240,11 @@ function reserveRoomCard(id, name, type, number, button) {
                         <h6 style="font-weight: 400">${number}</h6>
                     </div>
                 </div>`;
-    if (button === true){
-               html += `<button class="btn-dark purple-dark full_button" onclick="fill_reserve_form_vars('${id}', '${name}', '${type}', '${number}');displayContent('${Content.employee_make_reservation}')"> <img src="img/icon-reserve.png" width="25" height="25"> Reserve</button>`;
-            
+    if (button === true) {
+        html += `<button class="btn-dark purple-dark full_button" onclick="fill_reserve_form_vars('${id}', '${name}', '${type}', '${number}');displayContent('${Content.employee_make_reservation}')"> <img src="img/icon-reserve.png" width="25" height="25"> Reserve</button>`;
+
     }
-    html +=`</div>`;
+    html += `</div>`;
     return html;
 }
 
@@ -278,7 +282,7 @@ function cardRoomReservation(reservationID, employeeID, roomID, reservationDate,
     return html;
 }
 
-function reservationForm(i){
+function reservationForm(i) {
     $('#reserve_from').append(`<table>
             <tr>
               <td><h6>Date:</h6></td>
@@ -293,34 +297,34 @@ function reservationForm(i){
               <td><input class="search_element" type="time" id="end_time_${i}" name="end_time" min="10:00" max="18:00" step="3600000"></td>
             </tr>
         </table>`);
-        const StarttimeInput = document.getElementById('start_time_'+i);
-        const EndtimeInput = document.getElementById('end_time_'+i);
-        StarttimeInput.addEventListener('input', (e) => {
-          let hour = e.target.value.split(':')[0];
-          e.target.value = `${hour}:00`;
-          document.getElementById('end_time_'+i).value = `${parseInt(hour)+1}:00`;
-        });
-        EndtimeInput.addEventListener('input', (e) => {
-          let hour = document.getElementById('start_time_'+i).value;
-          e.target.value = `${parseInt(hour)+1}:00`;
-        });
-        document.getElementById('date_'+i).min = minDate;
+    const StarttimeInput = document.getElementById('start_time_' + i);
+    const EndtimeInput = document.getElementById('end_time_' + i);
+    StarttimeInput.addEventListener('input', (e) => {
+        let hour = e.target.value.split(':')[0];
+        e.target.value = `${hour}:00`;
+        document.getElementById('end_time_' + i).value = `${parseInt(hour) + 1}:00`;
+    });
+    EndtimeInput.addEventListener('input', (e) => {
+        let hour = document.getElementById('start_time_' + i).value;
+        e.target.value = `${parseInt(hour) + 1}:00`;
+    });
+    document.getElementById('date_' + i).min = minDate;
 }
 
-function add_reservation_from(){
+function add_reservation_from() {
     reservations_count++;
     reservationForm(reservations_count);
 }
-function makeReservationForm(){
+function makeReservationForm() {
 
     html = `<div style="display:flex; flex-flow: column;"><div id="reservation">${reserveRoomCard(reserve_form.roomID, reserve_form.roomName, reserve_form.roomType, reserve_form.roomCapacity, false)}`;
-    html +=   `<div id="reserve_from"></div> </div>`;
+    html += `<div id="reserve_from"></div> </div>`;
     html += `<div style="display: flex; gap:15px; padding: 35px; justify-content:center">
                 <img src="img/button-plus-deep-purple.png" width="25" height="25" onclick="add_reservation_from()">
                 <h6>add more reservations</h6>
             </div></div>
             <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="multy_reservations()">Complete Reservation</button>`;
-    
+
     return html;
 }
 
@@ -482,7 +486,7 @@ function employeePastReservations() {
     const user = JSON.parse(localStorage.getItem("logedIn"));
     var jsonData = JSON.stringify(
             {
-                employeeID: "1"
+                employeeID: user["employeeID"]
             }
     );
 
@@ -543,47 +547,45 @@ function allPastReservations() {
 }
 
 function search() {
-    displayContent(Content.employee_search);
-    $('#search_title').html("Rooms");
+    var jsonData = JSON.stringify({
+        roomName: document.getElementById("room_name").value,
+        roomType: document.getElementById("room_type").value,
+        capacity: document.getElementById("room_capacity").value,
+        date: document.getElementById("date").value,
+        start_time: document.getElementById("start_time").value
+    });
+    console.log(jsonData)
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
-            $('#employee_search_rooms').html("<div class='cards-container' id='employee_search_rooms_cards'></div>");
+             $('#employee_search_rooms').html("<div class='cards-container' id='employee_search_rooms'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#employee_search_rooms_cards').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Reserve", "img/icon-reserve.png"));
+                $('#employee_search_rooms').append(reserveRoomCard(data[i].roomName, data[i].roomType, data[i].capacity));
             }
         } else {
             $('#employee_search_rooms').html(data["msg"]);
         }
     };
 
-    xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_active_reservations");
+    xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_search");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
-    console.log(JSON.parse(jsonData));
-    xhr.send();
-
-    $('#search_results').html("");
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
-//    $('#search_results').append(reserveRoomCard("name", "type", "number"));
+    xhr.send(jsonData);
 }
 
-function make_reservation(i){
+function make_reservation(i) {
     const user = JSON.parse(localStorage.getItem("logedIn"));
     var jsonData = JSON.stringify(
             {
                 roomID: reserve_form.roomID,
                 employeeID: user["employeeID"],
-                reservationDate: document.getElementById("date_"+i).value,
-                start_time: document.getElementById("start_time_"+i).value,
-                end_time: document.getElementById("end_time_"+i).value
+                reservationDate: document.getElementById("date_" + i).value,
+                start_time: document.getElementById("start_time_" + i).value,
+                end_time: document.getElementById("end_time_" + i).value
             }
     );
-    
+
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
@@ -598,7 +600,7 @@ function make_reservation(i){
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonData);
-    
+
 }
 
 //Helpful Functions
@@ -632,15 +634,15 @@ function logout() {
     isLoggedIn();
 }
 
-function fill_reserve_form_vars(id, name, type, number){
+function fill_reserve_form_vars(id, name, type, number) {
     reserve_form.roomID = id;
     reserve_form.roomName = name;
     reserve_form.roomType = type;
     reserve_form.roomCapacity = number;
 }
 
-function multy_reservations(){
-    for (let i=1; i<=reservations_count; i++){
+function multy_reservations() {
+    for (let i = 1; i <= reservations_count; i++) {
         make_reservation(i);
     }
 }
