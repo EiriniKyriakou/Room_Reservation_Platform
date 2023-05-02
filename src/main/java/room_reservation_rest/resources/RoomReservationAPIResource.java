@@ -292,5 +292,36 @@ public class RoomReservationAPIResource {
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Fail.\"}").build();
         }
     }
+    
+    @POST
+    @Path("/make_reservation")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response make_reservation(String reservation) {
+        try {
+            Gson gson = new Gson();
+            Reservation r = gson.fromJson(reservation, Reservation.class);
+            EditReservationTable edt = new EditReservationTable();
+//            check the availability (not correct)
+            ArrayList<Reservation> res = edt.chechAvailability(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID());
+            System.out.println(gson.toJson(res));
+            
+            if (res == null || res.isEmpty()){
+//            make the reservation
+                edt.addNewReservation(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID(), r.getEmployeeID(), 0, 0);
+                Response.Status status = Response.Status.OK;
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
+            } else {
+                Response.Status status = Response.Status.UNAUTHORIZED;
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Dateand time not available.\"}").build();
+            }
+            
+            
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
+            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to make reservation\"}").build();
+        }
+    }
 
 }
