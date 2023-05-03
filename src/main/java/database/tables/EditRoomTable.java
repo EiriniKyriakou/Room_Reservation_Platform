@@ -91,4 +91,25 @@ public class EditRoomTable {
         return null;
         
     }
+    
+    public Room databaseToRoomID(int id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM rooms WHERE roomID = " + id );
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            Gson gson = new Gson();
+            Room r = gson.fromJson(json, Room.class);
+            return r;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
+    }
 }
