@@ -229,7 +229,7 @@ public class RoomReservationAPIResource {
             JsonObject jobj = new Gson().fromJson(employee_id, JsonObject.class);
             active_reservations = edt.getEmployeeActiveReservations(jobj.get("employeeID").toString());
             String json = gson.toJson(active_reservations);
-            if (json == "[]") {
+            if (active_reservations.size()!=0) {
                 Response.Status status = Response.Status.OK;
                 return Response.status(status).type("application/json").entity(json).build();
             } else {

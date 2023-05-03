@@ -837,23 +837,40 @@ function update_reservation_status(reservationID, status){
     xhr.send(jsonData);
 }
 
-function cancel_reservation(reservationID){
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        const data = JSON.parse(xhr.responseText);
-        console.log(data)
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            displayContent(Content.employee_active_reservations);
-            send_notification(data["msg"]);
-        } else {
-            send_notification(data["msg"]);
-        }
-    };
+function cancel_reservation(reservationID) {
+    Swal.fire({
+        title: 'Are you sure you want to delete this reservation?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                const data = JSON.parse(xhr.responseText);
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    displayContent(Content.employee_active_reservations);
+                    send_notification(data["msg"]);
+                    Swal.fire(
+                    'Deleted!',
+                    'Your reservation has been deleted.',
+                    'success'
+                    );
+                } else {
+                    send_notification(data["msg"]);
+                }
+            };
 
-    xhr.open("DELETE", "http://localhost:8080/room_reservation/api/reservation");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify({reservationID: reservationID}));
+            xhr.open("DELETE", "http://localhost:8080/room_reservation/api/reservation");
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify({reservationID: reservationID}));
+            
+        }
+    });
+
 }
 
 function review_reservation_employee(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status){
