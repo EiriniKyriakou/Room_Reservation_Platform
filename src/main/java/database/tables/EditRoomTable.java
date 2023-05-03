@@ -105,7 +105,7 @@ public class EditRoomTable {
             ArrayList<String> keys = new ArrayList<String>();
             keys.add("roomName");
             keys.add("roomType");
-            keys.add("roomCapacity");
+            keys.add("capacity");
             keys.add("reservationDate");
             keys.add("start_time");
 
@@ -125,12 +125,12 @@ public class EditRoomTable {
                 }
             }
             System.out.println(room_query + query);
-
+            String json = "";
             if (!query.equals("")) {
                 rs = stmt.executeQuery(room_query + query);
                 System.out.println("Result set is " + rs);
                 while (rs.next()) {
-                    String json = DB_Connection.getResultsToJSON(rs);
+                    json = DB_Connection.getResultsToJSON(rs);
                     System.out.println(json);
                     Gson gson = new Gson();
                     Room room = gson.fromJson(json, Room.class);
@@ -150,21 +150,25 @@ public class EditRoomTable {
             for (int i = 0; i < rooms.size(); ++i) {
                 rest_of_reservation_query = "";
                 if (search_options.get(3).equals("")) { // we don't care about reservationDate
-                    rest_of_reservation_query += " start_time NOT IN (SELECT start_time FROM reservations WHERE roomID ="
-                   + rooms.get(i).getRoomID() +")";
+                    rest_of_reservation_query += " start_time IN (SELECT start_time FROM reservations WHERE roomID ="
+                            + rooms.get(i).getRoomID() + ")";
                 } else if (search_options.get(4).equals("")) { // we don't care about reservationStart_time
-                    rest_of_reservation_query += " reservationDate NOT IN (SELECT reservationDate FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
+                    rest_of_reservation_query += " reservationDate IN (SELECT reservationDate FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
                 } else { // we care about both
-                    rest_of_reservation_query = " (reservationDate NOT IN (SELECT reservationDate FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + " AND "
-                            + " start_time NOT IN (SELECT start_time FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + "))";
+                    rest_of_reservation_query += " (reservationDate,start_time) IN (SELECT reservationDate,start_time FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
                 }
                 System.out.println(reservation_query + rest_of_reservation_query);
                 rs1 = stmt.executeQuery(reservation_query + rest_of_reservation_query); // search for rooms that have not been reserved for the date+time user has chosen
-                if (!rs1.next())
+                System.out.println("Rs1 is " + rs1);
+
+                if (rs1.next()) {
                     rooms_to_remove.add(rooms.get(i)); // so as not to show it as a result (does not match user options)
+                    json = DB_Connection.getResultsToJSON(rs1);
+                    System.out.println(json);
                     continue;
                 }
-            
+
+            }
             //remove it here so as not to change initial structure of arraylist
             for (Room r : rooms_to_remove) {
                 rooms.remove(r);
@@ -172,6 +176,10 @@ public class EditRoomTable {
             System.out.println("# Employee Search Results");
             stmt.close();
             con.close();
+//            for (int i = 0; i < rooms.size(); ++i) {
+//                System.out.println("Available Rooms\n" + rooms.get(i).getRoomName());
+//
+//            }
             return rooms;
         } catch (SQLException ex) {
             System.err.println("Got an exception! ");
