@@ -68,8 +68,15 @@ function displayContent(id) {
             options = ["Reactivate Employee", "Add Employee", "Pending Requests", "Active Reservations", "Past Reservations"];
             actions = ["", "", "displayContent(Content.admin_home)", "displayContent(Content.admin_active_reservations)", "displayContent(Content.admin_past_reservations)"];
             $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
-            $('#main_content').html(pageTitle("Active Reservations", "admin_active_reservations"), 'content_admin_home');
+            $('#main_content').html(pageTitle("Active Reservations", "admin_active_reservations", 'content_admin_home'));
             allActiveReservations();
+            break;
+        case Content.admin_review_reservation:
+            options = ["Reactivate Employee", "Add Employee", "Pending Requests", "Active Reservations", "Past Reservations"];
+            actions = ["", "", "displayContent(Content.admin_home)", "displayContent(Content.admin_active_reservations)", "displayContent(Content.admin_past_reservations)"];
+            $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
+            $('#main_content').html(pageTitle("Review Reservation", "admin_review_reservation", 'content_admin_home'));
+            $('#admin_review_reservation').append(reviewReservationForm());
             break;
         case Content.admin_edit_reservation:
             break;
@@ -245,10 +252,11 @@ function reserveRoomCard(id, name, type, number, button) {
 }
 
 
-function cardRoomReservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status, button, img_src) {
+function cardRoomReservation(reservation, button, img_src) {
     const user = JSON.parse(localStorage.getItem("logedIn"));
+    let status = "";
     let html = `<div class="big-cards">
-                <h6 style="font-weight: bolder"> Reservation ID: ${reservationID} </h6>
+                <h6 style="font-weight: bolder"> Reservation ID: ${reservation.reservationID} </h6>
                 <div class="inner-card"> 
                     <div>`;
     if (user["employeeID"] === undefined) {
@@ -262,17 +270,30 @@ function cardRoomReservation(reservationID, employeeID, roomID, reservationDate,
                     </div>
                     <div>`;
     if (user["employeeID"] === undefined) {
-        html += `<h6 style="font-weight: 400"> ${employeeID}</h6>`;
+        html += `<h6 style="font-weight: 400"> ${reservation.employeeID}</h6>`;
     }
-    html += `<h6 style="font-weight: 400"> ${roomID}</h6>
-                        <h6 style="font-weight: 400"> ${reservationDate}</h6>
-                        <h6 style="font-weight: 400"> ${start_time}</h6>
-                        <h6 style="font-weight: 400"> ${end_time}</h6>
-                        <h6 style="font-weight: 400"> ${status}</h6>
-                </div>
-                </div>`;
+    html += `<h6 style="font-weight: 400"> ${reservation.roomID}</h6>
+                        <h6 style="font-weight: 400"> ${reservation.reservationDate}</h6>
+                        <h6 style="font-weight: 400"> ${reservation.start_time}</h6>
+                        <h6 style="font-weight: 400"> ${reservation.end_time}</h6>`;
+    if (reservation.accepted === 1){
+        status = "Accepted";
+    } else if (reservation.accepted === 0){
+        status = "Pending";
+    } if (reservation.accepted === -1){
+        status = "Denied";
+    }
+    html +=`<h6 style="font-weight: 400"> ${status} </h6>`;
+    html +=`</div> </div>`;
+    
     if (button !== null) {
-        html += `<button class="btn-dark purple-dark full_button"> <img src=${img_src} width="25" height="25"> ${button}</button>`;
+        if (button === "Review") {
+            html += `<button class="btn-dark purple-dark full_button" 
+                        onclick="review_reservation(${reservation.reservationID}, ${reservation.employeeID}, ${reservation.roomID}, '${reservation.reservationDate}', '${reservation.start_time}', '${reservation.end_time}', '${status}')"> 
+                        <img src=${img_src} width="25" height="25"> ${button}</button>`;
+        } else {
+            html += `<button class="btn-dark purple-dark full_button"> <img src=${img_src} width="25" height="25"> ${button}</button>`;
+        }
     }
     html += `</div>`;
     return html;
@@ -322,6 +343,80 @@ function makeReservationForm(){
             <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="multy_reservations()">Complete Reservation</button>`;
     
     return html;
+}
+
+function reviewReservationForm() {
+    return `
+    <div class="box" style="flex-flow: column;" id="reservationReview">
+        <div class="max-cards">
+            <h6 style="font-weight: bolder"> Reservation Info </h6>
+                <div class="inner-card"> 
+                    <table>
+                        <tr>
+                          <td><h6>Reservation ID:</h6></td>
+                          <td><p id="reservationID"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6>Employee ID:</h6></td>
+                          <td><p id="employeeID"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6 class="paddingL">First Name:</h6></td>
+                          <td><p id="firstName"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6 class="paddingL">Last Name:</h6></td>
+                          <td><p id="lastName"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6 class="paddingL">Email:</h6></td>
+                          <td><p id="email"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6 class="paddingL paddingR">Corporate Email:</h6></td>
+                          <td><p id="corpEmail"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6 class="paddingL">Phone:</h6></td>
+                          <td><p id="phone"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6>Room ID:</h6></td>
+                          <td><p id="roomID"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6 class="paddingL">Name:</h6></td>
+                          <td><p id="name"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6 class="paddingL">Type:</h6></td>
+                          <td><p id="type"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6 class="paddingL">Capacity:</h6></td>
+                          <td><p id="capacity"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6>Date:</h6></td>
+                          <td><p id="date"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6>Start time:</h6></td>
+                          <td><p id="startTime"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6>End time:</h6></td>
+                          <td><p id="endTime"></p></td>
+                        </tr>
+                        <tr>
+                          <td><h6>Status:</h6></td>
+                          <td><p id="status"></p></td>
+                        </tr>
+                    </table>
+                </div>
+        </div>
+    
+    </div>`;
 }
 
 //Requests
@@ -437,7 +532,7 @@ function pendingRequests() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#pending_requests').html("<div class='cards-container' id='pending_requests_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#pending_requests_cards').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Pending", "Review", "img/icon-review.png"));
+                $('#pending_requests_cards').append(cardRoomReservation(data[i], "Review", "img/icon-review.png"));
             }
         } else {
             $('#pending_requests').html(data["msg"]);
@@ -464,7 +559,7 @@ function employeeActiveReservations() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#employee_active_reservations').html("<div class='cards-container' id='employee_active_reservations_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#employee_active_reservations_cards').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Edit", "img/icon-edit.png"));
+                $('#employee_active_reservations_cards').append(cardRoomReservation(data[i], "Edit", "img/icon-edit.png"));
             }
         } else {
             $('#employee_active_reservations').html(data["msg"]);
@@ -491,7 +586,7 @@ function employeePastReservations() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#employee_past_reservations').html("<div class='cards-container' id='employee_past_reservations_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#employee_past_reservations_cards').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Edit", "img/icon-edit.png"));
+                $('#employee_past_reservations_cards').append(cardRoomReservation(data[i], null, null));
             }
         } else {
             $('#employee_past_reservations').html(data["msg"]);
@@ -510,7 +605,8 @@ function allActiveReservations() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#admin_active_reservations').html("<div class='cards-container' id='admin_active_reservations_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#admin_active_reservations_cards').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Edit", "img/icon-edit.png"));
+                console.log(data[i])
+                $('#admin_active_reservations_cards').append(cardRoomReservation(data[i], "Edit", "img/icon-edit.png"));
             }
         } else {
             $('#admin_active_reservations').html(data["msg"]);
@@ -529,7 +625,7 @@ function allPastReservations() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#admin_past_reservations').html("<div class='cards-container' id='admin_past_reservations_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#admin_past_reservations_cards').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Edit", "img/icon-edit.png"));
+                $('#admin_past_reservations_cards').append(cardRoomReservation(data[i], null, null));
             }
         } else {
             $('#admin_past_reservations').html(data["msg"]);
@@ -551,7 +647,7 @@ function search() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#employee_search_rooms').html("<div class='cards-container' id='employee_search_rooms_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#employee_search_rooms_cards').append(cardRoomReservation(data[i].reservationID, data[i].employeeID, data[i].roomID, data[i].reservationDate, data[i].start_time, data[i].end_time, "Accepted", "Reserve", "img/icon-reserve.png"));
+                $('#employee_search_rooms_cards').append(cardRoomReservation(data[i], "Reserve", "img/icon-reserve.png"));
             }
         } else {
             $('#employee_search_rooms').html(data["msg"]);
@@ -599,6 +695,85 @@ function make_reservation(i){
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonData);
     
+}
+
+function review_reservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status){
+    displayContent(Content.admin_review_reservation);
+    $('#reservationID').html(reservationID);
+    $('#employeeID').html(employeeID);
+    $('#roomID').html(roomID);
+    $('#date').html(reservationDate);
+    $('#startTime').html(start_time);
+    $('#endTime').html(end_time);
+    $('#status').html(status);
+    
+    $('#reservationReview').append(`
+        <div style="display: flex; justify-content:space-between; width: 500px; padding: 35px 0px;">
+            <button class="btn-dark purple-dark back_button" style="padding: 5px 70px;" onclick="update_reservation_status(${reservationID},1)"> <img src="img/icon-accept.png" width="25" height="25"> Accept</button>
+            <button class="btn-dark purple-dark back_button" style="padding: 5px 70px;" onclick="update_reservation_status(${reservationID},-1)"> <img src="img/icon-reject.png" width="25" height="25"> Reject</button>
+        </div>`);
+    
+    const xhrEmployee = new XMLHttpRequest();
+    xhrEmployee.onload = function () {
+        const employee = JSON.parse(xhrEmployee.responseText);
+        if (xhrEmployee.readyState === 4 && xhrEmployee.status === 200) {
+            $('#firstName').html(employee.firstName);
+            $('#lastName').html(employee.lastName);
+            $('#email').html(employee.email);
+            $('#corpEmail').html(employee.corp_email);
+            $('#phone').html(employee.phone);
+        } else {
+            send_notification(employee["msg"]);
+        }
+    };
+
+    xhrEmployee.open("POST", "http://localhost:8080/room_reservation/api/employee");
+    xhrEmployee.setRequestHeader("Accept", "application/json");
+    xhrEmployee.setRequestHeader("Content-Type", "application/json");
+    xhrEmployee.send(JSON.stringify({employeeID: employeeID}));
+
+
+    const xhRoom = new XMLHttpRequest();
+    xhRoom.onload = function () {
+        const room = JSON.parse(xhRoom.responseText);
+        if (xhRoom.readyState === 4 && xhRoom.status === 200) {
+            $('#name').html(room.roomName);
+            $('#type').html(room.roomType);
+            $('#capacity').html(room.capacity);
+        } else {
+            send_notification(room["msg"]);
+        }
+    };
+
+    xhRoom.open("POST", "http://localhost:8080/room_reservation/api/room");
+    xhRoom.setRequestHeader("Accept", "application/json");
+    xhRoom.setRequestHeader("Content-Type", "application/json");
+    xhRoom.send(JSON.stringify({roomID: roomID})); 
+}
+
+function update_reservation_status(reservationID, status){
+    var jsonData = JSON.stringify(
+            {
+                reservationID: reservationID,
+                accepted: status
+            }
+    );
+    
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            displayContent(Content.admin_home);
+            send_notification(data["msg"]);
+        } else {
+            send_notification(data["msg"]);
+        }
+    };
+
+    xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(jsonData);
 }
 
 //Helpful Functions
