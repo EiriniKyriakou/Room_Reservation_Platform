@@ -257,4 +257,13 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
+    
+    public void deleteReservation(int reservationID) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        String update = "DELETE FROM reservations WHERE reservationID = '" + reservationID + "'";
+        stmt.execute(update);
+        stmt.close();
+        con.close();
+    }
 }

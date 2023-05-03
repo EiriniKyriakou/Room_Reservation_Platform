@@ -126,20 +126,16 @@ function displayContent(id) {
             
             break;
         case Content.employee_active_reservations:
-            options = ["Active Reservations", "Past Reservations"];
-            actions = ["displayContent(Content.employee_active_reservations)", "displayContent(Content.employee_past_reservations)"];
-            $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
             $('#main_content').html(pageTitle("Active Reservations", "employee_active_reservations", 'content_employee_home'));
             employeeActiveReservations();
             break;
         case Content.employee_review_reservation:
+            $('#main_content').html(pageTitle("Review Reservation", "employee_review_reservation", 'content_employee_home'));
+            $('#employee_review_reservation').append(employeeReviewReservation());
             break;
         case Content.employee_edit_reservation:
             break;
         case Content.employee_past_reservations:
-            options = ["Active Reservations", "Past Reservations"];
-            actions = ["displayContent(Content.employee_active_reservations)", "displayContent(Content.employee_past_reservations)"];
-            $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
             $('#main_content').html(pageTitle("Past Reservations", "employee_past_reservations", 'content_employee_home'));
             employeePastReservations();
             break;
@@ -287,9 +283,13 @@ function cardRoomReservation(reservation, button, img_src) {
     html +=`</div> </div>`;
     
     if (button !== null) {
-        if (button === "Review") {
+        if (button === "Review" && user["adminID"]!==undefined) {
             html += `<button class="btn-dark purple-dark full_button" 
                         onclick="review_reservation(${reservation.reservationID}, ${reservation.employeeID}, ${reservation.roomID}, '${reservation.reservationDate}', '${reservation.start_time}', '${reservation.end_time}', '${status}')"> 
+                        <img src=${img_src} width="25" height="25"> ${button}</button>`;
+        } else if (button === "Review" && user["employeeID"]!==undefined) {
+            html += `<button class="btn-dark purple-dark full_button" 
+                        onclick="review_reservation_employee(${reservation.reservationID}, ${reservation.employeeID}, ${reservation.roomID}, '${reservation.reservationDate}', '${reservation.start_time}', '${reservation.end_time}', '${status}')"> 
                         <img src=${img_src} width="25" height="25"> ${button}</button>`;
         } else {
             html += `<button class="btn-dark purple-dark full_button"> <img src=${img_src} width="25" height="25"> ${button}</button>`;
@@ -414,6 +414,61 @@ function reviewReservationForm() {
                         </tr>
                     </table>
                 </div>
+        </div>
+    
+    </div>`;
+}
+
+function employeeReviewReservation(){
+    return `
+    <div class="box" style="flex-flow: column;" >
+        <div class="big-cards" id="reservationReview">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h6 style="font-weight: bolder"> Reservation Info </h6>
+                <button class="back_button btn-dark purple-dark" onclick=""> <img src="img/icon-edit.png" width="25" height="25"> Edit</button>
+            </div>
+            <div class="inner-card"> 
+                <table>
+                    <tr>
+                      <td><h6 class="paddingR">Reservation ID:</h6></td>
+                      <td><p id="reservationID"></p></td>
+                    </tr>
+                    <tr>
+                    <tr>
+                      <td><h6>Room ID:</h6></td>
+                      <td><p id="roomID"></p></td>
+                    </tr>
+                    <tr>
+                      <td><h6 class="paddingL">Name:</h6></td>
+                      <td><p id="name"></p></td>
+                    </tr>
+                    <tr>
+                      <td><h6 class="paddingL">Type:</h6></td>
+                      <td><p id="type"></p></td>
+                    </tr>
+                    <tr>
+                      <td><h6 class="paddingL">Capacity:</h6></td>
+                      <td><p id="capacity"></p></td>
+                    </tr>
+                    <tr>
+                      <td><h6>Date:</h6></td>
+                      <td><p id="date"></p></td>
+                    </tr>
+                    <tr>
+                      <td><h6>Start time:</h6></td>
+                      <td><p id="startTime"></p></td>
+                    </tr>
+                    <tr>
+                      <td><h6>End time:</h6></td>
+                      <td><p id="endTime"></p></td>
+                    </tr>
+                    <tr>
+                      <td><h6>Status:</h6></td>
+                      <td><p id="status"></p></td>
+                    </tr>
+                </table>
+            </div>
+            
         </div>
     
     </div>`;
@@ -556,10 +611,11 @@ function employeeActiveReservations() {
 
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
+        console.log(data)
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#employee_active_reservations').html("<div class='cards-container' id='employee_active_reservations_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#employee_active_reservations_cards').append(cardRoomReservation(data[i], "Edit", "img/icon-edit.png"));
+                $('#employee_active_reservations_cards').append(cardRoomReservation(data[i], "Review", "img/icon-review.png"));
             }
         } else {
             $('#employee_active_reservations').html(data["msg"]);
@@ -618,6 +674,7 @@ function allActiveReservations() {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send();
 }
+
 function allPastReservations() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -697,6 +754,25 @@ function make_reservation(i){
     
 }
 
+function get_room_info(roomID){
+    const xhRoom = new XMLHttpRequest();
+    xhRoom.onload = function () {
+        const room = JSON.parse(xhRoom.responseText);
+        if (xhRoom.readyState === 4 && xhRoom.status === 200) {
+            $('#name').html(room.roomName);
+            $('#type').html(room.roomType);
+            $('#capacity').html(room.capacity);
+        } else {
+            send_notification(room["msg"]);
+        }
+    };
+
+    xhRoom.open("POST", "http://localhost:8080/room_reservation/api/room");
+    xhRoom.setRequestHeader("Accept", "application/json");
+    xhRoom.setRequestHeader("Content-Type", "application/json");
+    xhRoom.send(JSON.stringify({roomID: roomID})); 
+}
+
 function review_reservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status){
     displayContent(Content.admin_review_reservation);
     $('#reservationID').html(reservationID);
@@ -733,22 +809,7 @@ function review_reservation(reservationID, employeeID, roomID, reservationDate, 
     xhrEmployee.send(JSON.stringify({employeeID: employeeID}));
 
 
-    const xhRoom = new XMLHttpRequest();
-    xhRoom.onload = function () {
-        const room = JSON.parse(xhRoom.responseText);
-        if (xhRoom.readyState === 4 && xhRoom.status === 200) {
-            $('#name').html(room.roomName);
-            $('#type').html(room.roomType);
-            $('#capacity').html(room.capacity);
-        } else {
-            send_notification(room["msg"]);
-        }
-    };
-
-    xhRoom.open("POST", "http://localhost:8080/room_reservation/api/room");
-    xhRoom.setRequestHeader("Accept", "application/json");
-    xhRoom.setRequestHeader("Content-Type", "application/json");
-    xhRoom.send(JSON.stringify({roomID: roomID})); 
+    get_room_info(roomID);
 }
 
 function update_reservation_status(reservationID, status){
@@ -774,6 +835,40 @@ function update_reservation_status(reservationID, status){
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonData);
+}
+
+function cancel_reservation(reservationID){
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        console.log(data)
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            displayContent(Content.employee_active_reservations);
+            send_notification(data["msg"]);
+        } else {
+            send_notification(data["msg"]);
+        }
+    };
+
+    xhr.open("DELETE", "http://localhost:8080/room_reservation/api/reservation");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSON.stringify({reservationID: reservationID}));
+}
+
+function review_reservation_employee(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status){
+    displayContent(Content.employee_review_reservation);
+    $('#reservationID').html(reservationID);
+    $('#employeeID').html(employeeID);
+    $('#roomID').html(roomID);
+    $('#date').html(reservationDate);
+    $('#startTime').html(start_time);
+    $('#endTime').html(end_time);
+    $('#status').html(status);
+    
+    $('#reservationReview').append(`<button class="btn-dark purple-dark full_button" onclick="cancel_reservation(${reservationID})"> <img src="img/icon-cancel.png" width="25" height="25"> Cancel Reservation</button>`);
+    
+    get_room_info(roomID);
 }
 
 //Helpful Functions
