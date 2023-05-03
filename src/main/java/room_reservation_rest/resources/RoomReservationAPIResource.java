@@ -206,7 +206,7 @@ public class RoomReservationAPIResource {
             ArrayList<Room> room_results = new ArrayList<Room>();
             Gson gson = new Gson();
             JsonObject jobj = new Gson().fromJson(search_options, JsonObject.class);
-//      Add all info for the query
+//      Add all info for the query (NOTE: here we remove quotes in order for queries to succeed)
             search_results.add(jobj.get("roomName").toString().substring(1, jobj.get("roomName").toString().length() - 1));
             search_results.add(jobj.get("roomType").toString().substring(1, jobj.get("roomType").toString().length() - 1));
             search_results.add(jobj.get("capacity").toString().substring(1, jobj.get("capacity").toString().length() - 1));
