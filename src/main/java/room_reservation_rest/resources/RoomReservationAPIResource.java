@@ -9,7 +9,6 @@ import database.tables.EditReservationTable;
 import database.tables.EditRoomTable;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
@@ -229,9 +228,10 @@ public class RoomReservationAPIResource {
             Gson gson = new Gson();
             JsonObject jobj = new Gson().fromJson(employee_id, JsonObject.class);
             active_reservations = edt.getEmployeeActiveReservations(jobj.get("employeeID").toString());
-            if (active_reservations != null || !active_reservations.isEmpty()) {
+            String json = gson.toJson(active_reservations);
+            if (json == "[]") {
                 Response.Status status = Response.Status.OK;
-                return Response.status(status).type("application/json").entity(gson.toJson(active_reservations)).build();
+                return Response.status(status).type("application/json").entity(json).build();
             } else {
                 Response.Status status = Response.Status.UNAUTHORIZED;
                 return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No active reservations.\"}").build();
@@ -397,6 +397,27 @@ public class RoomReservationAPIResource {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
             Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to find emloyee\"}").build();
+        }
+    }
+    
+    @DELETE
+    @Path("/reservation")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response delete_reservation(String reservation) {
+        try {
+            System.out.println(reservation);
+            JsonObject jobj = new Gson().fromJson(reservation, JsonObject.class);
+            int id = Integer.parseInt(jobj.get("reservationID").toString());
+            EditReservationTable ert = new EditReservationTable();
+            ert.deleteReservation(id);
+            Response.Status status = Response.Status.OK;
+            return Response.status(status).type("application/json").entity("{\"msg\":\"Reservation succesfully canceled.\"}").build();
+
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
+            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to cancel Reservation\"}").build();
         }
     }
 
