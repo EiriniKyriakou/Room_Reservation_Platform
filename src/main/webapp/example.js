@@ -727,6 +727,12 @@ function search() {
         const data = JSON.parse(xhr.responseText);
         console.log("Results: " + data)
         if (xhr.readyState === 4 && xhr.status === 200) {
+            jsonData = JSON.parse(jsonData);
+            if (jsonData.date==='' && jsonData.start_time===''){
+                document.getElementById("pageTitle").innerHTML = "Rooms:";
+            } else {
+                document.getElementById("pageTitle").innerHTML = "Available rooms:";
+            }
             $('#employee_search').html("<div class='cards-container' id='employee_search_rooms_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
                 console.log(data[i].roomName, data[i].roomType, data[i].capacity);
