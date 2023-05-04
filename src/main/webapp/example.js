@@ -134,6 +134,7 @@ function displayContent(id) {
             $('#employee_review_reservation').append(employeeReviewReservation());
             break;
         case Content.employee_edit_reservation:
+            
             break;
         case Content.employee_past_reservations:
             $('#main_content').html(pageTitle("Past Reservations", "employee_past_reservations", 'content_employee_home'));
@@ -217,7 +218,7 @@ function pageTitle(title, div_id, back) {
     if (back !== null) {
         html += `<button class="back_button btn-dark purple-dark" onclick="displayContent('${back}')"> <img src="img/icon-back.png" width="25" height="25"> Back</button>`;
     }
-    html += `<h5>${title}</h5>
+    html += `<h5 id="pageTitle">${title}</h5>
                 </div>
                 <div id=${div_id} class="inner-container-fluid">
                 </div>
@@ -332,6 +333,7 @@ function add_reservation_from(){
     reservations_count++;
     reservationForm(reservations_count);
 }
+
 function makeReservationForm(){
 
     html = `<div style="display:flex; flex-flow: column;"><div id="reservation">${reserveRoomCard(reserve_form.roomID, reserve_form.roomName, reserve_form.roomType, reserve_form.roomCapacity, false)}`;
@@ -341,6 +343,31 @@ function makeReservationForm(){
                 <h6>add more reservations</h6>
             </div></div>
             <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="multy_reservations()">Complete Reservation</button>`;
+    
+    return html;
+}
+
+function updateReservationForm(){
+
+    html = `<div style="display:flex; flex-flow: column;"><div id="reservation">${reserveRoomCard(reserve_form.roomID, reserve_form.roomName, reserve_form.roomType, reserve_form.roomCapacity, false)}`;
+    html +=   `<div id="reserve_from"> <table>
+            <tr>
+              <td><h6>Date:</h6></td>
+              <td><input class="search_element" type="date" id="date" min="2014-05-11" name="date"></td>
+            </tr>
+            <tr>
+              <td style="padding-right: 25px;"><h6>Start time:</h6></td>
+              <td><input class="search_element" type="time" id="start_time" name="start_time" min="09:00" max="17:00" step="3600000"></td>
+            </tr>
+            <tr>
+              <td><h6>End time:</h6></td>
+              <td><input class="search_element" type="time" id="end_time" name="end_time" min="10:00" max="18:00" step="3600000"></td>
+            </tr>
+        </table>
+</div></div>`;
+    
+    html += `<br>
+            <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="update_reservation()">Update Reservation</button>`;
     
     return html;
 }
@@ -425,7 +452,7 @@ function employeeReviewReservation(){
         <div class="big-cards" id="reservationReview">
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <h6 style="font-weight: bolder"> Reservation Info </h6>
-                <button class="back_button btn-dark purple-dark" onclick="update_reservation()"> <img src="img/icon-edit.png" width="25" height="25"> Edit</button>
+                <button class="back_button btn-dark purple-dark" onclick="edit_reservation()"> <img src="img/icon-edit.png" width="25" height="25"> Edit</button>
             </div>
             <div class="inner-card"> 
                 <table>
@@ -611,7 +638,6 @@ function employeeActiveReservations() {
 
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
-        console.log(data)
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#employee_active_reservations').html("<div class='cards-container' id='employee_active_reservations_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
@@ -758,6 +784,7 @@ function get_room_info(roomID){
     const xhRoom = new XMLHttpRequest();
     xhRoom.onload = function () {
         const room = JSON.parse(xhRoom.responseText);
+        console.log(room);
         if (xhRoom.readyState === 4 && xhRoom.status === 200) {
             $('#name').html(room.roomName);
             $('#type').html(room.roomType);
@@ -888,16 +915,41 @@ function review_reservation_employee(reservationID, employeeID, roomID, reservat
     get_room_info(roomID);
 }
 
+function edit_reservation(){
+    var jsonData =
+            {
+                reservationID: document.getElementById("reservationID").innerHTML,
+                reservationDate: document.getElementById("date").innerHTML,
+                start_time: document.getElementById("startTime").innerHTML,
+                end_time: document.getElementById("endTime").innerHTML
+            };
+    console.log(jsonData);
+    fill_reserve_form_vars(document.getElementById("roomID").innerHTML, document.getElementById("name").innerHTML, document.getElementById("type").innerHTML, document.getElementById("capacity").innerHTML);
+
+    //    displayContent(Content.employee_edit_reservation);
+    $('#main_content').html(pageTitle("Edit Reservation "+ jsonData.reservationID, "employee_edit_reservation", 'content_employee_active_reservations'));
+    $('#employee_edit_reservation').append(updateReservationForm());
+    
+    document.getElementById("date").value = jsonData.reservationDate;
+    document.getElementById("start_time").value = jsonData.start_time;
+    document.getElementById("end_time").value = jsonData.end_time;
+//    $('#date').html(jsonData.reservationDate);
+//    $('#start_time').html(jsonData.start_time);
+//    $('#start_time').html(jsonData.end_time);
+}
 
 function update_reservation(){
+    let reservationID = parseInt(document.getElementById("pageTitle").innerHTML.slice(-1));
+    console.log(reservationID)
     var jsonData = JSON.stringify(
             {
-                reservationID: document.getElementById("reservationID").value,
+                reservationID: reservationID,
                 reservationDate: document.getElementById("date").value,
-                start_time: document.getElementById("startTime").value,
-                end_time: document.getElementById("endTime").value
+                start_time: document.getElementById("start_time").value,
+                end_time: document.getElementById("end_time").value
             }
     );
+    console.log(jsonData);
     const user = JSON.parse(localStorage.getItem("logedIn"));
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
