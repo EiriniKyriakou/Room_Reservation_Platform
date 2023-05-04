@@ -250,7 +250,7 @@ function cardRoomReservation(reservation, button, img_src) {
     const user = JSON.parse(localStorage.getItem("logedIn"));
     let status = "";
     let html = `<div class="big-cards">
-                <h6 style="font-weight: bolder"> Reservation ID: ${reservation.reservationID} </h6>
+                <h6 style="font-weight: bolder" id="reservationID"> Reservation ID: ${reservation.reservationID} </h6>
                 <div class="inner-card"> 
                     <div>`;
     if (user["employeeID"] === undefined) {
@@ -266,10 +266,10 @@ function cardRoomReservation(reservation, button, img_src) {
     if (user["employeeID"] === undefined) {
         html += `<h6 style="font-weight: 400"> ${reservation.employeeID}</h6>`;
     }
-    html += `<h6 style="font-weight: 400"> ${reservation.roomID}</h6>
-                        <h6 style="font-weight: 400"> ${reservation.reservationDate}</h6>
-                        <h6 style="font-weight: 400"> ${reservation.start_time}</h6>
-                        <h6 style="font-weight: 400"> ${reservation.end_time}</h6>`;
+    html += `<h6 style="font-weight: 400" id="roomID"> ${reservation.roomID}</h6>
+                        <h6 style="font-weight: 400" id="date"> ${reservation.reservationDate}</h6>
+                        <h6 style="font-weight: 400" id="startTime"> ${reservation.start_time}</h6>
+                        <h6 style="font-weight: 400" id="endTime"> ${reservation.end_time}</h6>`;
     if (reservation.accepted === 1){
         status = "Accepted";
     } else if (reservation.accepted === 0){
@@ -289,7 +289,9 @@ function cardRoomReservation(reservation, button, img_src) {
             html += `<button class="btn-dark purple-dark full_button" 
                         onclick="review_reservation_employee(${reservation.reservationID}, ${reservation.employeeID}, ${reservation.roomID}, '${reservation.reservationDate}', '${reservation.start_time}', '${reservation.end_time}', '${status}')"> 
                         <img src=${img_src} width="25" height="25"> ${button}</button>`;
-        } else {
+        } else if (button === "Edit" && user["adminID"]!==undefined){
+            html += `<button class="btn-dark purple-dark full_button" onclick="edit_reservation()"> <img src=${img_src} width="25" height="25"> ${button}</button>`;
+        }else {
             html += `<button class="btn-dark purple-dark full_button"> <img src=${img_src} width="25" height="25"> ${button}</button>`;
         }
     }
@@ -684,7 +686,6 @@ function allActiveReservations() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#admin_active_reservations').html("<div class='cards-container' id='admin_active_reservations_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                console.log(data[i])
                 $('#admin_active_reservations_cards').append(cardRoomReservation(data[i], "Edit", "img/icon-edit.png"));
             }
         } else {
@@ -790,11 +791,11 @@ function get_room_info(roomID){
     const xhRoom = new XMLHttpRequest();
     xhRoom.onload = function () {
         const room = JSON.parse(xhRoom.responseText);
-        console.log(room);
         if (xhRoom.readyState === 4 && xhRoom.status === 200) {
             $('#name').html(room.roomName);
             $('#type').html(room.roomType);
             $('#capacity').html(room.capacity);
+            fill_reserve_form_vars(room.roomID, room.roomName, room.roomType, room.capacity);
         } else {
             send_notification(room["msg"]);
         }
@@ -922,26 +923,39 @@ function review_reservation_employee(reservationID, employeeID, roomID, reservat
 }
 
 function edit_reservation(){
-    var jsonData =
-            {
-                reservationID: document.getElementById("reservationID").innerHTML,
-                reservationDate: document.getElementById("date").innerHTML,
-                start_time: document.getElementById("startTime").innerHTML,
-                end_time: document.getElementById("endTime").innerHTML
-            };
-    console.log(jsonData);
-    fill_reserve_form_vars(document.getElementById("roomID").innerHTML, document.getElementById("name").innerHTML, document.getElementById("type").innerHTML, document.getElementById("capacity").innerHTML);
-
-    //    displayContent(Content.employee_edit_reservation);
-    $('#main_content').html(pageTitle("Edit Reservation "+ jsonData.reservationID, "employee_edit_reservation", 'content_employee_active_reservations'));
-    $('#employee_edit_reservation').append(updateReservationForm());
-    
-    document.getElementById("date").value = jsonData.reservationDate;
-    document.getElementById("start_time").value = jsonData.start_time;
-    document.getElementById("end_time").value = jsonData.end_time;
-//    $('#date').html(jsonData.reservationDate);
-//    $('#start_time').html(jsonData.start_time);
-//    $('#start_time').html(jsonData.end_time);
+    const user = JSON.parse(localStorage.getItem("logedIn"));
+    if (user["adminID"] !== undefined) {
+        var jsonData =
+                {
+                    reservationID: parseInt(document.getElementById("reservationID").innerHTML.slice(-2)),
+                    reservationDate: document.getElementById("date").innerHTML.slice(1),
+                    start_time: document.getElementById("startTime").innerHTML.slice(1),
+                    end_time: document.getElementById("endTime").innerHTML.slice(1)
+                };
+        get_room_info(parseInt((document.getElementById("roomID").innerHTML)));
+        $('#main_content').html(pageTitle("Edit Reservation "+ jsonData.reservationID, "admin_edit_reservation", 'content_admin_active_reservations'));
+        setTimeout( ()=>{
+            $('#admin_edit_reservation').append(updateReservationForm());
+            document.getElementById("date").value = jsonData.reservationDate;
+            document.getElementById("start_time").value = jsonData.start_time;
+            document.getElementById("end_time").value = jsonData.end_time;
+        }, 100);
+        
+    } else {
+        var jsonData =
+                {
+                    reservationID: document.getElementById("reservationID").innerHTML,
+                    reservationDate: document.getElementById("date").innerHTML,
+                    start_time: document.getElementById("startTime").innerHTML,
+                    end_time: document.getElementById("endTime").innerHTML
+                };
+        fill_reserve_form_vars(document.getElementById("roomID").innerHTML, document.getElementById("name").innerHTML, document.getElementById("type").innerHTML, document.getElementById("capacity").innerHTML);
+        $('#main_content').html(pageTitle("Edit Reservation "+ jsonData.reservationID, "employee_edit_reservation", 'content_employee_active_reservations'));
+        $('#employee_edit_reservation').append(updateReservationForm());
+        document.getElementById("date").value = jsonData.reservationDate;
+        document.getElementById("start_time").value = jsonData.start_time;
+        document.getElementById("end_time").value = jsonData.end_time;
+    }
 }
 
 function update_reservation(){
@@ -955,7 +969,6 @@ function update_reservation(){
                 end_time: document.getElementById("end_time").value
             }
     );
-    console.log(jsonData);
     const user = JSON.parse(localStorage.getItem("logedIn"));
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
