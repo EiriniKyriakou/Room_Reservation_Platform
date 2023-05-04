@@ -107,7 +107,6 @@ public class EditReservationTable {
             Statement stmt = con.createStatement();
             ResultSet rs;
             ArrayList<Reservation> reservations = new ArrayList<Reservation>();
-
             rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 AND reservationDate >= CURDATE()");
             System.out.println(rs);
 
