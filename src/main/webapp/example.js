@@ -888,6 +888,38 @@ function review_reservation_employee(reservationID, employeeID, roomID, reservat
     get_room_info(roomID);
 }
 
+
+function update_reservation(reservationID, date, start_time, end_time){
+    var jsonData = JSON.stringify(
+            {
+                reservationID: reservationID,
+                reservationDate: date,
+                start_time: start_time,
+                end_time: end_time
+            }
+    );
+    const user = JSON.parse(localStorage.getItem("logedIn"));
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            if (user["employeeID"] !== undefined) {
+                displayContent(Content.employee_active_reservations);
+            } else if (user["adminID"] !== undefined) {
+                displayContent(Content.admin_active_reservations);
+            }
+            send_notification(data["msg"]);
+        } else {
+            send_notification(data["msg"]);
+        }
+    };
+
+    xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(jsonData);
+}
+
 //Helpful Functions
 function send_notification(text) {
     document.getElementById("info_span").innerHTML = text;
