@@ -271,7 +271,7 @@ public class RoomReservationAPIResource {
             );
             active_reservations = edt.getEmployeeActiveReservations(jobj.get("employeeID").toString());
             String json = gson.toJson(active_reservations);
-            if (active_reservations.size()!=0) {
+            if (active_reservations.size() != 0) {
                 Response.Status status = Response.Status.OK;
                 return Response.status(status).type("application/json").entity(json).build();
             } else {
@@ -373,19 +373,19 @@ public class RoomReservationAPIResource {
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to make reservation\"}").build();
         }
     }
-    
+
     @POST
     @Path("/employee")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response employee(String employeeID)  {
+    public Response employee(String employeeID) {
         try {
             JsonObject jobj = new Gson().fromJson(employeeID, JsonObject.class);
             int id = Integer.parseInt(jobj.get("employeeID").toString());
             EditEmployeeTable eet = new EditEmployeeTable();
             Employee e = eet.databaseToEmployeeID(id);
-            
-            if (e != null){
+
+            if (e != null) {
                 Gson gson = new Gson();
                 Response.Status status = Response.Status.OK;
                 return Response.status(status).type("application/json").entity(gson.toJson(e)).build();
@@ -393,27 +393,26 @@ public class RoomReservationAPIResource {
                 Response.Status status = Response.Status.UNAUTHORIZED;
                 return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No employee with that id.\"}").build();
             }
-            
+
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
             Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to find emloyee\"}").build();
         }
     }
-    
-    
+
     @POST
     @Path("/room")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response room(String roomID)  {
+    public Response room(String roomID) {
         try {
             JsonObject jobj = new Gson().fromJson(roomID, JsonObject.class);
             int id = Integer.parseInt(jobj.get("roomID").toString());
             EditRoomTable eet = new EditRoomTable();
             Room r = eet.databaseToRoomID(id);
-            
-            if (r != null){
+
+            if (r != null) {
                 Gson gson = new Gson();
                 Response.Status status = Response.Status.OK;
                 return Response.status(status).type("application/json").entity(gson.toJson(r)).build();
@@ -421,14 +420,14 @@ public class RoomReservationAPIResource {
                 Response.Status status = Response.Status.UNAUTHORIZED;
                 return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No employee with that id.\"}").build();
             }
-            
+
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
             Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to find emloyee\"}").build();
         }
     }
-    
+
     @PUT
     @Path("/reservation_status")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -449,7 +448,7 @@ public class RoomReservationAPIResource {
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to find emloyee\"}").build();
         }
     }
-    
+
     @DELETE
     @Path("/reservation")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -468,6 +467,41 @@ public class RoomReservationAPIResource {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
             Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to cancel Reservation\"}").build();
+        }
+    }
+
+    @PUT
+    @Path("/reservation")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response update_reservation(String reservation) {
+        try {
+            String[] times = {"07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"};
+            JsonObject jobj = new Gson().fromJson(reservation, JsonObject.class);
+            int id = Integer.parseInt(jobj.get("reservationID").toString());
+            String newDate = String.valueOf(jobj.get("reservationDate").toString());
+            String newStartTime = String.valueOf(jobj.get("start_time").toString());
+            String newEndTime = "";
+            for (int i = 0; i < 12; ++i) {
+                if (i == 11) {
+                    newEndTime = "19:00";
+                }
+                if (times[i].equals(newStartTime)) {
+                    newEndTime = times[i + 1];
+                }
+            }
+
+            EditReservationTable ert = new EditReservationTable();
+            if (!newEndTime.equals("")) {
+                ert.updateReservationInfo(id, newDate, newStartTime, newEndTime);
+            }
+            Response.Status status = Response.Status.OK;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Reservation updated.\"}").build();
+
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
+            Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to update reservation.\"}").build();
         }
     }
 

@@ -265,4 +265,14 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
+    
+        
+    public void updateReservationInfo(int reservationID, String newDate, String startTime, String end_time) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        String update = "UPDATE reservations SET reservationDate='" + newDate + "', start_time='" + startTime+ "', end_time='"+ end_time +"' WHERE reservationID = '" + reservationID + "'";
+        stmt.executeUpdate(update);
+        stmt.close();
+        con.close();
+    }
 }
