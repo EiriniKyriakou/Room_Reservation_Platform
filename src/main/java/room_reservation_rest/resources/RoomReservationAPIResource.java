@@ -380,10 +380,10 @@ public class RoomReservationAPIResource {
     }
     
     @PUT
-    @Path("/reservation")
+    @Path("/reservation_status")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response update_reservation(String reservation) {
+    public Response update_reservation_status(String reservation) {
         try {
             JsonObject jobj = new Gson().fromJson(reservation, JsonObject.class);
             int id = Integer.parseInt(jobj.get("reservationID").toString());

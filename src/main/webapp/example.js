@@ -831,7 +831,7 @@ function update_reservation_status(reservationID, status){
         }
     };
 
-    xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation");
+    xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation_status");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonData);
