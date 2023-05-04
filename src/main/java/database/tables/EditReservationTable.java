@@ -267,7 +267,7 @@ public class EditReservationTable {
     }
     
         
-    public void updateReservationInfo(int reservationID, String newDate, String startTime, String end_time) throws SQLException, ClassNotFoundException {
+    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
         String update = "UPDATE reservations SET reservationDate='" + newDate + "', start_time='" + startTime+ "', end_time='"+ end_time +"' WHERE reservationID = '" + reservationID + "'";

@@ -349,20 +349,8 @@ function makeReservationForm(){
 function updateReservationForm(){
 
     html = `<div style="display:flex; flex-flow: column;"><div id="reservation">${reserveRoomCard(reserve_form.roomID, reserve_form.roomName, reserve_form.roomType, reserve_form.roomCapacity, false)}`;
-    html +=   `<div id="reserve_from"> <table>
-            <tr>
-              <td><h6>Date:</h6></td>
-              <td><input class="search_element" type="date" id="date" min="2014-05-11" name="date"></td>
-            </tr>
-            <tr>
-              <td style="padding-right: 25px;"><h6>Start time:</h6></td>
-              <td><input class="search_element" type="time" id="start_time" name="start_time" min="09:00" max="17:00" step="3600000"></td>
-            </tr>
-            <tr>
-              <td><h6>End time:</h6></td>
-              <td><input class="search_element" type="time" id="end_time" name="end_time" min="10:00" max="18:00" step="3600000"></td>
-            </tr>
-        </table>
+    html +=   `<div id="reserve_from"> 
+
 </div></div>`;
     
     html += `<br>
@@ -936,10 +924,10 @@ function edit_reservation(){
         $('#main_content').html(pageTitle("Edit Reservation "+ jsonData.reservationID, "admin_edit_reservation", 'content_admin_active_reservations'));
         setTimeout( ()=>{
             $('#admin_edit_reservation').append(updateReservationForm());
-            document.getElementById("date").value = jsonData.reservationDate;
-            document.getElementById("start_time").value = jsonData.start_time;
-            document.getElementById("end_time").value = jsonData.end_time;
-            document.getElementById('date').min = minDate;
+            reservationForm(1);
+            document.getElementById("date_1").value = jsonData.reservationDate;
+            document.getElementById("start_time_1").value = jsonData.start_time;
+            document.getElementById("end_time_1").value = jsonData.end_time;
         }, 100);
         
     } else {
@@ -953,22 +941,22 @@ function edit_reservation(){
         fill_reserve_form_vars(document.getElementById("roomID").innerHTML, document.getElementById("name").innerHTML, document.getElementById("type").innerHTML, document.getElementById("capacity").innerHTML);
         $('#main_content').html(pageTitle("Edit Reservation "+ jsonData.reservationID, "employee_edit_reservation", 'content_employee_active_reservations'));
         $('#employee_edit_reservation').append(updateReservationForm());
-        document.getElementById("date").value = jsonData.reservationDate;
-        document.getElementById("start_time").value = jsonData.start_time;
-        document.getElementById("end_time").value = jsonData.end_time;
-        document.getElementById('date').min = minDate;
+        reservationForm(1);
+        document.getElementById("date_1").value = jsonData.reservationDate;
+        document.getElementById("start_time_1").value = jsonData.start_time;
+        document.getElementById("end_time_1").value = jsonData.end_time;
     }
 }
 
 function update_reservation(){
     let reservationID = parseInt(document.getElementById("pageTitle").innerHTML.slice(-1));
-    console.log(reservationID)
+    
     var jsonData = JSON.stringify(
             {
                 reservationID: reservationID,
-                reservationDate: document.getElementById("date").value,
-                start_time: document.getElementById("start_time").value,
-                end_time: document.getElementById("end_time").value
+                reservationDate: document.getElementById("date_1").value,
+                start_time: document.getElementById("start_time_1").value,
+                end_time: document.getElementById("end_time_1").value
             }
     );
     const user = JSON.parse(localStorage.getItem("logedIn"));
@@ -987,6 +975,7 @@ function update_reservation(){
         }
     };
 
+    console.log(jsonData);
     xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
