@@ -222,7 +222,7 @@ public class RoomReservationAPIResource {
                 return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No available rooms.\"}").build();
             } else {
                 Response.Status status = Response.Status.OK;
-                return Response.status(status).type("application/json").entity(gson.toJson(search_options)).build();
+                return Response.status(status).type("application/json").entity(gson.toJson(room_results)).build();
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);

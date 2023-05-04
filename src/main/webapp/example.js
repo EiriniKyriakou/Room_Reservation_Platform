@@ -92,9 +92,6 @@ function displayContent(id) {
             topCapacity();
             break;
         case Content.employee_search:
-            options = ["Active Reservations", "Past Reservations"];
-            actions = ["displayContent(Content.employee_active_reservations)", "displayContent(Content.employee_past_reservations)"];
-            $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
             $('#main_content').html(searchBarHome());
             $('#main_content').html(`<div class="purple-light search_bar"> 
                 <button class="back_button btn-dark purple-dark" onclick="displayContent('content_employee_home')"> <img src="img/icon-back.png" width="25" height="25"> Back</button> 
@@ -106,7 +103,6 @@ function displayContent(id) {
                 e.target.value = `${hour}:00`;
             });
             $('#main_content').append(pageTitle("Rooms", "employee_search", null));
-            search();
             break;
         case Content.employee_make_reservation:
             reservations_count = 0;
@@ -204,7 +200,7 @@ function searchBarForm() {
                 </select>
                 <input class="search_element" type="date" id="date" name="date">
                 <input class="search_element" type="time" id="start_time" name="start_time" min="09:00" max="17:00">
-                <button class="btn-dark purple-dark search_button" onclick="displayContent(Content.employee_search)"> <img src="img/search.png" width="25" height="25"> Search</button>
+                <button class="btn-dark purple-dark search_button" onclick="search()"> <img src="img/search.png" width="25" height="25"> Search</button>
             </div>`;
 }
 
@@ -544,27 +540,36 @@ function allPastReservations() {
 }
 
 function search() {
-    var jsonData = JSON.stringify({
+    var jsonData = {
         roomName: document.getElementById("room_name").value,
         roomType: document.getElementById("room_type").value,
         capacity: document.getElementById("room_capacity").value,
         date: document.getElementById("date").value,
         start_time: document.getElementById("start_time").value
-    });
+    };
+    
+    displayContent(Content.employee_search);
+    document.getElementById("room_name").value = jsonData.roomName;
+    document.getElementById("room_type").value = jsonData.roomType;
+    document.getElementById("room_capacity").value = jsonData.capacity;
+    document.getElementById("date").value = jsonData.date;
+    document.getElementById("start_time").value = jsonData.start_time;
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
+        console.log("Results: " + data)
         if (xhr.readyState === 4 && xhr.status === 200) {
             $('#employee_search').html("<div class='cards-container' id='employee_search_rooms_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
                 console.log(data[i].roomName, data[i].roomType, data[i].capacity);
-                $('#employee_search_rooms_cards').append(reserveRoomCard(data[i].roomName, data[i].roomType, data[i].capacity));
+                $('#employee_search_rooms_cards').append(reserveRoomCard(data[i].roomID, data[i].roomName, data[i].roomType, data[i].capacity, true));
+                
             }
         } else {
             $('#employee_search').html(data["msg"]);
         }
     };
-
+    jsonData = JSON.stringify(jsonData);
     xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_search");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
