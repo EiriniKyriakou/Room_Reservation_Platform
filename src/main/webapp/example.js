@@ -425,7 +425,7 @@ function employeeReviewReservation(){
         <div class="big-cards" id="reservationReview">
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <h6 style="font-weight: bolder"> Reservation Info </h6>
-                <button class="back_button btn-dark purple-dark" onclick=""> <img src="img/icon-edit.png" width="25" height="25"> Edit</button>
+                <button class="back_button btn-dark purple-dark" onclick="update_reservation()"> <img src="img/icon-edit.png" width="25" height="25"> Edit</button>
             </div>
             <div class="inner-card"> 
                 <table>
@@ -889,13 +889,13 @@ function review_reservation_employee(reservationID, employeeID, roomID, reservat
 }
 
 
-function update_reservation(reservationID, date, start_time, end_time){
+function update_reservation(){
     var jsonData = JSON.stringify(
             {
-                reservationID: reservationID,
-                reservationDate: date,
-                start_time: start_time,
-                end_time: end_time
+                reservationID: document.getElementById("reservationID").value,
+                reservationDate: document.getElementById("date").value,
+                start_time: document.getElementById("startTime").value,
+                end_time: document.getElementById("endTime").value
             }
     );
     const user = JSON.parse(localStorage.getItem("logedIn"));
