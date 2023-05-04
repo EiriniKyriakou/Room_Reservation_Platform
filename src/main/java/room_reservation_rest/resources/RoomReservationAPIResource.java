@@ -420,12 +420,12 @@ public class RoomReservationAPIResource {
     }
 
     @PUT
-    @Path("/update_reservation")
+    @Path("/reservation")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response update_reservation(String reservation) {
         try {
-            String[] times = {"07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00"};
+            String[] times = {"07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"};
             JsonObject jobj = new Gson().fromJson(reservation, JsonObject.class);
             int id = Integer.parseInt(jobj.get("reservationID").toString());
             String newDate = String.valueOf(jobj.get("reservationDate").toString());
@@ -433,7 +433,7 @@ public class RoomReservationAPIResource {
             String newEndTime = "";
             for (int i = 0; i < 12; ++i) {
                 if (i == 11) {
-                    newEndTime = times[0];
+                    newEndTime = "19:00";
                 }
                 if (times[i].equals(newStartTime)) {
                     newEndTime = times[i + 1];
@@ -445,7 +445,7 @@ public class RoomReservationAPIResource {
                 ert.updateReservationInfo(id, newDate, newStartTime, newEndTime);
             }
             Response.Status status = Response.Status.OK;
-            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Reservation Updated.\"}").build();
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Reservation updated.\"}").build();
 
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
