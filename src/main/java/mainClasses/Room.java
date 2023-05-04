@@ -13,43 +13,43 @@ public class Room {
         this.roomType = roomType;
     }
 
-    int getRoomID() {
+    public int getRoomID() {
         return this.roomID;
     }
 
-    void setRoomID(int value) {
+    public void setRoomID(int value) {
         this.roomID = value;
     }
-    
-    int getDepID() {
+
+    public int getDepID() {
         return this.depID;
     }
 
-    void setDepID(int value) {
+    public void setDepID(int value) {
         this.depID = value;
     }
 
-    String getRoomName() {
+    public String getRoomName() {
         return this.roomName;
     }
 
-    void setRoomName(String value) {
+    public void setRoomName(String value) {
         this.roomName = value;
     }
 
-    String getRoomType() {
+    public String getRoomType() {
         return this.roomType;
     }
 
-    void setRoomType(String value) {
+    public void setRoomType(String value) {
         this.roomType = value;
     }
 
-    int getCapacity() {
+    public int getCapacity() {
         return this.capacity;
     }
 
-    void setCapacity(int value) {
+    public void setCapacity(int value) {
         this.capacity = value;
     }
 
@@ -64,5 +64,4 @@ public class Room {
     public List<Room> search_available_rooms(String date) {
         return null;
     }
-
 }
