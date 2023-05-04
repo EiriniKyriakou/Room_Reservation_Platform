@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mainClasses.Room;
@@ -120,13 +119,13 @@ public class EditRoomTable {
                     query += keys.get(i) + "='" + search_options.get(i) + "'";
                 }
 
-                if (!search_options.get(i + 1).equals("") && (i < 2)) { // i = 2 means we are in the last concatenation before the reservation query (which we don't know if it is empty)
+                if (!search_options.get(i).equals("") && !search_options.get(i + 1).equals("") && (i < 2)) { // i = 2 means we are in the last concatenation before the reservation query (which we don't know if it is empty)
                     query += " AND ";
                 }
             }
-            System.out.println(room_query + query);
             String json = "";
             if (!query.equals("")) {
+                System.out.println(room_query + query);
                 rs = stmt.executeQuery(room_query + query);
                 System.out.println("Result set is " + rs);
                 while (rs.next()) {
@@ -145,8 +144,57 @@ public class EditRoomTable {
                 con.close();
                 return rooms;
             }
-            String rest_of_reservation_query;
+            
+            String rest_of_reservation_query = "";
+            int reservation_slots = 0, query_date_case = 0;
             ArrayList<Room> rooms_to_remove = new ArrayList<Room>();
+            //only date + time data
+            if (query.equals("")) {
+                if (search_options.get(3).equals("")) { // we don't care about reservationDate 
+                    rooms = getTopCapacityRooms();
+                    return rooms;
+                } else if (search_options.get(4).equals("")) { // we don't care about reservationStart_time, we only care about reservationDate
+                    rest_of_reservation_query += "WHERE reservationDate='" + search_options.get(3) +"')";
+                    reservation_query = room_query + "roomID IN (" + "SELECT roomID FROM reservations " ;
+                    query_date_case = 1;
+                } else { // we care about both
+                    reservation_query = room_query + " roomID NOT IN (SELECT roomID FROM reservations WHERE reservationDate='" + search_options.get(3) + "' AND " + "start_time='" + search_options.get(4) + "' )";
+                }
+                System.out.println(reservation_query + rest_of_reservation_query);
+
+                rs1 = stmt.executeQuery(reservation_query + rest_of_reservation_query); // search for rooms that have not been reserved for the date+time user has chosen
+                System.out.println("Rs1 is " + rs1);
+
+                while (rs1.next()) {
+                    json = DB_Connection.getResultsToJSON(rs1);
+                    Gson gson = new Gson();
+                    Room room = gson.fromJson(json, Room.class);
+
+                    if (query_date_case == 1) {
+                        reservation_slots++;
+                        rooms_to_remove.add(room);
+                    }
+
+                    rooms.add(room); // so as not to show it as a result (does not match user options)
+                    json = DB_Connection.getResultsToJSON(rs1);
+                    System.out.println(json);
+                    continue;
+                }
+                 
+                if(reservation_slots == 0)
+                    rooms = getTopCapacityRooms();
+                if (reservation_slots > 0 && reservation_slots < 12) { // 12 slots per day (7am-6pm)
+                    //remove it here so as not to change initial structure of arraylist
+                    for (Room r : rooms_to_remove) {
+                        rooms.remove(r);
+                    }
+                }
+                System.out.println("# Employee Search Results");
+                stmt.close();
+                con.close();
+                return rooms;
+            }
+
             for (int i = 0; i < rooms.size(); ++i) {
                 rest_of_reservation_query = "";
                 if (search_options.get(3).equals("")) { // we don't care about reservationDate
@@ -158,6 +206,7 @@ public class EditRoomTable {
                     rest_of_reservation_query += " (reservationDate,start_time) IN (SELECT reservationDate,start_time FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
                 }
                 System.out.println(reservation_query + rest_of_reservation_query);
+
                 rs1 = stmt.executeQuery(reservation_query + rest_of_reservation_query); // search for rooms that have not been reserved for the date+time user has chosen
                 System.out.println("Rs1 is " + rs1);
 
@@ -176,10 +225,10 @@ public class EditRoomTable {
             System.out.println("# Employee Search Results");
             stmt.close();
             con.close();
-//            for (int i = 0; i < rooms.size(); ++i) {
-//                System.out.println("Available Rooms\n" + rooms.get(i).getRoomName());
-//
-//            }
+            for (int i = 0; i < rooms.size(); ++i) {
+                System.out.println("Available Rooms\n" + rooms.get(i).getRoomName());
+
+            }
             return rooms;
         } catch (SQLException ex) {
             System.err.println("Got an exception! ");

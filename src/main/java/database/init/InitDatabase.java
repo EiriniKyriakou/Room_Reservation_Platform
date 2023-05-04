@@ -47,14 +47,14 @@ public class InitDatabase {
 
         EditRoomTable erot = new EditRoomTable();
         erot.createRoomTable();
-        erot.addNewRoom("Amf_A", "Amphitheater", 150, 1);
-        erot.addNewRoom("Amf_B", "Amphitheater", 100, 1);
-        erot.addNewRoom("A_101", "Meeting Room", 20, 1);
-        erot.addNewRoom("A_110", "Meeting Room", 20, 1);
-        erot.addNewRoom("H_207", "Meeting Room", 15, 1);
-        erot.addNewRoom("H_211", "Meeting Room", 15, 1);
-        erot.addNewRoom("B_201", "Meeting Room", 10, 1);
-        erot.addNewRoom("B_211", "Meeting Room", 10, 1);
+        erot.addNewRoom("Amf A", "Amphitheater", 150, 1);
+        erot.addNewRoom("Amf B", "Amphitheater", 100, 1);
+        erot.addNewRoom("A.101", "Meeting Room", 20, 1);
+        erot.addNewRoom("A.110", "Meeting Room", 20, 1);
+        erot.addNewRoom("H.207", "Meeting Room", 15, 1);
+        erot.addNewRoom("H.211", "Meeting Room", 15, 1);
+        erot.addNewRoom("B.201", "Meeting Room", 10, 1);
+        erot.addNewRoom("B.211", "Meeting Room", 10, 1);
 
         EditAdministratorTable eat = new EditAdministratorTable();
         eat.createAdministratorTable();

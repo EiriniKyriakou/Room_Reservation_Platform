@@ -318,14 +318,12 @@ public class RoomReservationAPIResource {
     @Path("/employee_past_reservations")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response employee_past_reservations(String employee_id
-    ) {
+    public Response employee_past_reservations(String employee_id) {
         try {
             EditReservationTable edt = new EditReservationTable();
             ArrayList<Reservation> past_reservations = new ArrayList<Reservation>();
             Gson gson = new Gson();
-            JsonObject jobj = new Gson().fromJson(employee_id, JsonObject.class
-            );
+            JsonObject jobj = new Gson().fromJson(employee_id, JsonObject.class);
             past_reservations = edt.getEmployeePastReservations(jobj.get("employeeID").toString());
             if (past_reservations != null || !past_reservations.isEmpty()) {
                 Response.Status status = Response.Status.OK;
@@ -347,8 +345,7 @@ public class RoomReservationAPIResource {
     @Path("/make_reservation")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response make_reservation(String reservation
-    ) {
+    public Response make_reservation(String reservation) {
         try {
             Gson gson = new Gson();
             Reservation r = gson.fromJson(reservation, Reservation.class

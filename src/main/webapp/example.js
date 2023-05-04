@@ -38,8 +38,6 @@ var now = new Date();
 // minimum date the user can choose, in this case now and in the future
 var minDate = now.toISOString().substring(0, 10);
 
-
-
 //Depending on the page we want to desplay, this function chooses what to insert in the html code
 //The main idea is that we have a NavBar, and the main_content div, in which we put the content
 function displayContent(id) {
@@ -94,6 +92,10 @@ function displayContent(id) {
             topCapacity();
             break;
         case Content.employee_search:
+            options = ["Active Reservations", "Past Reservations"];
+            actions = ["displayContent(Content.employee_active_reservations)", "displayContent(Content.employee_past_reservations)"];
+            $('#navbar-options').html(navBarOptions(options, actions, user["firstName"] + " " + user["lastName"]));
+            $('#main_content').html(searchBarHome());
             $('#main_content').html(`<div class="purple-light search_bar"> 
                 <button class="back_button btn-dark purple-dark" onclick="displayContent('content_employee_home')"> <img src="img/icon-back.png" width="25" height="25"> Back</button> 
                 ${searchBarForm()}
@@ -103,12 +105,8 @@ function displayContent(id) {
                 let hour = e.target.value.split(':')[0];
                 e.target.value = `${hour}:00`;
             });
-//        Search Results  
-            $('#main_content').append(`<div class="search_container">
-                <h5 id="search_title"> </h5>
-                <div class="inner-container-fluid" id='search_results'>                 
-                </div>
-            </div>`);
+            $('#main_content').append(pageTitle("Rooms", "employee_search", null));
+            search();
             break;
         case Content.employee_make_reservation:
             reservations_count = 0;
@@ -116,7 +114,6 @@ function displayContent(id) {
             $('#employee_make_reservation').append(makeReservationForm());
             reservations_count++;
             reservationForm(reservations_count);
-
             break;
         case Content.employee_active_reservations:
             options = ["Active Reservations", "Past Reservations"];
@@ -207,7 +204,7 @@ function searchBarForm() {
                 </select>
                 <input class="search_element" type="date" id="date" name="date">
                 <input class="search_element" type="time" id="start_time" name="start_time" min="09:00" max="17:00">
-                <button class="btn-dark purple-dark search_button" onclick="search()"> <img src="img/search.png" width="25" height="25"> Search</button>
+                <button class="btn-dark purple-dark search_button" onclick="displayContent(Content.employee_search)"> <img src="img/search.png" width="25" height="25"> Search</button>
             </div>`;
 }
 
@@ -554,17 +551,17 @@ function search() {
         date: document.getElementById("date").value,
         start_time: document.getElementById("start_time").value
     });
-    console.log(jsonData)
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
-             $('#employee_search_rooms').html("<div class='cards-container' id='employee_search_rooms'></div>");
+            $('#employee_search').html("<div class='cards-container' id='employee_search_rooms_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                $('#employee_search_rooms').append(reserveRoomCard(data[i].roomName, data[i].roomType, data[i].capacity));
+                console.log(data[i].roomName, data[i].roomType, data[i].capacity);
+                $('#employee_search_rooms_cards').append(reserveRoomCard(data[i].roomName, data[i].roomType, data[i].capacity));
             }
         } else {
-            $('#employee_search_rooms').html(data["msg"]);
+            $('#employee_search').html(data["msg"]);
         }
     };
 
@@ -572,6 +569,8 @@ function search() {
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonData);
+//    displayContent(Content.employee_search);
+
 }
 
 function make_reservation(i) {
