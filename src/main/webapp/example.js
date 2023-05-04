@@ -939,6 +939,7 @@ function edit_reservation(){
             document.getElementById("date").value = jsonData.reservationDate;
             document.getElementById("start_time").value = jsonData.start_time;
             document.getElementById("end_time").value = jsonData.end_time;
+            document.getElementById('date').min = minDate;
         }, 100);
         
     } else {
@@ -955,6 +956,7 @@ function edit_reservation(){
         document.getElementById("date").value = jsonData.reservationDate;
         document.getElementById("start_time").value = jsonData.start_time;
         document.getElementById("end_time").value = jsonData.end_time;
+        document.getElementById('date').min = minDate;
     }
 }
 
