@@ -41,6 +41,7 @@ var minDate = now.toISOString().substring(0, 10);
 //Company Hours: 09:00 - 18:00
 var allSlots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 var roomID;
+var readySlots = false;
 
 //Depending on the page we want to desplay, this function chooses what to insert in the html code
 //The main idea is that we have a NavBar, and the main_content div, in which we put the content
@@ -223,7 +224,6 @@ function searchBarForm() {
             </div>`;
 }
 
-
 function pageTitle(title, div_id, back) {
     let html = `<div class="container-fluid">
                 <div style="display: flex; gap: 20px; align-items: center;">`;
@@ -237,7 +237,6 @@ function pageTitle(title, div_id, back) {
             </div>`;
     return html;
 }
-
 
 function reserveRoomCard(id, name, type, number, button) {
     roomID = id;
@@ -260,7 +259,6 @@ function reserveRoomCard(id, name, type, number, button) {
     html += `</div>`;
     return html;
 }
-
 
 function cardRoomReservation(reservation, button, img_src) {
     const user = JSON.parse(localStorage.getItem("logedIn"));
@@ -344,9 +342,19 @@ function reservationForm(i) {
         available_slots(1);
     }
     if (i === 1 && reserve_form.start_time !== ""){
-        document.getElementById('start_time_1').value = reserve_form.start_time;
+        checkSlots();
     }
     
+}
+
+function checkSlots() {
+    if (readySlots === false) {
+        window.setTimeout(checkSlots, 100); /* this checks the flag every 100 milliseconds*/
+    } else {
+        document.getElementById('start_time_1').value = reserve_form.start_time;
+        document.getElementById('end_time_1').innerHTML = allSlots[allSlots.indexOf(reserve_form.start_time) + 1];
+        readySlots = false;
+    }
 }
 
 function end_time_slots(i){
@@ -1033,12 +1041,14 @@ function available_slots(i){
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log("load slots")
             $('#start_time_'+i).html('');
             for (let j = 0; j < Object.keys(data).length; j++) {
                 $('#start_time_'+i).append('<option value="'+data[j]+'">'+data[j]+'</option>');
                 
             }
-            document.getElementById('end_time_'+i).innerHTML= allSlots[allSlots.indexOf(data[0])+1];  
+            document.getElementById('end_time_'+i).innerHTML= allSlots[allSlots.indexOf(data[0])+1];
+            readySlots = true;
         } else {
             send_notification(data["msg"]);
         }
@@ -1060,8 +1070,8 @@ function available_slots_update_reservation(reservationDate, roomID, start_time)
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
+        $('#start_time_1').html('<option value="'+start_time+'">'+start_time+'</option>');
         if (xhr.readyState === 4 && xhr.status === 200) {
-            $('#start_time_1').html('<option value="'+start_time+'">'+start_time+'</option>');
             for (let j = 0; j < Object.keys(data).length; j++) {
                 $('#start_time_1').append('<option value="'+data[j]+'">'+data[j]+'</option>');
                 
