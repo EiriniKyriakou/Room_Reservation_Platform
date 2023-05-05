@@ -275,4 +275,40 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
+    
+    public ArrayList<String> availableSlots(Date reservationDate, int roomID){
+        String[] allSlots = {"09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"};
+        try {
+            ArrayList<String> nonSlots = new ArrayList<>();
+            ArrayList<String> slots = new ArrayList<>();
+            Connection con = DB_Connection.getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+            String update = "SELECT * FROM reservations WHERE roomID=" + roomID + " AND reservationDate='" + reservationDate + "' AND accepted <> -1";
+            System.out.println(update);
+            rs = stmt.executeQuery(update);
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                System.out.println(json);
+                Gson gson = new Gson();
+                Reservation reservation = gson.fromJson(json, Reservation.class);
+                nonSlots.add(reservation.getStart_time());
+            }
+            stmt.close();
+            con.close();
+            for(int i=0; i<allSlots.length; i++){
+                if(!nonSlots.contains(allSlots[i])){
+                    slots.add(allSlots[i]);
+                }
+            }
+            System.out.println(slots);
+            return slots;
+        } catch (SQLException ex) {
+            Logger.getLogger(EditReservationTable.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(EditReservationTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+        
+    }
 }
