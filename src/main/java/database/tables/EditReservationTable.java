@@ -311,4 +311,52 @@ public class EditReservationTable {
         return null;
         
     }
+
+    //Returns all the reservations that have that reservation date (if its not empty) and that start_time (if it's not empty)
+    //they are not both empty
+    //This method is used for the searchbar to find available slots for reservations
+    public ArrayList<Reservation> execute_reservation_query(String reservationDate, String start_time) {
+        ArrayList<Reservation> reservationsFromReservationQuery = new ArrayList<>();
+        try {
+            String reservation_query = "SELECT * FROM reservations WHERE ";
+            if (!reservationDate.equals("")) {
+                reservation_query += "reservationDate = '" + reservationDate + "' ";
+            }
+            if (!start_time.equals("")) {
+                if (!reservationDate.equals("")) {
+                    reservation_query += "AND ";
+                }
+                reservation_query += "start_time = '" + start_time + "' ";
+            }
+            if(!start_time.equals("") || !reservationDate.equals("")){
+                reservation_query += "AND ";
+            }
+            reservation_query += "accepted <> -1 ";
+            System.out.println(reservation_query);
+            
+            Connection con = DB_Connection.getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+            rs = stmt.executeQuery(reservation_query);
+            System.out.println("Result from reservation query: ");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                System.out.println(json);
+                Gson gson = new Gson();
+                Reservation reservation = gson.fromJson(json, Reservation.class);
+                reservationsFromReservationQuery.add(reservation);
+            }
+            System.out.println("");
+
+            stmt.close();
+            con.close();
+            return reservationsFromReservationQuery;
+        } catch (SQLException ex) {
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
 }

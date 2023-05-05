@@ -8,7 +8,6 @@ import database.tables.EditEmployeeTable;
 import database.tables.EditReservationTable;
 import database.tables.EditRoomTable;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -212,7 +211,8 @@ public class RoomReservationAPIResource {
             search_results.add(jobj.get("date").toString().substring(1, jobj.get("date").toString().length() - 1));
             search_results.add(jobj.get("start_time").toString().substring(1, jobj.get("start_time").toString().length() - 1));
 
-            room_results = ert.getEmployeeSearchResults(search_results);
+//            room_results = ert.getEmployeeSearchResults(search_results); String roomName, String roomType, String capacity, String date, String start_time
+            room_results = ert.getEmployeeSearchResults2(search_results.get(0), search_results.get(1), search_results.get(2), search_results.get(3), search_results.get(4));
             if (room_results == null) {
                 Response.Status status = Response.Status.UNAUTHORIZED;
                 return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No available rooms.\"}").build();

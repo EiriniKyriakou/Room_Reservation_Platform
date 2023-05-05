@@ -7,8 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mainClasses.Reservation;
 import mainClasses.Room;
 
 /**
@@ -349,4 +351,157 @@ public class EditRoomTable {
 
         return null;
     }
+    
+    public ArrayList<Room> execute_room_query(String roomName, String roomType, String capacity) {
+        ArrayList<Room> roomsFromRoomQuery = new ArrayList<>();
+        try {
+            String room_query = "SELECT * FROM rooms WHERE ";
+            if (!roomName.equals("")) {
+                room_query += "roomName = '" + roomName + "' ";
+            }
+            if (!roomType.equals("")) {
+                if (!roomName.equals("")) {
+                    room_query += "AND ";
+                }
+                room_query += "roomType = '" + roomType + "' ";
+            }
+            if (!capacity.equals("")) {
+                if (!roomName.equals("") || !roomType.equals("")) {
+                    room_query += "AND ";
+                }
+                room_query += "capacity = '" + capacity + "' ";
+            }
+            
+            System.out.println(room_query);
+            Connection con = DB_Connection.getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+
+            rs = stmt.executeQuery(room_query);
+            System.out.println("Result from room query: ");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                System.out.println(json);
+                Gson gson = new Gson();
+                Room room = gson.fromJson(json, Room.class);
+                roomsFromRoomQuery.add(room);
+            }
+            System.out.println("");
+
+            stmt.close();
+            con.close();
+            return roomsFromRoomQuery;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public ArrayList<Room> getEmployeeSearchResults2(String roomName, String roomType, String capacity, String date, String start_time) throws ClassNotFoundException {
+        ArrayList<Room> roomsFromRoomQuery = new ArrayList<>();
+        ArrayList<Reservation> reservationsFromReservationQuery = new ArrayList<>();
+        String[] slots = {"09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"};
+            
+        if (!roomName.equals("") || !roomType.equals("") || !capacity.equals("")) {
+            roomsFromRoomQuery = execute_room_query( roomName,  roomType, capacity);
+        }
+        if (!date.equals("") || !start_time.equals("")){
+            EditReservationTable edt = new EditReservationTable();
+            reservationsFromReservationQuery = edt.execute_reservation_query( date,  start_time);
+        }
+        
+        //case 0 (empty search)
+        if (roomName.equals("") && roomType.equals("") && capacity.equals("") && date.equals("") && start_time.equals("")){
+            ArrayList<Room> returnRooms = getTopCapacityRooms();
+            return returnRooms;
+        }
+        //case 1 (only details about rooms)
+        if ((!roomName.equals("") || !roomType.equals("") || !capacity.equals("")) && date.equals("") && start_time.equals("")){
+            return roomsFromRoomQuery;
+        }
+        
+        //case 2 (only date), case 3 (details about rooms, and date)
+        else if (!date.equals("") && start_time.equals("")){
+            ArrayList<Integer> notRooms = new ArrayList<>(); //cointains thee ids of the rooms that have all the slots booked for that day
+            ArrayList<Integer> reservedRooms = new ArrayList<>(); //contains the id's of the rooms that have atleast on slot booked
+            ArrayList<Integer> reservedRoomsDUP = new ArrayList<>(); //contains the id's of the rooms that have atleast on slot booked, with duplicate ids
+            ArrayList<Room> allRooms = new ArrayList<>(); //Begining Available Rooms
+            ArrayList<Room> returnRooms = new ArrayList<>(); //Rooms without the fully booked ones
+            
+            //Beging Rooms
+            if (roomName.equals("") && roomType.equals("") && capacity.equals("")){
+                allRooms = getTopCapacityRooms();
+            }else {
+                allRooms = roomsFromRoomQuery;
+            }
+            
+            //Find id's of rooms that have atleast one reservation on that date
+            for (int i=0; i<reservationsFromReservationQuery.size(); i++){
+                if (!reservedRooms.contains(reservationsFromReservationQuery.get(i).getRoomID())){
+                    reservedRooms.add(reservationsFromReservationQuery.get(i).getRoomID());
+                }
+                reservedRoomsDUP.add(reservationsFromReservationQuery.get(i).getRoomID());
+            }
+            
+            //Find id's of rooms that have all the slots booked
+            for (int i=0; i<reservedRooms.size(); i++){
+                if(Collections.frequency(reservedRoomsDUP, reservedRooms.get(i)) >= slots.length){
+                    notRooms.add(reservedRooms.get(i));
+                }
+            }
+            
+            //Put available room in returnRooms (allRooms - notRooms)
+            for (int i=0; i<allRooms.size(); i++){
+                if(!notRooms.contains(allRooms.get(i).getRoomID())){
+                    returnRooms.add(allRooms.get(i));
+                }
+            }
+            return returnRooms;
+        }
+        
+        //case 4 (date and start_time)
+        else if (!date.equals("") && !start_time.equals("")){
+            ArrayList<Integer> reservedRooms = new ArrayList<>(); //contains the id's of the rooms that have booked that slot
+            ArrayList<Room> allRooms = new ArrayList<>(); //Begining Available Rooms
+            ArrayList<Room> returnRooms = new ArrayList<>(); //Available rooms without that slot booked
+            
+            //Beging Rooms
+            if (roomName.equals("") && roomType.equals("") && capacity.equals("")){
+                allRooms = getTopCapacityRooms();
+            }else {
+                allRooms = roomsFromRoomQuery;
+            }
+            
+            //Find id's of rooms that have that slot booked
+            for (int i=0; i<reservationsFromReservationQuery.size(); i++){
+                reservedRooms.add(reservationsFromReservationQuery.get(i).getRoomID());
+            }
+            //Put available room in returnRooms (allRooms - reservedRooms)
+            for (int i=0; i<allRooms.size(); i++){
+                if(!reservedRooms.contains(allRooms.get(i).getRoomID())){
+                    returnRooms.add(allRooms.get(i));
+                }
+            }
+            return returnRooms;
+        }
+        
+        //case 5 (start_time) (all rooms will be available in a future date in that time)
+        else if (date.equals("") && !start_time.equals("")){
+            ArrayList<Room> returnRooms = new ArrayList<>(); //Available rooms without that slot booked
+            //Return Rooms
+            if (roomName.equals("") && roomType.equals("") && capacity.equals("")){
+                returnRooms = getTopCapacityRooms();
+            }else {
+                returnRooms = roomsFromRoomQuery;
+            }
+            return returnRooms;
+        }
+        
+        return null;
+        
+    }
+
 }
