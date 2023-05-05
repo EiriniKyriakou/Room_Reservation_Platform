@@ -16,14 +16,14 @@ import mainClasses.Room;
  * @author eirin
  */
 public class EditRoomTable {
-
+    
     ArrayList<Room> rooms, rooms_to_remove;
-
+    
     public void createRoomTable() throws SQLException, ClassNotFoundException {
-
+        
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
-
+        
         String query = "CREATE TABLE rooms"
                 + "(roomID INTEGER not NULL AUTO_INCREMENT, "
                 + "    roomName VARCHAR(30) not null unique,"
@@ -32,18 +32,18 @@ public class EditRoomTable {
                 + "    depID INTEGER not NULL,"
                 + " PRIMARY KEY (roomID),"
                 + " FOREIGN KEY (depID) REFERENCES departments(depID))";
-
+        
         stmt.execute(query);
         stmt.close();
         con.close();
     }
-
+    
     public void addNewRoom(String roomName, String roomType, int capacity, int depID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
-
+            
             Statement stmt = con.createStatement();
-
+            
             String insertQuery = "INSERT INTO "
                     + " rooms (roomName,roomType,capacity,depID)"
                     + " VALUES ("
@@ -55,22 +55,22 @@ public class EditRoomTable {
             System.out.println(insertQuery);
             stmt.executeUpdate(insertQuery);
             System.out.println("# The room was successfully added in the database.");
-
+            
             stmt.close();
             con.close();
-
+            
         } catch (SQLException ex) {
             Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     public ArrayList<Room> getTopCapacityRooms() throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
             Statement stmt = con.createStatement();
             ResultSet rs;
             ArrayList<Room> rooms = new ArrayList<Room>();
-
+            
             rs = stmt.executeQuery("SELECT * FROM rooms ORDER BY capacity DESC");
             System.out.println(rs);
             while (rs.next()) {
@@ -81,22 +81,22 @@ public class EditRoomTable {
                 rooms.add(room);
             }
             System.out.println("# Top Capacity");
-
+            
             stmt.close();
             con.close();
             return rooms;
-
+            
         } catch (SQLException ex) {
             System.err.println("Got an exception! ");
             Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
-
+    
     public Room databaseToRoomID(int id) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
-
+        
         ResultSet rs;
         try {
             rs = stmt.executeQuery("SELECT * FROM rooms WHERE roomID = " + id);
@@ -113,7 +113,7 @@ public class EditRoomTable {
         con.close();
         return null;
     }
-
+    
     public ArrayList<Room> getRoomQueryResults(ArrayList<String> search_options, ArrayList<String> keys, String query, Connection con, Statement stmt) {
         ResultSet rs;
         try {
@@ -146,14 +146,14 @@ public class EditRoomTable {
         }
         return rooms;
     }
-
+    
     public ArrayList<Room> getReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, String query, Connection con, Statement stmt, int reservation_slots, int query_case) {
         String reservation_query = "SELECT * FROM reservations WHERE ";
         String rest_of_reservation_query = "";
         String room_query = "SELECT * FROM rooms WHERE ";
         String json = "";
         ResultSet rs1;
-
+        
         if (search_options.get(3).equals("")) {
             try {
                 // we don't care about reservationDate
@@ -167,27 +167,32 @@ public class EditRoomTable {
             reservation_query = room_query + "roomID IN (" + "SELECT roomID FROM reservations ";
             query_case = 1;
         } else { // we care about both
-            reservation_query = room_query + " roomID NOT IN (SELECT roomID FROM reservations WHERE reservationDate='" + search_options.get(3) + "' AND " + "start_time='" + search_options.get(4) + "' )";
-
+            reservation_query = room_query + " roomID IN (SELECT roomID FROM reservations WHERE reservationDate='" + search_options.get(3) + "' AND " + "start_time='" + search_options.get(4) + "' AND " + "accepted='1'" + ")";
+            query_case = 2;
         }
 
-        System.out.println(reservation_query + rest_of_reservation_query);
-
+        //System.out.println(reservation_query + rest_of_reservation_query);
         try {
             for (int i = 0; i < rooms.size(); ++i) {
-                rs1 = stmt.executeQuery(reservation_query + rest_of_reservation_query + " AND roomID='" + rooms.get(i) + "')"); // search for rooms that have not been reserved for the date+time user has chosen
+                System.out.println("Checking roomID " + rooms.get(i).getRoomID());
+                System.out.println(reservation_query + rest_of_reservation_query);
+                rs1 = stmt.executeQuery(reservation_query + rest_of_reservation_query); // search for rooms that have not been reserved for the date+time user has chosen
                 System.out.println("Rs1 is " + rs1);
-
                 if (rs1.next()) {
                     json = DB_Connection.getResultsToJSON(rs1);
-
+                    
                     Gson gson = new Gson();
                     Room room = gson.fromJson(json, Room.class);
-
+                    
                     if (query_case == 1) {
                         reservation_slots++;
                         rooms_to_remove.add(room);
                     }
+                    if (query_case == 2) {
+                        System.out.println(room + " needs to be removed.");
+                        rooms_to_remove.add(room);
+                    }
+
                     // so as not to show it as a result (does not match user options)
                     json = DB_Connection.getResultsToJSON(rs1);
                     System.out.println(json);
@@ -197,31 +202,37 @@ public class EditRoomTable {
             if (reservation_slots < 11 && query_case == 1) {
                 rooms = getTopCapacityRooms();
             }
-
-            if (reservation_slots > 11) { // 12 slots per day (7am-6pm)
+            
+            if (reservation_slots > 11 || query_case == 2) { // 12 slots per day (7am-6pm)
                 //remove it here so as not to change initial structure of arraylist
-                for (Room r : rooms_to_remove) {
-                    rooms.remove(r);
+                System.out.println(" We need to remove rooms now.");
+                for (int i = 0; i < rooms_to_remove.size(); ++i) {
+                    for (int j = 0; j < rooms.size(); ++j) {
+                        if (rooms.get(j).getRoomID() == rooms_to_remove.get(i).getRoomID()) {
+                            rooms.remove(j);
+                        }
+                    }
                 }
+                System.out.println(rooms);
             }
-
+            
             System.out.println("# Employee Search Results");
-
+            
             stmt.close();
             con.close();
             return rooms;
-
+            
         } catch (SQLException ex) {
             System.err.println("Got an exception! ");
             Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
-
+            
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         return rooms;
     }
-
+    
     public ArrayList<Room> getRoomReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, Connection con, Statement stmt, int reservation_slots, int query_case) {
         String reservation_query = "SELECT * FROM reservations WHERE ";
         String rest_of_reservation_query;
@@ -240,11 +251,11 @@ public class EditRoomTable {
                     rest_of_reservation_query += " (reservationDate,start_time) NOT IN (SELECT reservationDate,start_time FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
                 }
                 System.out.println(reservation_query + rest_of_reservation_query);
-
+                
                 rs1 = stmt.executeQuery(reservation_query + rest_of_reservation_query); // search for rooms that have not been reserved for the date+time user has chosen
 
                 System.out.println("Rs1 is " + rs1);
-
+                
                 while (rs1.next()) {
                     if (query_case == 2) {
                         reservation_slots++;
@@ -255,7 +266,7 @@ public class EditRoomTable {
                     continue;
                 }
             }
-
+            
             if (query_case == 1 || (query_case == 2 && reservation_slots > 11)) {
                 //remove it here so as not to change initial structure of arraylist
                 for (Room r : rooms_to_remove) {
@@ -287,7 +298,7 @@ public class EditRoomTable {
             keys.add("capacity");
             keys.add("reservationDate");
             keys.add("start_time");
-
+            
             String query = "";
             int reservation_slots = 0, query_case = 0;
 
@@ -305,6 +316,7 @@ public class EditRoomTable {
             }
             // only date + time data
             if (query.equals("")) {
+                System.out.println("Query is Empty");
                 rooms = getReservationQueryResults(search_options, keys, query, con, stmt, reservation_slots, query_case);
                 return rooms;
             }
@@ -316,7 +328,7 @@ public class EditRoomTable {
             System.err.println("Got an exception! ");
             Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         return null;
     }
 }

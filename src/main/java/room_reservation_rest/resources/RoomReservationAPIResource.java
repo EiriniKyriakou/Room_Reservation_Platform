@@ -480,26 +480,10 @@ public class RoomReservationAPIResource {
             Gson gson = new Gson();
             Reservation r = gson.fromJson(reservation, Reservation.class);
             System.out.println("Json reservation: " + gson.toJson(r));
-//            String[] times = {"07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"};
-//            JsonObject jobj = new Gson().fromJson(reservation, JsonObject.class);
-//            int id = Integer.parseInt(jobj.get("reservationID").toString());
-//            String newDate = String.valueOf(jobj.get("reservationDate").toString());
-//            String newStartTime = String.valueOf(jobj.get("start_time").toString());
-//            String newEndTime = "";
-//            for (int i = 0; i < 12; ++i) {
-//                if (i == 11) {
-//                    newEndTime = "19:00";
-//                }
-//                if (times[i].equals(newStartTime)) {
-//                    newEndTime = times[i + 1];
-//                }
-//            }
+
 
             EditReservationTable ert = new EditReservationTable();
             ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time());
-//            if (!newEndTime.equals("")) {
-//                ert.updateReservationInfo(id, newDate, newStartTime, newEndTime);
-//            }
             Response.Status status = Response.Status.OK;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Reservation updated.\"}").build();
 
