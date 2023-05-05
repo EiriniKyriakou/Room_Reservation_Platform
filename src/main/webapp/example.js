@@ -28,8 +28,8 @@ var reserve_form = {
     roomName: "",
     roomType: "",
     roomCapacity: "",
-    date: "",
-    time: ""
+    reservationDate: "",
+    start_time: ""
 };
 
 var reservations_count = 0;
@@ -207,7 +207,18 @@ function searchBarForm() {
                     <option value="150">150</option>
                 </select>
                 <input class="search_element" type="date" id="date" name="date">
-                <input class="search_element" type="time" id="start_time" name="start_time" min="09:00" max="17:00">
+                <select class="search_element" name="start_time" id="start_time">
+                    <option value="" disabled selected hidden>Start time</option>
+                    <option value="09:00">09:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="11:00">11:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="13:00">13:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="15:00">15:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="17:00">17:00</option>
+                </select>
                 <button class="btn-dark purple-dark search_button" onclick="search()"> <img src="img/search.png" width="25" height="25"> Search</button>
             </div>`;
 }
@@ -243,7 +254,7 @@ function reserveRoomCard(id, name, type, number, button) {
                     </div>
                 </div>`;
     if (button === true) {
-        html += `<button class="btn-dark purple-dark full_button" onclick="fill_reserve_form_vars('${id}', '${name}', '${type}', '${number}');displayContent('${Content.employee_make_reservation}')"> <img src="img/icon-reserve.png" width="25" height="25"> Reserve</button>`;
+        html += `<button class="btn-dark purple-dark full_button" onclick="fill_reserve_form_vars('${id}', '${name}', '${type}', '${number}'); fill_reserve_form_vars_time(); displayContent('${Content.employee_make_reservation}')"> <img src="img/icon-reserve.png" width="25" height="25"> Reserve</button>`;
 
     }
     html += `</div>`;
@@ -328,6 +339,13 @@ function reservationForm(i) {
     const StarttimeInput = document.getElementById('start_time_' + i);
     const EndtimeInput = document.getElementById('end_time_' + i);
     document.getElementById('date_' + i).min = minDate;
+    if (i === 1 && reserve_form.reservationDate !== ""){
+        document.getElementById('date_1').value = reserve_form.reservationDate;
+        available_slots(1);
+    }
+    if (i === 1 && reserve_form.start_time !== ""){
+        document.getElementById('start_time_1').value = reserve_form.start_time;
+    }
     
 }
 
@@ -733,7 +751,7 @@ function search() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
-        console.log("Results: " + data)
+        console.log("Results: " + JSON.stringify(data));
         if (xhr.readyState === 4 && xhr.status === 200) {
             jsonData = JSON.parse(jsonData);
             if (jsonData.date==='' && jsonData.start_time===''){
@@ -743,7 +761,6 @@ function search() {
             }
             $('#employee_search').html("<div class='cards-container' id='employee_search_rooms_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
-                console.log(data[i].roomName, data[i].roomType, data[i].capacity);
                 $('#employee_search_rooms_cards').append(reserveRoomCard(data[i].roomID, data[i].roomName, data[i].roomType, data[i].capacity, true));
                 
             }
@@ -1096,6 +1113,12 @@ function fill_reserve_form_vars(id, name, type, number) {
     reserve_form.roomName = name;
     reserve_form.roomType = type;
     reserve_form.roomCapacity = number;
+}
+
+function fill_reserve_form_vars_time(){
+    reserve_form.reservationDate = document.getElementById("date").value;
+    reserve_form.start_time = document.getElementById("start_time").value;
+    
 }
 
 function multy_reservations() {
