@@ -122,7 +122,7 @@ public class EditRoomTable {
                 if (search_options.get(i).equals("")) {
                     continue;
                 }
-                
+
                 if (!search_options.get(i).equals("")) {
                     query += keys.get(i) + "='" + search_options.get(i) + "'";
                 }
@@ -153,10 +153,11 @@ public class EditRoomTable {
         return rooms;
     }
 
-    public ArrayList<Room> getReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, String query, Connection con, Statement stmt, int reservation_slots, int query_case) {
+    public ArrayList<Room> getReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, String query, Connection con, Statement stmt) {
         String reservation_query = "SELECT * FROM reservations WHERE ";
         String rest_of_reservation_query = "";
         String room_query = "SELECT * FROM rooms WHERE ";
+        int reservation_slots = 0, query_case = 0;
         String json = "";
         ResultSet rs1;
         if (query.equals("")) {
@@ -189,8 +190,7 @@ public class EditRoomTable {
                     json = DB_Connection.getResultsToJSON(rs1);
 
                     Gson gson = new Gson();
-                    Room room = gson.fromJson(json, Room.class
-                    );
+                    Room room = gson.fromJson(json, Room.class);
                     System.out.println("Rs1 is " + room.getRoomName());
                     rooms.add(room);
                     if (query_case == 1) {
@@ -210,7 +210,7 @@ public class EditRoomTable {
 
                 if (reservation_slots > 11) { // 12 slots per day (7am-6pm)
                     //remove it here so as not to change initial structure of arraylist
-                    System.out.println(" We need to remove rooms now.");
+//                    System.out.println(" We need to remove rooms now. Reservation slots are " + reservation_slots);
                     for (int i = 0; i < rooms_to_remove.size(); ++i) {
                         for (int j = 0; j < rooms.size(); ++j) {
                             if (rooms.get(j).getRoomID() == rooms_to_remove.get(i).getRoomID()) {
@@ -239,12 +239,13 @@ public class EditRoomTable {
         return rooms;
     }
 
-    public ArrayList<Room> getRoomReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, Connection con, Statement stmt, int reservation_slots, int query_case) {
+    public ArrayList<Room> getRoomReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, Connection con, Statement stmt) {
         System.out.println("In combined query case");
         String reservation_query = "SELECT * FROM reservations WHERE ";
         String rest_of_reservation_query;
         ResultSet rs1;
         String json = "";
+        int reservation_slots = 0, query_case = 0;
         try {
             for (int i = 0; i < rooms.size(); ++i) {
                 rest_of_reservation_query = "";
@@ -255,8 +256,9 @@ public class EditRoomTable {
                     rest_of_reservation_query += " reservationDate IN (SELECT reservationDate FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
                     query_case = 1;
                 } else { // we care about both
-                    rest_of_reservation_query += "(reservationDate,start_time) IN (SELECT reservationDate,start_time FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
+                    rest_of_reservation_query += "(reservationDate,start_time) NOT IN (SELECT reservationDate,start_time FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
                     query_case = 2;
+                    reservation_slots++;
                 }
                 System.out.println(reservation_query + rest_of_reservation_query);
 
@@ -275,9 +277,9 @@ public class EditRoomTable {
                 }
             }
 
-            if (query_case == 1 || query_case == 2) {
+            if ((query_case == 1 || query_case == 2) && reservation_slots > 11) {
                 //remove it here so as not to change initial structure of arraylist
-                System.out.println(" We need to remove rooms now.");
+//                System.out.println(" We need to remove rooms now.");
                 for (int i = 0; i < rooms_to_remove.size(); ++i) {
                     for (int j = 0; j < rooms.size(); ++j) {
                         if (rooms.get(j).getRoomID() == rooms_to_remove.get(i).getRoomID()) {
@@ -316,8 +318,6 @@ public class EditRoomTable {
             keys.add("start_time");
 
             String query = "";
-            int reservation_slots = 0, query_case = 0;
-
             //we start by building the room query
             //limit: keys.size() - 2(= 3) because we then have to build the reservation query
             rooms = getRoomQueryResults(search_options, keys, query, con, stmt);
@@ -333,12 +333,12 @@ public class EditRoomTable {
             // only date + time data
             if (rooms.size() == 0) {
                 System.out.println("Query is Empty");
-                rooms = getReservationQueryResults(search_options, keys, "", con, stmt, reservation_slots, query_case);
+                rooms = getReservationQueryResults(search_options, keys, "", con, stmt);
                 return rooms;
             }
 
 //         we need to combine both room and reservation options
-            rooms = getRoomReservationQueryResults(search_options, keys, con, stmt, reservation_slots, query_case);
+            rooms = getRoomReservationQueryResults(search_options, keys, con, stmt);
             return rooms;
         } catch (SQLException ex) {
             System.err.println("Got an exception! ");
