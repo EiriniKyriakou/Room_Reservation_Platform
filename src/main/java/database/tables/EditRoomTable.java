@@ -116,17 +116,23 @@ public class EditRoomTable {
 
     public ArrayList<Room> getRoomQueryResults(ArrayList<String> search_options, ArrayList<String> keys, String query, Connection con, Statement stmt) {
         ResultSet rs;
+        String room_query = "SELECT * FROM rooms WHERE ";
         try {
-            String room_query = "SELECT * FROM rooms WHERE ";
             for (int i = 0; i < 3; ++i) {
+                if (search_options.get(i).equals("")) {
+                    continue;
+                }
+                
                 if (!search_options.get(i).equals("")) {
                     query += keys.get(i) + "='" + search_options.get(i) + "'";
                 }
+
                 // i = 2 means we are in the last concatenation before the reservation query (which we don't know if it is empty)
-                if (!search_options.get(i).equals("") && !search_options.get(i + 1).equals("") && (i < 2)) {
+                if (!search_options.get(i + 1).equals("") && (i < 2)) {
                     query += " AND ";
                 }
             }
+
             String json = "";
             if (!query.equals("")) {
                 System.out.println(room_query + query);
@@ -142,7 +148,7 @@ public class EditRoomTable {
             }
         } catch (SQLException ex) {
             System.err.println("Got an exception! ");
-            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, "No available rooms", ex);
         }
         return rooms;
     }
@@ -158,8 +164,10 @@ public class EditRoomTable {
                 try {
                     // we don't care about reservationDate
                     rooms = getTopCapacityRooms();
+
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(EditRoomTable.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
                 return rooms;
             } else if (search_options.get(4).equals("")) { // we don't care about reservationStart_time, we only care about reservationDate
@@ -181,7 +189,8 @@ public class EditRoomTable {
                     json = DB_Connection.getResultsToJSON(rs1);
 
                     Gson gson = new Gson();
-                    Room room = gson.fromJson(json, Room.class);
+                    Room room = gson.fromJson(json, Room.class
+                    );
                     System.out.println("Rs1 is " + room.getRoomName());
                     rooms.add(room);
                     if (query_case == 1) {
@@ -221,16 +230,17 @@ public class EditRoomTable {
 
             } catch (SQLException ex) {
                 System.err.println("Got an exception! ");
-                Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, "No available rooms", ex);
 
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, "No available rooms", ex);
             }
         }
         return rooms;
     }
 
     public ArrayList<Room> getRoomReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, Connection con, Statement stmt, int reservation_slots, int query_case) {
+        System.out.println("In combined query case");
         String reservation_query = "SELECT * FROM reservations WHERE ";
         String rest_of_reservation_query;
         ResultSet rs1;
@@ -243,9 +253,10 @@ public class EditRoomTable {
                             + rooms.get(i).getRoomID() + ")";
                 } else if (search_options.get(4).equals("")) { // we don't care about reservationStart_time
                     rest_of_reservation_query += " reservationDate IN (SELECT reservationDate FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
-                    query_case = 2;
+                    query_case = 1;
                 } else { // we care about both
-                    rest_of_reservation_query += " (reservationDate,start_time) NOT IN (SELECT reservationDate,start_time FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
+                    rest_of_reservation_query += "(reservationDate,start_time) IN (SELECT reservationDate,start_time FROM reservations WHERE roomID=" + rooms.get(i).getRoomID() + ")";
+                    query_case = 2;
                 }
                 System.out.println(reservation_query + rest_of_reservation_query);
 
@@ -264,21 +275,29 @@ public class EditRoomTable {
                 }
             }
 
-            if (query_case == 1 || (query_case == 2 && reservation_slots > 11)) {
+            if (query_case == 1 || query_case == 2) {
                 //remove it here so as not to change initial structure of arraylist
-                for (Room r : rooms_to_remove) {
-                    rooms.remove(r);
+                System.out.println(" We need to remove rooms now.");
+                for (int i = 0; i < rooms_to_remove.size(); ++i) {
+                    for (int j = 0; j < rooms.size(); ++j) {
+                        if (rooms.get(j).getRoomID() == rooms_to_remove.get(i).getRoomID()) {
+                            System.out.println("Removing room " + rooms.get(j).getRoomName());
+                            rooms.remove(j);
+                        }
+                    }
                 }
             }
             stmt.close();
             con.close();
+
         } catch (SQLException ex) {
-            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EditRoomTable.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return rooms;
     }
-    // Get reservations that have been accepted and their date < current_date
-    // For search options we have (indexes) 0: roomName, 1: roomType, 2: roomCapacity, 3: reservationDate, 4: reservationStartTime
+// Get reservations that have been accepted and their date < current_date
+// For search options we have (indexes) 0: roomName, 1: roomType, 2: roomCapacity, 3: reservationDate, 4: reservationStartTime
 
     public ArrayList<Room> getEmployeeSearchResults(ArrayList<String> search_options) throws ClassNotFoundException {
         try {
@@ -323,7 +342,9 @@ public class EditRoomTable {
             return rooms;
         } catch (SQLException ex) {
             System.err.println("Got an exception! ");
-            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
+            Logger
+                    .getLogger(EditRoomTable.class
+                            .getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;
