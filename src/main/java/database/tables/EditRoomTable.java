@@ -138,6 +138,7 @@ public class EditRoomTable {
                 System.out.println(room_query + query);
                 rs = stmt.executeQuery(room_query + query);
                 System.out.println("Result set is " + rs);
+
                 while (rs.next()) {
                     json = DB_Connection.getResultsToJSON(rs);
                     System.out.println(json);
@@ -181,7 +182,6 @@ public class EditRoomTable {
 
             System.out.println(reservation_query + rest_of_reservation_query);
             try {
-
 //                System.out.println("Checking roomID " + rooms.get().getRoomID());
                 System.out.println(reservation_query + rest_of_reservation_query);
                 rs1 = stmt.executeQuery(reservation_query + rest_of_reservation_query); // search for rooms that have not been reserved for the date+time user has chosen
@@ -277,7 +277,7 @@ public class EditRoomTable {
                 }
             }
 
-            if ((query_case == 1 || query_case == 2) && reservation_slots > 11) {
+            if (query_case == 1 || (query_case == 2 && reservation_slots > 11)) {
                 //remove it here so as not to change initial structure of arraylist
 //                System.out.println(" We need to remove rooms now.");
                 for (int i = 0; i < rooms_to_remove.size(); ++i) {
@@ -330,9 +330,13 @@ public class EditRoomTable {
                 con.close();
                 return rooms;
             }
+            boolean empty_room_query = (search_options.get(0).equals("") && search_options.get(1).equals("") && search_options.get(2).equals(""));
+
+            if (!empty_room_query) {
+                return rooms;
+            }
             // only date + time data
             if (rooms.size() == 0) {
-                System.out.println("Query is Empty");
                 rooms = getReservationQueryResults(search_options, keys, "", con, stmt);
                 return rooms;
             }
