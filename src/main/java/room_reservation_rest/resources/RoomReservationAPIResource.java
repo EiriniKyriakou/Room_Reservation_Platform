@@ -481,7 +481,6 @@ public class RoomReservationAPIResource {
             Reservation r = gson.fromJson(reservation, Reservation.class);
             System.out.println("Json reservation: " + gson.toJson(r));
 
-
             EditReservationTable ert = new EditReservationTable();
             ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.isAccepted());
             Response.Status status = Response.Status.OK;
@@ -493,7 +492,7 @@ public class RoomReservationAPIResource {
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to update reservation.\"}").build();
         }
     }
-    
+
     @PUT
     @Path("/available_slots")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -508,9 +507,9 @@ public class RoomReservationAPIResource {
         if (slots != null && !slots.isEmpty()) {
             Response.Status status = Response.Status.OK;
             return Response.status(status).type("application/json").entity(gson.toJson(slots)).build();
-        }else {
-                Response.Status status = Response.Status.UNAUTHORIZED;
-                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"None available slots.\"}").build();
+        } else {
+            Response.Status status = Response.Status.UNAUTHORIZED;
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"None available slots.\"}").build();
         }
     }
 

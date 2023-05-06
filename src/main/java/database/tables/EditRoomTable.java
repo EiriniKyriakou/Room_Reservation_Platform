@@ -256,9 +256,8 @@ public class EditRoomTable {
                     rest_of_reservation_query += " reservationDate IN (SELECT reservationDate FROM reservations WHERE roomID='" + rooms.get(i).getRoomID() + "' AND accepted='1')";
                     query_case = 1;
                 } else { // we care about both
-                    rest_of_reservation_query += "(reservationDate,start_time) NOT IN (SELECT reservationDate,start_time FROM reservations WHERE roomID='" + rooms.get(i).getRoomID() + "' AND accepted='1')";
+                    rest_of_reservation_query += "(reservationDate,start_time) IN (SELECT reservationDate,start_time FROM reservations WHERE roomID='" + rooms.get(i).getRoomID() + "' AND accepted='1')";
                     query_case = 2;
-                    reservation_slots++;
                 }
                 System.out.println(reservation_query + rest_of_reservation_query);
 
@@ -267,7 +266,7 @@ public class EditRoomTable {
                 System.out.println("Rs1 is " + rs1);
 
                 while (rs1.next()) {
-                    if (query_case == 2) {
+                    if (query_case == 1 || query_case == 2) {
                         reservation_slots++;
                     }
                     rooms_to_remove.add(rooms.get(i)); // so as not to show it as a result (does not match user options)
@@ -277,7 +276,7 @@ public class EditRoomTable {
                 }
             }
 
-            if (query_case == 1 || (query_case == 2 && reservation_slots > 11)) {
+            if (query_case == 2 || (query_case == 1 && reservation_slots > 11)) {
                 //remove it here so as not to change initial structure of arraylist
 //                System.out.println(" We need to remove rooms now.");
                 for (int i = 0; i < rooms_to_remove.size(); ++i) {
@@ -332,11 +331,8 @@ public class EditRoomTable {
             }
             boolean empty_room_query = (search_options.get(0).equals("") && search_options.get(1).equals("") && search_options.get(2).equals(""));
 
-            if (!empty_room_query) {
-                return rooms;
-            }
             // only date + time data
-            if (rooms.size() == 0) {
+            if (rooms.size() == 0 && empty_room_query) {
                 rooms = getReservationQueryResults(search_options, keys, "", con, stmt);
                 return rooms;
             }
@@ -346,9 +342,7 @@ public class EditRoomTable {
             return rooms;
         } catch (SQLException ex) {
             System.err.println("Got an exception! ");
-            Logger
-                    .getLogger(EditRoomTable.class
-                            .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EditRoomTable.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;
