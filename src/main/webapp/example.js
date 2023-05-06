@@ -996,7 +996,7 @@ function update_reservation() {
     let status;
     if (user["adminID"] !== undefined) {
         status = 1;
-    } else if(user["employeeID"] !== undefined)
+    } else if (user["employeeID"] !== undefined)
         status = 0;
 
     var jsonData = JSON.stringify(
@@ -1015,10 +1015,12 @@ function update_reservation() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             if (user["employeeID"] !== undefined) {
                 displayContent(Content.employee_active_reservations);
+                send_notification("Wait for admin to review your request.");
             } else if (user["adminID"] !== undefined) {
                 displayContent(Content.admin_active_reservations);
+                send_notification("Reservation updated successfully.");
             }
-            send_notification(data["msg"]);
+
         } else {
             send_notification(data["msg"]);
         }
