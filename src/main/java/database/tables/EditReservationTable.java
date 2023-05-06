@@ -128,7 +128,7 @@ public class EditReservationTable {
         }
         return null;
     }
-    
+
     // Get reservations  for specific employee that have been accepted and their date >= current_date
     public ArrayList<Reservation> getEmployeeActiveReservations(String employee_id) throws ClassNotFoundException {
         try {
@@ -137,7 +137,7 @@ public class EditReservationTable {
             ResultSet rs;
             ArrayList<Reservation> reservations = new ArrayList<Reservation>();
 
-            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 AND reservationDate >= CURDATE() AND employeeID="+employee_id);
+            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 AND reservationDate >= CURDATE() AND employeeID=" + employee_id);
             System.out.println(rs);
 
             while (rs.next()) {
@@ -196,7 +196,7 @@ public class EditReservationTable {
             ResultSet rs;
             ArrayList<Reservation> reservations = new ArrayList<Reservation>();
 
-            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 AND reservationDate < CURDATE() AND employeeID="+employee_id);
+            rs = stmt.executeQuery("SELECT * FROM reservations WHERE accepted = 1 AND reservationDate < CURDATE() AND employeeID=" + employee_id);
             System.out.println(rs);
 
             while (rs.next()) {
@@ -247,7 +247,7 @@ public class EditReservationTable {
         }
         return null;
     }
-    
+
     public void updateReservation(int reservationID, String key, int value) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -256,7 +256,7 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
-    
+
     public void deleteReservation(int reservationID) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -265,18 +265,17 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
-    
-        
-    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time) throws SQLException, ClassNotFoundException {
+
+    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
-        String update = "UPDATE reservations SET reservationDate='" + newDate + "', start_time='" + startTime+ "', end_time='"+ end_time +"' WHERE reservationID = '" + reservationID + "'";
+        String update = "UPDATE reservations SET reservationDate='" + newDate + "', start_time='" + startTime + "', end_time='" + end_time + "', accepted='" + accepted + "' WHERE reservationID = '" + reservationID + "'";
         stmt.executeUpdate(update);
         stmt.close();
         con.close();
     }
-    
-    public ArrayList<String> availableSlots(Date reservationDate, int roomID){
+
+    public ArrayList<String> availableSlots(Date reservationDate, int roomID) {
         String[] allSlots = {"09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"};
         try {
             ArrayList<String> nonSlots = new ArrayList<>();
@@ -296,8 +295,8 @@ public class EditReservationTable {
             }
             stmt.close();
             con.close();
-            for(int i=0; i<allSlots.length; i++){
-                if(!nonSlots.contains(allSlots[i])){
+            for (int i = 0; i < allSlots.length; i++) {
+                if (!nonSlots.contains(allSlots[i])) {
                     slots.add(allSlots[i]);
                 }
             }
@@ -309,6 +308,6 @@ public class EditReservationTable {
             Logger.getLogger(EditReservationTable.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-        
+
     }
 }

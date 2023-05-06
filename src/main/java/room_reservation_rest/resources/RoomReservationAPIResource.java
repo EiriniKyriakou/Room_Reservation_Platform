@@ -445,7 +445,7 @@ public class RoomReservationAPIResource {
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
             Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
-            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to find emloyee\"}").build();
+            return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Failed to update reservation.\"}").build();
         }
     }
 
@@ -483,7 +483,7 @@ public class RoomReservationAPIResource {
 
 
             EditReservationTable ert = new EditReservationTable();
-            ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time());
+            ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.isAccepted());
             Response.Status status = Response.Status.OK;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Reservation updated.\"}").build();
 

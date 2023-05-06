@@ -132,7 +132,7 @@ function displayContent(id) {
             $('#employee_review_reservation').append(employeeReviewReservation());
             break;
         case Content.employee_edit_reservation:
-            
+
             break;
         case Content.employee_past_reservations:
             $('#main_content').html(pageTitle("Past Reservations", "employee_past_reservations", 'content_employee_home'));
@@ -287,28 +287,29 @@ function cardRoomReservation(reservation, button, img_src) {
                         <h6 style="font-weight: 400" id="date"> ${reservation.reservationDate}</h6>
                         <h6 style="font-weight: 400" id="startTime"> ${reservation.start_time}</h6>
                         <h6 style="font-weight: 400" id="endTime"> ${reservation.end_time}</h6>`;
-    if (reservation.accepted === 1){
+    if (reservation.accepted === 1) {
         status = "Accepted";
-    } else if (reservation.accepted === 0){
+    } else if (reservation.accepted === 0) {
         status = "Pending";
-    } if (reservation.accepted === -1){
+    }
+    if (reservation.accepted === -1) {
         status = "Denied";
     }
-    html +=`<h6 style="font-weight: 400"> ${status} </h6>`;
-    html +=`</div> </div>`;
-    
+    html += `<h6 style="font-weight: 400"> ${status} </h6>`;
+    html += `</div> </div>`;
+
     if (button !== null) {
-        if (button === "Review" && user["adminID"]!==undefined) {
+        if (button === "Review" && user["adminID"] !== undefined) {
             html += `<button class="btn-dark purple-dark full_button" 
                         onclick="review_reservation(${reservation.reservationID}, ${reservation.employeeID}, ${reservation.roomID}, '${reservation.reservationDate}', '${reservation.start_time}', '${reservation.end_time}', '${status}')"> 
                         <img src=${img_src} width="25" height="25"> ${button}</button>`;
-        } else if (button === "Review" && user["employeeID"]!==undefined) {
+        } else if (button === "Review" && user["employeeID"] !== undefined) {
             html += `<button class="btn-dark purple-dark full_button" 
                         onclick="review_reservation_employee(${reservation.reservationID}, ${reservation.employeeID}, ${reservation.roomID}, '${reservation.reservationDate}', '${reservation.start_time}', '${reservation.end_time}', '${status}')"> 
                         <img src=${img_src} width="25" height="25"> ${button}</button>`;
-        } else if (button === "Edit" && user["adminID"]!==undefined){
+        } else if (button === "Edit" && user["adminID"] !== undefined) {
             html += `<button class="btn-dark purple-dark full_button" onclick="edit_reservation()"> <img src=${img_src} width="25" height="25"> ${button}</button>`;
-        }else {
+        } else {
             html += `<button class="btn-dark purple-dark full_button"> <img src=${img_src} width="25" height="25"> ${button}</button>`;
         }
     }
@@ -337,14 +338,14 @@ function reservationForm(i) {
     const StarttimeInput = document.getElementById('start_time_' + i);
     const EndtimeInput = document.getElementById('end_time_' + i);
     document.getElementById('date_' + i).min = minDate;
-    if (i === 1 && reserve_form.reservationDate !== ""){
+    if (i === 1 && reserve_form.reservationDate !== "") {
         document.getElementById('date_1').value = reserve_form.reservationDate;
         available_slots(1);
     }
-    if (i === 1 && reserve_form.start_time !== ""){
+    if (i === 1 && reserve_form.start_time !== "") {
         checkSlots();
     }
-    
+
 }
 
 function checkSlots() {
@@ -357,9 +358,9 @@ function checkSlots() {
     }
 }
 
-function end_time_slots(i){
+function end_time_slots(i) {
     let hour = document.getElementById('start_time_' + i).value;
-    document.getElementById('end_time_'+i).innerHTML= allSlots[allSlots.indexOf(hour)+1];
+    document.getElementById('end_time_' + i).innerHTML = allSlots[allSlots.indexOf(hour) + 1];
 }
 
 function add_reservation_from() {
@@ -367,7 +368,7 @@ function add_reservation_from() {
     reservationForm(reservations_count);
 }
 
-function makeReservationForm(){
+function makeReservationForm() {
 
     html = `<div style="display:flex; flex-flow: column;"><div id="reservation">${reserveRoomCard(reserve_form.roomID, reserve_form.roomName, reserve_form.roomType, reserve_form.roomCapacity, false)}`;
     html += `<div id="reserve_from"></div> </div>`;
@@ -380,16 +381,16 @@ function makeReservationForm(){
     return html;
 }
 
-function updateReservationForm(){
+function updateReservationForm() {
 
     html = `<div style="display:flex; flex-flow: column;"><div id="reservation">${reserveRoomCard(reserve_form.roomID, reserve_form.roomName, reserve_form.roomType, reserve_form.roomCapacity, false)}`;
-    html +=   `<div id="reserve_from"> 
+    html += `<div id="reserve_from"> 
 
 </div></div>`;
-    
+
     html += `<br>
             <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="update_reservation()">Update Reservation</button>`;
-    
+
     return html;
 }
 
@@ -467,7 +468,7 @@ function reviewReservationForm() {
     </div>`;
 }
 
-function employeeReviewReservation(){
+function employeeReviewReservation() {
     return `
     <div class="box" style="flex-flow: column;" >
         <div class="big-cards" id="reservationReview">
@@ -749,7 +750,7 @@ function search() {
         date: document.getElementById("date").value,
         start_time: document.getElementById("start_time").value
     };
-    
+
     displayContent(Content.employee_search);
     document.getElementById("room_name").value = jsonData.roomName;
     document.getElementById("room_type").value = jsonData.roomType;
@@ -762,7 +763,7 @@ function search() {
         console.log("Results: " + JSON.stringify(data));
         if (xhr.readyState === 4 && xhr.status === 200) {
             jsonData = JSON.parse(jsonData);
-            if (jsonData.date==='' && jsonData.start_time===''){
+            if (jsonData.date === '' && jsonData.start_time === '') {
                 document.getElementById("pageTitle").innerHTML = "Rooms:";
             } else {
                 document.getElementById("pageTitle").innerHTML = "Available rooms:";
@@ -770,7 +771,7 @@ function search() {
             $('#employee_search').html("<div class='cards-container' id='employee_search_rooms_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
                 $('#employee_search_rooms_cards').append(reserveRoomCard(data[i].roomID, data[i].roomName, data[i].roomType, data[i].capacity, true));
-                
+
             }
         } else {
             $('#employee_search').html(data["msg"]);
@@ -781,8 +782,6 @@ function search() {
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonData);
-//    displayContent(Content.employee_search);
-
 }
 
 function make_reservation(i) {
@@ -806,7 +805,7 @@ function make_reservation(i) {
             send_notification(data["msg"]);
         }
     };
-    
+
     xhr.open("POST", "http://localhost:8080/room_reservation/api/make_reservation");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -814,7 +813,7 @@ function make_reservation(i) {
 
 }
 
-function get_room_info(roomID){
+function get_room_info(roomID) {
     const xhRoom = new XMLHttpRequest();
     xhRoom.onload = function () {
         const room = JSON.parse(xhRoom.responseText);
@@ -831,10 +830,10 @@ function get_room_info(roomID){
     xhRoom.open("POST", "http://localhost:8080/room_reservation/api/room");
     xhRoom.setRequestHeader("Accept", "application/json");
     xhRoom.setRequestHeader("Content-Type", "application/json");
-    xhRoom.send(JSON.stringify({roomID: roomID})); 
+    xhRoom.send(JSON.stringify({roomID: roomID}));
 }
 
-function review_reservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status){
+function review_reservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status) {
     displayContent(Content.admin_review_reservation);
     $('#reservationID').html(reservationID);
     $('#employeeID').html(employeeID);
@@ -843,13 +842,13 @@ function review_reservation(reservationID, employeeID, roomID, reservationDate, 
     $('#startTime').html(start_time);
     $('#endTime').html(end_time);
     $('#status').html(status);
-    
+
     $('#reservationReview').append(`
         <div style="display: flex; justify-content:space-between; width: 500px; padding: 35px 0px;">
             <button class="btn-dark purple-dark back_button" style="padding: 5px 70px;" onclick="update_reservation_status(${reservationID},1)"> <img src="img/icon-accept.png" width="25" height="25"> Accept</button>
             <button class="btn-dark purple-dark back_button" style="padding: 5px 70px;" onclick="update_reservation_status(${reservationID},-1)"> <img src="img/icon-reject.png" width="25" height="25"> Reject</button>
         </div>`);
-    
+
     const xhrEmployee = new XMLHttpRequest();
     xhrEmployee.onload = function () {
         const employee = JSON.parse(xhrEmployee.responseText);
@@ -873,14 +872,14 @@ function review_reservation(reservationID, employeeID, roomID, reservationDate, 
     get_room_info(roomID);
 }
 
-function update_reservation_status(reservationID, status){
+function update_reservation_status(reservationID, status) {
     var jsonData = JSON.stringify(
             {
                 reservationID: reservationID,
                 accepted: status
             }
     );
-    
+
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
@@ -915,10 +914,10 @@ function cancel_reservation(reservationID) {
                     displayContent(Content.employee_active_reservations);
                     send_notification(data["msg"]);
                     Swal.fire(
-                    'Deleted!',
-                    'Your reservation has been deleted.',
-                    'success'
-                    );
+                            'Deleted!',
+                            'Your reservation has been deleted.',
+                            'success'
+                            );
                 } else {
                     send_notification(data["msg"]);
                 }
@@ -928,13 +927,13 @@ function cancel_reservation(reservationID) {
             xhr.setRequestHeader("Accept", "application/json");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify({reservationID: reservationID}));
-            
+
         }
     });
 
 }
 
-function review_reservation_employee(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status){
+function review_reservation_employee(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status) {
     displayContent(Content.employee_review_reservation);
     $('#reservationID').html(reservationID);
     $('#employeeID').html(employeeID);
@@ -943,13 +942,13 @@ function review_reservation_employee(reservationID, employeeID, roomID, reservat
     $('#startTime').html(start_time);
     $('#endTime').html(end_time);
     $('#status').html(status);
-    
+
     $('#reservationReview').append(`<button class="btn-dark purple-dark full_button" onclick="cancel_reservation(${reservationID})"> <img src="img/icon-cancel.png" width="25" height="25"> Cancel Reservation</button>`);
-    
+
     get_room_info(roomID);
 }
 
-function edit_reservation(){
+function edit_reservation() {
     const user = JSON.parse(localStorage.getItem("logedIn"));
     if (user["adminID"] !== undefined) {
         var jsonData =
@@ -961,8 +960,8 @@ function edit_reservation(){
                 };
         console.log("Old reservation: " + JSON.stringify(jsonData));
         get_room_info(parseInt((document.getElementById("roomID").innerHTML)));
-        $('#main_content').html(pageTitle("Edit Reservation "+ jsonData.reservationID, "admin_edit_reservation", 'content_admin_active_reservations'));
-        setTimeout( ()=>{
+        $('#main_content').html(pageTitle("Edit Reservation " + jsonData.reservationID, "admin_edit_reservation", 'content_admin_active_reservations'));
+        setTimeout(() => {
             $('#admin_edit_reservation').append(updateReservationForm());
             reservationForm(1);
             document.getElementById("date_1").value = jsonData.reservationDate;
@@ -970,7 +969,7 @@ function edit_reservation(){
             available_slots_update_reservation(jsonData.reservationDate, reserve_form.roomID, jsonData.start_time);
             document.getElementById("end_time_1").innerHTML = jsonData.end_time;
         }, 100);
-        
+
     } else {
         var jsonData =
                 {
@@ -981,9 +980,9 @@ function edit_reservation(){
                 };
         console.log("Old reservation: " + JSON.stringify(jsonData));
         fill_reserve_form_vars(document.getElementById("roomID").innerHTML, document.getElementById("name").innerHTML, document.getElementById("type").innerHTML, document.getElementById("capacity").innerHTML);
-        $('#main_content').html(pageTitle("Edit Reservation "+ jsonData.reservationID, "employee_edit_reservation", 'content_employee_active_reservations'));
+        $('#main_content').html(pageTitle("Edit Reservation " + jsonData.reservationID, "employee_edit_reservation", 'content_employee_active_reservations'));
         $('#employee_edit_reservation').append(updateReservationForm());
-        reservationForm(1);   
+        reservationForm(1);
         document.getElementById("date_1").value = jsonData.reservationDate;
 //        document.getElementById("start_time_1").value = jsonData.start_time;
         available_slots_update_reservation(jsonData.reservationDate, reserve_form.roomID, jsonData.start_time);
@@ -991,18 +990,25 @@ function edit_reservation(){
     }
 }
 
-function update_reservation(){
+function update_reservation() {
     let reservationID = parseInt(document.getElementById("pageTitle").innerHTML.slice(17));
-    
+    const user = JSON.parse(localStorage.getItem("logedIn"));
+    let status;
+    if (user["adminID"] !== undefined) {
+        status = 1;
+    } else if(user["employeeID"] !== undefined)
+        status = 0;
+
     var jsonData = JSON.stringify(
             {
                 reservationID: reservationID,
                 reservationDate: document.getElementById("date_1").value,
                 start_time: document.getElementById("start_time_1").value,
-                end_time: document.getElementById("end_time_1").innerHTML
+                end_time: document.getElementById("end_time_1").innerHTML,
+                accepted: status
             }
     );
-    const user = JSON.parse(localStorage.getItem("logedIn"));
+
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
@@ -1025,10 +1031,10 @@ function update_reservation(){
     xhr.send(jsonData);
 }
 
-function available_slots(i){
-    let date = document.getElementById("date_"+i).value;
-    if (date === undefined){
-        date = document.getElementById("date_"+i).innerHTML
+function available_slots(i) {
+    let date = document.getElementById("date_" + i).value;
+    if (date === undefined) {
+        date = document.getElementById("date_" + i).innerHTML
     }
     var jsonData = JSON.stringify(
             {
@@ -1042,12 +1048,12 @@ function available_slots(i){
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
             console.log("load slots")
-            $('#start_time_'+i).html('');
+            $('#start_time_' + i).html('');
             for (let j = 0; j < Object.keys(data).length; j++) {
-                $('#start_time_'+i).append('<option value="'+data[j]+'">'+data[j]+'</option>');
-                
+                $('#start_time_' + i).append('<option value="' + data[j] + '">' + data[j] + '</option>');
+
             }
-            document.getElementById('end_time_'+i).innerHTML= allSlots[allSlots.indexOf(data[0])+1];
+            document.getElementById('end_time_' + i).innerHTML = allSlots[allSlots.indexOf(data[0]) + 1];
             readySlots = true;
         } else {
             send_notification(data["msg"]);
@@ -1060,7 +1066,7 @@ function available_slots(i){
     xhr.send(jsonData);
 }
 
-function available_slots_update_reservation(reservationDate, roomID, start_time){
+function available_slots_update_reservation(reservationDate, roomID, start_time) {
     var jsonData = JSON.stringify(
             {
                 reservationDate: reservationDate,
@@ -1070,12 +1076,12 @@ function available_slots_update_reservation(reservationDate, roomID, start_time)
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
-        $('#start_time_1').html('<option value="'+start_time+'">'+start_time+'</option>');
+        $('#start_time_1').html('<option value="' + start_time + '">' + start_time + '</option>');
         if (xhr.readyState === 4 && xhr.status === 200) {
             for (let j = 0; j < Object.keys(data).length; j++) {
-                $('#start_time_1').append('<option value="'+data[j]+'">'+data[j]+'</option>');
-                
-            } 
+                $('#start_time_1').append('<option value="' + data[j] + '">' + data[j] + '</option>');
+
+            }
         } else {
             send_notification(data["msg"]);
         }
@@ -1125,10 +1131,10 @@ function fill_reserve_form_vars(id, name, type, number) {
     reserve_form.roomCapacity = number;
 }
 
-function fill_reserve_form_vars_time(){
+function fill_reserve_form_vars_time() {
     reserve_form.reservationDate = document.getElementById("date").value;
     reserve_form.start_time = document.getElementById("start_time").value;
-    
+
 }
 
 function multy_reservations() {
