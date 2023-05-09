@@ -40,7 +40,7 @@ public class EditReservationTable {
         con.close();
     }
 
-    public void addNewReservation(Date reservationDate, String start_time, String end_time, int roomID, int employeeID, int tmp, int accepted) throws ClassNotFoundException {
+    public Reservation addNewReservation(Date reservationDate, String start_time, String end_time, int roomID, int employeeID, int tmp, int accepted) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
 
@@ -63,12 +63,36 @@ public class EditReservationTable {
 
             stmt.close();
             con.close();
+            return getReservation(reservationDate, start_time, roomID);
 
         } catch (SQLException ex) {
             Logger.getLogger(EditReservationTable.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
 
+    public Reservation getReservation(Date reservationDate, String start_time,  int roomID) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM reservations WHERE reservationDate = '" + reservationDate + "' AND start_time = '" + start_time + "' AND roomID =" + roomID);
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            System.out.println("New reservation: "+ json);
+            Gson gson = new Gson();
+            Reservation r = gson.fromJson(json, Reservation.class);
+            return r;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
+    }
+    
     // Get reservations that have neither been accepted nor rejected
     public ArrayList<Reservation> getPendingRequests() throws ClassNotFoundException {
         try {
@@ -265,11 +289,11 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
-
-    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted) throws SQLException, ClassNotFoundException {
+    
+    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted, int tmp) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
-        String update = "UPDATE reservations SET reservationDate='" + newDate + "', start_time='" + startTime + "', end_time='" + end_time + "', accepted='" + accepted + "' WHERE reservationID = '" + reservationID + "'";
+        String update = "UPDATE reservations SET reservationDate='" + newDate + "', start_time='" + startTime + "', end_time='" + end_time + "', accepted='" + accepted + "', tmp='" + tmp + "' WHERE reservationID = '" + reservationID + "'";
         stmt.executeUpdate(update);
         stmt.close();
         con.close();

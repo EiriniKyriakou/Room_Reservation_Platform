@@ -353,13 +353,15 @@ public class RoomReservationAPIResource {
             EditReservationTable edt = new EditReservationTable();
 //            check the availability (not correct)
             ArrayList<Reservation> res = edt.chechAvailability(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID());
-            System.out.println(gson.toJson(res));
-
+            
             if (res == null || res.isEmpty()) {
 //            make the reservation
-                edt.addNewReservation(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID(), r.getEmployeeID(), 0, 0);
+                Reservation result = edt.addNewReservation(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID(), r.getEmployeeID(), r.isTmp(), 0);
                 Response.Status status = Response.Status.OK;
-                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
+                if (result != null){
+                    return Response.status(status).type("application/json").entity("{\"id\":\""+result.getReservationID()+"\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
+                }
+                return Response.status(status).type("application/json").entity("{\"id\":\""+null+"\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
             } else {
                 Response.Status status = Response.Status.UNAUTHORIZED;
                 return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Dateand time not available.\"}").build();
@@ -482,7 +484,7 @@ public class RoomReservationAPIResource {
             System.out.println("Json reservation: " + gson.toJson(r));
 
             EditReservationTable ert = new EditReservationTable();
-            ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.isAccepted());
+            ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.isAccepted(), r.isTmp());
             Response.Status status = Response.Status.OK;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Reservation updated.\"}").build();
 
