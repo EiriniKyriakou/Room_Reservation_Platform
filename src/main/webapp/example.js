@@ -907,26 +907,51 @@ function cancel_reservation(reservationID) {
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            const xhr = new XMLHttpRequest();
-            xhr.onload = function () {
-                const data = JSON.parse(xhr.responseText);
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    displayContent(Content.employee_active_reservations);
-                    send_notification(data["msg"]);
-                    Swal.fire(
-                            'Deleted!',
-                            'Your reservation has been deleted.',
-                            'success'
-                            );
-                } else {
-                    send_notification(data["msg"]);
+            Swal.fire({
+                title: 'Confirm Password',
+                html: `<input type="password" id="password" class="swal2-input" placeholder="Password">`,
+                confirmButtonText: 'Confirm',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                focusConfirm: false,
+                preConfirm: () => {
+                    const password = Swal.getPopup().querySelector('#password').value;
+                    const user = JSON.parse(localStorage.getItem("logedIn"));
+                    if (user["password"] !== password) {
+                        Swal.showValidationMessage(`Wrong password`);
+                    }
+                    if (!password){
+                        Swal.showValidationMessage(`Please enter password`);
+                    }
+                    return {password: password};
                 }
-            };
+            }).then((result) => {
+                const user = JSON.parse(localStorage.getItem("logedIn"));
+                if (user["password"] === result.value.password) {
 
-            xhr.open("DELETE", "http://localhost:8080/room_reservation/api/reservation");
-            xhr.setRequestHeader("Accept", "application/json");
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify({reservationID: reservationID}));
+                    const xhr = new XMLHttpRequest();
+                    xhr.onload = function () {
+                        const data = JSON.parse(xhr.responseText);
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            displayContent(Content.employee_active_reservations);
+                            send_notification(data["msg"]);
+                            Swal.fire(
+                                    'Deleted!',
+                                    'Your reservation has been deleted.',
+                                    'success'
+                                    );
+                        } else {
+                            send_notification(data["msg"]);
+                        }
+                    };
+
+                    xhr.open("DELETE", "http://localhost:8080/room_reservation/api/reservation");
+                    xhr.setRequestHeader("Accept", "application/json");
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(JSON.stringify({reservationID: reservationID}));
+                }
+            });
 
         }
     });
@@ -991,46 +1016,73 @@ function edit_reservation() {
 }
 
 function update_reservation() {
-    let reservationID = parseInt(document.getElementById("pageTitle").innerHTML.slice(17));
-    const user = JSON.parse(localStorage.getItem("logedIn"));
-    let status;
-    if (user["adminID"] !== undefined) {
-        status = 1;
-    } else if (user["employeeID"] !== undefined)
-        status = 0;
-
-    var jsonData = JSON.stringify(
-            {
-                reservationID: reservationID,
-                reservationDate: document.getElementById("date_1").value,
-                start_time: document.getElementById("start_time_1").value,
-                end_time: document.getElementById("end_time_1").innerHTML,
-                accepted: status
+    Swal.fire({
+        title: 'Confirm Password',
+        html: `<input type="password" id="password" class="swal2-input" placeholder="Password">`,
+        confirmButtonText: 'Confirm',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        focusConfirm: false,
+        preConfirm: () => {
+            const password = Swal.getPopup().querySelector('#password').value;
+            const user = JSON.parse(localStorage.getItem("logedIn"));
+            if (user["password"] !== password) {
+                Swal.showValidationMessage(`Wrong password`);
             }
-    );
-
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        const data = JSON.parse(xhr.responseText);
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            if (user["employeeID"] !== undefined) {
-                displayContent(Content.employee_active_reservations);
-                send_notification("Wait for admin to review your request.");
-            } else if (user["adminID"] !== undefined) {
-                displayContent(Content.admin_active_reservations);
-                send_notification("Reservation updated successfully.");
+            if (!password) {
+                Swal.showValidationMessage(`Please enter password`);
             }
-
-        } else {
-            send_notification(data["msg"]);
+            return {password: password};
         }
-    };
+    }).then((result) => {
+        const user = JSON.parse(localStorage.getItem("logedIn"));
+        if (user["password"] === result.value.password) {
+            let reservationID = parseInt(document.getElementById("pageTitle").innerHTML.slice(17));
+            let status;
+            if (user["adminID"] !== undefined) {
+                status = 1;
+            } else if (user["employeeID"] !== undefined)
+                status = 0;
 
-    console.log("Update Reservation: " + jsonData);
-    xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(jsonData);
+            var jsonData = JSON.stringify(
+                    {
+                        reservationID: reservationID,
+                        reservationDate: document.getElementById("date_1").value,
+                        start_time: document.getElementById("start_time_1").value,
+                        end_time: document.getElementById("end_time_1").innerHTML,
+                        accepted: status
+                    }
+            );
+
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                const data = JSON.parse(xhr.responseText);
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    if (user["employeeID"] !== undefined) {
+                        displayContent(Content.employee_active_reservations);
+                        send_notification("Wait for admin to review your request.");
+                    } else if (user["adminID"] !== undefined) {
+                        displayContent(Content.admin_active_reservations);
+                        send_notification("Reservation updated successfully.");
+                    }
+
+                } else {
+                    send_notification(data["msg"]);
+                }
+            };
+
+            console.log("Update Reservation: " + jsonData);
+            xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation");
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(jsonData);
+
+
+        }
+    });
+
+
 }
 
 function available_slots(i) {
