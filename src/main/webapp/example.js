@@ -33,6 +33,7 @@ var reserve_form = {
 };
 
 var reservations_count = 0;
+var reservation_return_count = 0;
 
 var now = new Date();
 // minimum date the user can choose, in this case now and in the future
@@ -118,6 +119,7 @@ function displayContent(id) {
             break;
         case Content.employee_make_reservation:
             reservations_count = 0;
+            reservation_return_count = 0;
             $('#main_content').html(pageTitle("Make Reservation", "employee_make_reservation", 'content_employee_home'));
             $('#employee_make_reservation').append(makeReservationForm());
             reservations_count++;
@@ -801,6 +803,10 @@ function make_reservation(i) {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
             send_notification(data["msg"]);
+            reservation_return_count ++;
+            if ( reservation_return_count === reservations_count){
+                displayContent(Content.employee_active_reservations);
+            }
         } else {
             send_notification(data["msg"]);
         }
