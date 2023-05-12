@@ -4,8 +4,8 @@ import ssl
 import smtplib
 
 def send_mail(email_receiver, reason, reservation_id):
-    email_sender = 'keletzit@gmail.com'
-    email_password = 'jhrjfyhanhjmxsez'
+    email_sender = 'dum4378my@gmail.com'
+    email_password = 'kpibzzfsuuwoqhiv'
     email_start = "We would like to inform you that "
     email_end =  "reservation #" + reservation_id + " has been " + reason  
     subject = 'Reservation Update'

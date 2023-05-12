@@ -173,11 +173,11 @@ public class EditRoomTable {
                 }
                 return rooms;
             } else if (search_options.get(4).equals("")) { // we don't care about reservationStart_time, we only care about reservationDate
-                rest_of_reservation_query += "WHERE reservationDate='" + search_options.get(3) + "' AND accepted='1')";
+                rest_of_reservation_query += "WHERE reservationDate='" + search_options.get(3) + "' AND accepted!='-1')";
                 reservation_query = room_query + "roomID IN (" + "SELECT roomID FROM reservations ";
                 query_case = 1;
             } else { // we care about both
-                reservation_query = room_query + "roomID NOT IN (SELECT roomID FROM reservations WHERE reservationDate='" + search_options.get(3) + "' AND " + "start_time='" + search_options.get(4) + "' AND " + "accepted='1'" + ")";
+                reservation_query = room_query + "roomID NOT IN (SELECT roomID FROM reservations WHERE reservationDate='" + search_options.get(3) + "' AND " + "start_time='" + search_options.get(4) + "' AND " + "accepted!='-1'" + ")";
             }
 
             System.out.println(reservation_query + rest_of_reservation_query);
@@ -251,12 +251,12 @@ public class EditRoomTable {
                 rest_of_reservation_query = "";
                 if (search_options.get(3).equals("")) { // we don't care about reservationDate
                     rest_of_reservation_query += " start_time ΝΟΤ IN (SELECT start_time FROM reservations WHERE roomID ='"
-                            + rooms.get(i).getRoomID() + "' AND accepted='1')";
+                            + rooms.get(i).getRoomID() + "' AND accepted!='-1')";
                 } else if (search_options.get(4).equals("")) { // we don't care about reservationStart_time
-                    rest_of_reservation_query += " reservationDate IN (SELECT reservationDate FROM reservations WHERE roomID='" + rooms.get(i).getRoomID() + "' AND accepted='1')";
+                    rest_of_reservation_query += " reservationDate IN (SELECT reservationDate FROM reservations WHERE roomID='" + rooms.get(i).getRoomID() + "' AND accepted!='-1')";
                     query_case = 1;
                 } else { // we care about both
-                    rest_of_reservation_query += "(reservationDate,start_time) IN (SELECT reservationDate,start_time FROM reservations WHERE roomID='" + rooms.get(i).getRoomID() + "' AND accepted='1')";
+                    rest_of_reservation_query += "(reservationDate,start_time) IN (SELECT reservationDate,start_time FROM reservations WHERE roomID='" + rooms.get(i).getRoomID() + "' AND accepted!='-1')";
                     query_case = 2;
                 }
                 System.out.println(reservation_query + rest_of_reservation_query);
