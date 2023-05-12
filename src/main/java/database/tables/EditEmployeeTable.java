@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mainClasses.Employee;
@@ -15,6 +16,7 @@ import mainClasses.Employee;
  * @author eirin
  */
 public class EditEmployeeTable {
+
     public void createEmployeeTable() throws SQLException, ClassNotFoundException {
 
         Connection con = DB_Connection.getConnection();
@@ -87,7 +89,7 @@ public class EditEmployeeTable {
         con.close();
         return null;
     }
-    
+
     public Employee databaseToEmployeeCorpEmail(String corp_email) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -107,7 +109,32 @@ public class EditEmployeeTable {
         con.close();
         return null;
     }
-    
+
+    public ArrayList<Employee> getAllActiveEmployees() throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<Employee> active_employees = new ArrayList<Employee>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM employees WHERE active='1'");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                System.out.println(json);
+                Gson gson = new Gson();
+                Employee empl = gson.fromJson(json, Employee.class);
+                active_employees.add(empl);
+            }
+            System.out.println(rs + " Number of active empoyees " + active_employees.size());
+            return active_employees;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
+    }
+
     public void updateEmployee(String corp_email, String key, String value) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -116,14 +143,14 @@ public class EditEmployeeTable {
         stmt.close();
         con.close();
     }
-    
+
     public Employee databaseToEmployeeID(int id) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
 
         ResultSet rs;
         try {
-            rs = stmt.executeQuery("SELECT * FROM employees WHERE employeeID = " + id );
+            rs = stmt.executeQuery("SELECT * FROM employees WHERE employeeID = " + id);
             rs.next();
             String json = DB_Connection.getResultsToJSON(rs);
             Gson gson = new Gson();

@@ -7,16 +7,20 @@ import database.tables.EditDepartmentTable;
 import database.tables.EditEmployeeTable;
 import database.tables.EditReservationTable;
 import database.tables.EditRoomTable;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+
 
 public class InitDatabase {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 //        InitDatabase init = new InitDatabase();
 //        init.initDatabase();
+        
     }
 
     public void initDatabase() throws SQLException, ClassNotFoundException {
@@ -62,7 +66,7 @@ public class InitDatabase {
 
         EditEmployeeTable eet = new EditEmployeeTable();
         eet.createEmployeeTable();
-        eet.addNewEmployee("Ast", "Sel", "a@email.com", "csd@email.com", "69", "eirini", 1, 1);
+        eet.addNewEmployee("Ast", "Sel", "a@email.com", "keletzit@gmail.com", "69", "eirini", 1, 1);
 
         EditReservationTable ert = new EditReservationTable();
         ert.createReservationTable();

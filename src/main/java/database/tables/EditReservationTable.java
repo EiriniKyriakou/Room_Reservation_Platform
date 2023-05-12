@@ -2,6 +2,7 @@ package database.tables;
 
 import com.google.gson.Gson;
 import database.DB_Connection;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mainClasses.Employee;
+import mainClasses.ManageEmails;
 import mainClasses.Reservation;
 
 /**
@@ -257,7 +260,7 @@ public class EditReservationTable {
         con.close();
     }
 
-    public void deleteReservation(int reservationID) throws SQLException, ClassNotFoundException {
+    public void deleteReservation(int reservationID) throws SQLException, ClassNotFoundException, IOException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
         String update = "DELETE FROM reservations WHERE reservationID = '" + reservationID + "'";
@@ -266,7 +269,7 @@ public class EditReservationTable {
         con.close();
     }
 
-    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted) throws SQLException, ClassNotFoundException {
+    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted) throws SQLException, ClassNotFoundException, IOException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
         String update = "UPDATE reservations SET reservationDate='" + newDate + "', start_time='" + startTime + "', end_time='" + end_time + "', accepted='" + accepted + "' WHERE reservationID = '" + reservationID + "'";

@@ -7,11 +7,14 @@ import database.tables.EditAdministratorTable;
 import database.tables.EditEmployeeTable;
 import database.tables.EditReservationTable;
 import database.tables.EditRoomTable;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.MessagingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -23,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import mainClasses.Administrator;
 import mainClasses.Employee;
+import mainClasses.ManageEmails;
 import mainClasses.Reservation;
 import mainClasses.Room;
 
@@ -37,7 +41,7 @@ public class RoomReservationAPIResource {
     @POST
     @Path("/database")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response createDB() {
+    public Response createDB() throws GeneralSecurityException, MessagingException, IOException {
         InitDatabase init = new InitDatabase();
         try {
             init.initDatabase();
@@ -453,7 +457,7 @@ public class RoomReservationAPIResource {
     @Path("/reservation")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response delete_reservation(String reservation) {
+    public Response delete_reservation(String reservation) throws IOException {
         try {
             System.out.println(reservation);
             JsonObject jobj = new Gson().fromJson(reservation, JsonObject.class);
@@ -461,6 +465,10 @@ public class RoomReservationAPIResource {
             EditReservationTable ert = new EditReservationTable();
             ert.deleteReservation(id);
             Response.Status status = Response.Status.OK;
+            // Notify employees for the change
+            EditEmployeeTable eet = new EditEmployeeTable();
+            ArrayList<Employee> active_employees = eet.getAllActiveEmployees();
+            ManageEmails.notifyEmployees("cancelled.", id, active_employees);
             return Response.status(status).type("application/json").entity("{\"msg\":\"Reservation succesfully canceled.\"}").build();
 
         } catch (SQLException | ClassNotFoundException ex) {
@@ -474,7 +482,7 @@ public class RoomReservationAPIResource {
     @Path("/reservation")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response update_reservation(String reservation) {
+    public Response update_reservation(String reservation) throws IOException {
         try {
             System.out.println("Reservation: " + reservation);
             Gson gson = new Gson();
@@ -483,9 +491,12 @@ public class RoomReservationAPIResource {
 
             EditReservationTable ert = new EditReservationTable();
             ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.isAccepted());
+            // Notify employees for the change
+            EditEmployeeTable eet = new EditEmployeeTable();
+            ArrayList<Employee> active_employees = eet.getAllActiveEmployees();
+            ManageEmails.notifyEmployees("rescheduled.", r.getReservationID(), active_employees);
             Response.Status status = Response.Status.OK;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Reservation updated.\"}").build();
-
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
             Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;

@@ -1,7 +1,6 @@
 window.onload = () => {
     isLoggedIn();
 };
-
 //Global Variables
 
 //This are the pages that we have in the platform
@@ -20,9 +19,7 @@ const Content = {
     employee_edit_reservation: "content_employee_edit_reservation",
     employee_past_reservations: "content_employee_past_reservations"
 };
-
 var login_attemts = ["email", 0];
-
 var reserve_form = {
     roomID: "",
     roomName: "",
@@ -31,27 +28,21 @@ var reserve_form = {
     reservationDate: "",
     start_time: ""
 };
-
 var reservations_count = 0;
 var reservation_return_count = 0;
-
 var now = new Date();
 // minimum date the user can choose, in this case now and in the future
 var minDate = now.toISOString().substring(0, 10);
-
 //Company Hours: 09:00 - 18:00
 var allSlots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 var roomID;
 var readySlots = false;
-
 //Depending on the page we want to desplay, this function chooses what to insert in the html code
 //The main idea is that we have a NavBar, and the main_content div, in which we put the content
 function displayContent(id) {
     $('#main_content').html("");
-
     const user = JSON.parse(localStorage.getItem("logedIn"));
     let options, actions;
-
     switch (id) {
         case Content.guest:
 //        Nav Bar
@@ -140,7 +131,6 @@ function displayContent(id) {
             $('#main_content').html(pageTitle("Past Reservations", "employee_past_reservations", 'content_employee_home'));
             employeePastReservations();
             break;
-
     }
 
 
@@ -256,7 +246,6 @@ function reserveRoomCard(id, name, type, number, button) {
                 </div>`;
     if (button === true) {
         html += `<button class="btn-dark purple-dark full_button" onclick="fill_reserve_form_vars('${id}', '${name}', '${type}', '${number}'); fill_reserve_form_vars_time(); displayContent('${Content.employee_make_reservation}')"> <img src="img/icon-reserve.png" width="25" height="25"> Reserve</button>`;
-
     }
     html += `</div>`;
     return html;
@@ -299,7 +288,6 @@ function cardRoomReservation(reservation, button, img_src) {
     }
     html += `<h6 style="font-weight: 400"> ${status} </h6>`;
     html += `</div> </div>`;
-
     if (button !== null) {
         if (button === "Review" && user["adminID"] !== undefined) {
             html += `<button class="btn-dark purple-dark full_button" 
@@ -379,7 +367,6 @@ function makeReservationForm() {
                 <h6>add more reservations</h6>
             </div></div>
             <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="multy_reservations()">Complete Reservation</button>`;
-
     return html;
 }
 
@@ -389,10 +376,8 @@ function updateReservationForm() {
     html += `<div id="reserve_from"> 
 
 </div></div>`;
-
     html += `<br>
             <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="update_reservation()">Update Reservation</button>`;
-
     return html;
 }
 
@@ -532,7 +517,6 @@ function creat_database() {
         const obj = JSON.parse(xhr.responseText);
         send_notification(obj["msg"]);
     };
-
     xhr.open("POST", "http://localhost:8080/room_reservation/api/database");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -545,7 +529,6 @@ function drop_database() {
         const obj = JSON.parse(xhr.responseText);
         send_notification(obj["msg"]);
     };
-
     xhr.open("DELETE", "http://localhost:8080/room_reservation/api/database");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -559,7 +542,6 @@ function login() {
                 password: document.getElementById("login_pass").value
             }
     );
-
     //if first attempt to login with this email 
     if (document.getElementById("login_email").value !== login_attemts[0]) {
         login_attemts[0] = document.getElementById("login_email").value;
@@ -593,11 +575,9 @@ function login() {
             }
         }
     };
-
     //If 5 wrong attempts lock account
     if (login_attemts[1] > 4) {
         xhr.open("PUT", "http://localhost:8080/room_reservation/api/lock_account");
-
         //Login request
     } else {
         xhr.open("POST", "http://localhost:8080/room_reservation/api/login");
@@ -605,7 +585,6 @@ function login() {
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonData);
-
     //clear the values
     document.getElementById("login_email").value = "";
     document.getElementById("login_pass").value = "";
@@ -624,7 +603,6 @@ function topCapacity() {
             $('#top_capacity').html(data["msg"]);
         }
     };
-
     xhr.open("GET", "http://localhost:8080/room_reservation/api/top_capacity");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -644,7 +622,6 @@ function pendingRequests() {
             $('#pending_requests').html(data["msg"]);
         }
     };
-
     xhr.open("GET", "http://localhost:8080/room_reservation/api/pending_requests");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -659,7 +636,6 @@ function employeeActiveReservations() {
                 employeeID: user["employeeID"]
             }
     );
-
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -671,7 +647,6 @@ function employeeActiveReservations() {
             $('#employee_active_reservations').html(data["msg"]);
         }
     };
-
     xhr.open("POST", "http://localhost:8080/room_reservation/api/employee_active_reservations");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -686,7 +661,6 @@ function employeePastReservations() {
                 employeeID: user["employeeID"]
             }
     );
-
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -717,7 +691,6 @@ function allActiveReservations() {
             $('#admin_active_reservations').html(data["msg"]);
         }
     };
-
     xhr.open("GET", "http://localhost:8080/room_reservation/api/all_active_reservations");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -737,7 +710,6 @@ function allPastReservations() {
             $('#admin_past_reservations').html(data["msg"]);
         }
     };
-
     xhr.open("GET", "http://localhost:8080/room_reservation/api/all_past_reservations");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -752,7 +724,6 @@ function search() {
         date: document.getElementById("date").value,
         start_time: document.getElementById("start_time").value
     };
-
     displayContent(Content.employee_search);
     document.getElementById("room_name").value = jsonData.roomName;
     document.getElementById("room_type").value = jsonData.roomType;
@@ -773,7 +744,6 @@ function search() {
             $('#employee_search').html("<div class='cards-container' id='employee_search_rooms_cards'></div>");
             for (let i = 0; i < Object.keys(data).length; i++) {
                 $('#employee_search_rooms_cards').append(reserveRoomCard(data[i].roomID, data[i].roomName, data[i].roomType, data[i].capacity, true));
-
             }
         } else {
             $('#employee_search').html(data["msg"]);
@@ -797,7 +767,6 @@ function make_reservation(i) {
                 end_time: document.getElementById("end_time_" + i).innerHTML
             }
     );
-
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
@@ -811,12 +780,10 @@ function make_reservation(i) {
             send_notification(data["msg"]);
         }
     };
-
     xhr.open("POST", "http://localhost:8080/room_reservation/api/make_reservation");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonData);
-
 }
 
 function get_room_info(roomID) {
@@ -832,7 +799,6 @@ function get_room_info(roomID) {
             send_notification(room["msg"]);
         }
     };
-
     xhRoom.open("POST", "http://localhost:8080/room_reservation/api/room");
     xhRoom.setRequestHeader("Accept", "application/json");
     xhRoom.setRequestHeader("Content-Type", "application/json");
@@ -848,13 +814,11 @@ function review_reservation(reservationID, employeeID, roomID, reservationDate, 
     $('#startTime').html(start_time);
     $('#endTime').html(end_time);
     $('#status').html(status);
-
     $('#reservationReview').append(`
         <div style="display: flex; justify-content:space-between; width: 500px; padding: 35px 0px;">
             <button class="btn-dark purple-dark back_button" style="padding: 5px 70px;" onclick="update_reservation_status(${reservationID},1)"> <img src="img/icon-accept.png" width="25" height="25"> Accept</button>
             <button class="btn-dark purple-dark back_button" style="padding: 5px 70px;" onclick="update_reservation_status(${reservationID},-1)"> <img src="img/icon-reject.png" width="25" height="25"> Reject</button>
         </div>`);
-
     const xhrEmployee = new XMLHttpRequest();
     xhrEmployee.onload = function () {
         const employee = JSON.parse(xhrEmployee.responseText);
@@ -868,13 +832,10 @@ function review_reservation(reservationID, employeeID, roomID, reservationDate, 
             send_notification(employee["msg"]);
         }
     };
-
     xhrEmployee.open("POST", "http://localhost:8080/room_reservation/api/employee");
     xhrEmployee.setRequestHeader("Accept", "application/json");
     xhrEmployee.setRequestHeader("Content-Type", "application/json");
     xhrEmployee.send(JSON.stringify({employeeID: employeeID}));
-
-
     get_room_info(roomID);
 }
 
@@ -885,7 +846,6 @@ function update_reservation_status(reservationID, status) {
                 accepted: status
             }
     );
-
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
@@ -896,7 +856,6 @@ function update_reservation_status(reservationID, status) {
             send_notification(data["msg"]);
         }
     };
-
     xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation_status");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -904,7 +863,7 @@ function update_reservation_status(reservationID, status) {
 }
 
 function cancel_reservation(reservationID) {
-    //Pop up for if you want to cancel the reservation
+//Pop up for if you want to cancel the reservation
     Swal.fire({
         title: 'Are you sure you want to delete this reservation?',
         icon: 'warning',
@@ -913,7 +872,7 @@ function cancel_reservation(reservationID) {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
-        //if you say yes to the pop up you have to re enter yur password
+//if you say yes to the pop up you have to re enter yur password
         if (result.isConfirmed) {
             Swal.fire({
                 title: 'Confirm Password',
@@ -936,9 +895,8 @@ function cancel_reservation(reservationID) {
                 }
             }).then((result) => {
                 const user = JSON.parse(localStorage.getItem("logedIn"));
-
                 if (user["password"] === result.value.password) {
-                    //if your password was correct you can undo the cancelation within 30secs
+//if your password was correct you can undo the cancelation within 30secs
                     document.getElementById("reservationReview").style.display = "none";
                     let timerInterval;
                     Swal.fire({
@@ -969,19 +927,18 @@ function cancel_reservation(reservationID) {
                                     send_notification(data["msg"]);
                                 }
                             };
-
+                            sendEmail();
                             xhr.open("DELETE", "http://localhost:8080/room_reservation/api/reservation");
                             xhr.setRequestHeader("Accept", "application/json");
                             xhr.setRequestHeader("Content-Type", "application/json");
                             xhr.send(JSON.stringify({reservationID: reservationID}));
                         }
                     });
-
                 }
             });
-
         }
     });
+
 }
 
 function review_reservation_employee(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status) {
@@ -993,9 +950,7 @@ function review_reservation_employee(reservationID, employeeID, roomID, reservat
     $('#startTime').html(start_time);
     $('#endTime').html(end_time);
     $('#status').html(status);
-
     $('#reservationReview').append(`<button class="btn-dark purple-dark full_button" onclick="cancel_reservation(${reservationID})"> <img src="img/icon-cancel.png" width="25" height="25"> Cancel Reservation</button>`);
-
     get_room_info(roomID);
 }
 
@@ -1020,7 +975,6 @@ function edit_reservation() {
             available_slots_update_reservation(jsonData.reservationDate, reserve_form.roomID, jsonData.start_time);
             document.getElementById("end_time_1").innerHTML = jsonData.end_time;
         }, 100);
-
     } else {
         var jsonData =
                 {
@@ -1070,7 +1024,6 @@ function update_reservation() {
                 status = 1;
             } else if (user["employeeID"] !== undefined)
                 status = 0;
-
             var jsonData = JSON.stringify(
                     {
                         reservationID: reservationID,
@@ -1080,7 +1033,6 @@ function update_reservation() {
                         accepted: status
                     }
             );
-
             const xhr = new XMLHttpRequest();
             xhr.onload = function () {
                 const data = JSON.parse(xhr.responseText);
@@ -1091,24 +1043,20 @@ function update_reservation() {
                     } else if (user["adminID"] !== undefined) {
                         displayContent(Content.admin_active_reservations);
                         send_notification("Reservation updated successfully.");
+                        // TODO: here we should send email 
                     }
 
                 } else {
                     send_notification(data["msg"]);
                 }
             };
-
             console.log("Update Reservation: " + jsonData);
             xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation");
             xhr.setRequestHeader("Accept", "application/json");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(jsonData);
-
-
         }
     });
-
-
 }
 
 function available_slots(i) {
@@ -1131,7 +1079,6 @@ function available_slots(i) {
             $('#start_time_' + i).html('');
             for (let j = 0; j < Object.keys(data).length; j++) {
                 $('#start_time_' + i).append('<option value="' + data[j] + '">' + data[j] + '</option>');
-
             }
             document.getElementById('end_time_' + i).innerHTML = allSlots[allSlots.indexOf(data[0]) + 1];
             readySlots = true;
@@ -1139,7 +1086,6 @@ function available_slots(i) {
             send_notification(data["msg"]);
         }
     };
-
     xhr.open("PUT", "http://localhost:8080/room_reservation/api/available_slots");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -1160,13 +1106,11 @@ function available_slots_update_reservation(reservationDate, roomID, start_time)
         if (xhr.readyState === 4 && xhr.status === 200) {
             for (let j = 0; j < Object.keys(data).length; j++) {
                 $('#start_time_1').append('<option value="' + data[j] + '">' + data[j] + '</option>');
-
             }
         } else {
             send_notification(data["msg"]);
         }
     };
-
     xhr.open("PUT", "http://localhost:8080/room_reservation/api/available_slots");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -1214,7 +1158,6 @@ function fill_reserve_form_vars(id, name, type, number) {
 function fill_reserve_form_vars_time() {
     reserve_form.reservationDate = document.getElementById("date").value;
     reserve_form.start_time = document.getElementById("start_time").value;
-
 }
 
 function multy_reservations() {
