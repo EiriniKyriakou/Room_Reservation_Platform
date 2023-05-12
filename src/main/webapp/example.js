@@ -28,8 +28,13 @@ var reserve_form = {
     reservationDate: "",
     start_time: ""
 };
+
+var reservation_tmp = false;
+var reservation_tmp_id = null;
 var reservations_count = 0;
 var reservation_return_count = 0;
+var remainingTime;
+
 var now = new Date();
 // minimum date the user can choose, in this case now and in the future
 var minDate = now.toISOString().substring(0, 10);
@@ -111,6 +116,8 @@ function displayContent(id) {
         case Content.employee_make_reservation:
             reservations_count = 0;
             reservation_return_count = 0;
+            reservation_tmp = false;
+            reservation_tmp_id = null;
             $('#main_content').html(pageTitle("Make Reservation", "employee_make_reservation", 'content_employee_home'));
             $('#employee_make_reservation').append(makeReservationForm());
             reservations_count++;
@@ -218,7 +225,7 @@ function searchBarForm() {
 
 function pageTitle(title, div_id, back) {
     let html = `<div class="container-fluid">
-                <div style="display: flex; gap: 20px; align-items: center;">`;
+                <div style="display: flex; gap: 20px; align-items: center;" id="titleRow">`;
     if (back !== null) {
         html += `<button class="back_button btn-dark purple-dark" onclick="displayContent('${back}')"> <img src="img/icon-back.png" width="25" height="25"> Back</button>`;
     }
@@ -335,6 +342,7 @@ function reservationForm(i) {
     if (i === 1 && reserve_form.start_time !== "") {
         checkSlots();
     }
+    
 
 }
 
@@ -342,9 +350,24 @@ function checkSlots() {
     if (readySlots === false) {
         window.setTimeout(checkSlots, 100); /* this checks the flag every 100 milliseconds*/
     } else {
+        console.log("reserve_form.start_time ="+reserve_form.start_time)
         document.getElementById('start_time_1').value = reserve_form.start_time;
         document.getElementById('end_time_1').innerHTML = allSlots[allSlots.indexOf(reserve_form.start_time) + 1];
         readySlots = false;
+        if (reserve_form.reservationDate !== ""){
+            console.log(document.getElementById('start_time_1').value)
+            checkStartTime();
+            
+        }
+    }
+}
+
+function checkStartTime() {
+    if (document.getElementById('start_time_1').value === "") {
+        window.setTimeout(checkStartTime, 100); /* this checks the flag every 100 milliseconds*/
+    } else {
+        reservation_tmp = true;
+        make_reservation(1);
     }
 }
 
@@ -758,32 +781,103 @@ function search() {
 
 function make_reservation(i) {
     const user = JSON.parse(localStorage.getItem("logedIn"));
-    var jsonData = JSON.stringify(
+    var jsonData;
+    if (reservation_tmp===true && i===1 && reservation_tmp_id===null){
+        jsonData = JSON.stringify(
             {
                 roomID: reserve_form.roomID,
                 employeeID: user["employeeID"],
                 reservationDate: document.getElementById("date_" + i).value,
                 start_time: document.getElementById("start_time_" + i).value,
-                end_time: document.getElementById("end_time_" + i).innerHTML
+                end_time: document.getElementById("end_time_" + i).innerHTML,
+                tmp:1
             }
-    );
+        ); 
+
+    } else if (reservation_tmp===true && i===1 && reservation_tmp_id!==null){
+        jsonData = JSON.stringify(
+            {
+                reservationID: reservation_tmp_id,
+                roomID: reserve_form.roomID,
+                employeeID: user["employeeID"],
+                reservationDate: document.getElementById("date_" + i).value,
+                start_time: document.getElementById("start_time_" + i).value,
+                end_time: document.getElementById("end_time_" + i).innerHTML,
+                tmp:0
+            }
+        ); 
+    } else {
+        jsonData = JSON.stringify(
+            {
+                roomID: reserve_form.roomID,
+                employeeID: user["employeeID"],
+                reservationDate: document.getElementById("date_" + i).value,
+                start_time: document.getElementById("start_time_" + i).value,
+                end_time: document.getElementById("end_time_" + i).innerHTML,
+                tmp:0
+            }
+        );
+    }
+
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         const data = JSON.parse(xhr.responseText);
         if (xhr.readyState === 4 && xhr.status === 200) {
-            send_notification(data["msg"]);
             reservation_return_count++;
-            if (reservation_return_count === reservations_count) {
-                displayContent(Content.employee_active_reservations);
+            if (i===1 && reservation_tmp===true && reservation_tmp_id===null && data["id"]!=="null"){
+                reservation_return_count--;
+                reservation_tmp_id = data["id"];
+                console.log(reservation_tmp_id);
+//                remainingTime = setTimeout(delete_tmp_reservation, 300000 /*milliseconds in 5 minutes*/);
+                startTimer(5);
+            }else if (reservation_return_count === reservations_count) {
+                send_notification("Request was send, wait for admin to verify");
+                displayContent(Content.employee_home);
             }
         } else {
             send_notification(data["msg"]);
         }
     };
-    xhr.open("POST", "http://localhost:8080/room_reservation/api/make_reservation");
+
+    if (i===1 && reservation_tmp===true && reservation_tmp_id!==null){
+        clearTimeout(remainingTime);
+        console.log("update tmp reservation");
+        console.log(jsonData);
+        xhr.open("PUT", "http://localhost:8080/room_reservation/api/reservation");
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(jsonData);
+    } else{
+        console.log("make reservation");
+        xhr.open("POST", "http://localhost:8080/room_reservation/api/make_reservation");
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(jsonData);
+    }
+
+}
+
+function delete_tmp_reservation() {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log("tmp reservation was deleted");
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Your time has expired'
+            });
+            displayContent(Content.employee_home);
+        } else {
+            console.log("tmp reservation was not deleted");
+        }
+    };
+
+    xhr.open("DELETE", "http://localhost:8080/room_reservation/api/reservation");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(jsonData);
+    xhr.send(JSON.stringify({reservationID: parseInt(reservation_tmp_id)}));
 }
 
 function get_room_info(roomID) {
@@ -1030,7 +1124,8 @@ function update_reservation() {
                         reservationDate: document.getElementById("date_1").value,
                         start_time: document.getElementById("start_time_1").value,
                         end_time: document.getElementById("end_time_1").innerHTML,
-                        accepted: status
+                        accepted: status,
+                        tmp: 0
                     }
             );
             const xhr = new XMLHttpRequest();
@@ -1165,3 +1260,32 @@ function multy_reservations() {
         make_reservation(i);
     }
 }
+
+function startTimer(minute) {
+    
+    $('#titleRow').append(
+            `<div style="margin-left: auto;"> <h6 id="timer">Time left: 05:00</h6></div>`
+            )
+    let seconds = minute * 60;
+    let textSec = '0';
+    let statSec= 60;
+    const prefix = minute < 10 ? '0' : '';
+    remainingTime = setInterval(() => {
+      seconds--;
+      if (statSec != 0) statSec--;
+      else statSec = 59;
+
+      if (statSec < 10) {
+        textSec = '0' + statSec;
+      } else textSec = statSec;
+      let time= `${prefix}${Math.floor(seconds / 60)}:${textSec}`;
+      console.log(time)
+      document.getElementById("timer").innerHTML = "Time left: " + time;
+
+      if (seconds == 0) {
+        console.log('End of timer');
+        clearInterval(remainingTime);
+        delete_tmp_reservation();        
+      }
+    }, 1000);
+  }
