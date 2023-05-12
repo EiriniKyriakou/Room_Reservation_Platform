@@ -113,6 +113,28 @@ public class EditRoomTable {
         con.close();
         return null;
     }
+    
+    
+    public String get_Room_Name(int id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM rooms WHERE roomID = " + id);
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            Gson gson = new Gson();
+            Room r = gson.fromJson(json, Room.class);
+            return r.getRoomName();
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
+    }
 
     public ArrayList<Room> getRoomQueryResults(ArrayList<String> search_options, ArrayList<String> keys, String query, Connection con, Statement stmt) {
         ResultSet rs;

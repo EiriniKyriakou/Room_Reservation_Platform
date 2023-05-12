@@ -357,15 +357,15 @@ public class RoomReservationAPIResource {
             EditReservationTable edt = new EditReservationTable();
 //            check the availability (not correct)
             ArrayList<Reservation> res = edt.chechAvailability(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID());
-            
+
             if (res == null || res.isEmpty()) {
 //            make the reservation
                 Reservation result = edt.addNewReservation(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID(), r.getEmployeeID(), r.isTmp(), 0);
                 Response.Status status = Response.Status.OK;
-                if (result != null){
-                    return Response.status(status).type("application/json").entity("{\"id\":\""+result.getReservationID()+"\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
+                if (result != null) {
+                    return Response.status(status).type("application/json").entity("{\"id\":\"" + result.getReservationID() + "\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
                 }
-                return Response.status(status).type("application/json").entity("{\"id\":\""+null+"\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
+                return Response.status(status).type("application/json").entity("{\"id\":\"" + null + "\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
             } else {
                 Response.Status status = Response.Status.UNAUTHORIZED;
                 return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Dateand time not available.\"}").build();
@@ -465,12 +465,15 @@ public class RoomReservationAPIResource {
             JsonObject jobj = new Gson().fromJson(reservation, JsonObject.class);
             int id = Integer.parseInt(jobj.get("reservationID").toString());
             EditReservationTable ert = new EditReservationTable();
+
+            Reservation prevInfo = ert.getReservationInfo(id);
             ert.deleteReservation(id);
             Response.Status status = Response.Status.OK;
             // Notify employees for the change
             EditEmployeeTable eet = new EditEmployeeTable();
             ArrayList<Employee> active_employees = eet.getAllActiveEmployees();
-            ManageEmails.notifyEmployees("cancelled.", id, active_employees);
+            EditRoomTable eroomt = new EditRoomTable();
+            ManageEmails.notifyEmployees(eroomt.get_Room_Name(prevInfo.getRoomID()), prevInfo.getReservationDate().toString(), prevInfo.getStart_time(), active_employees);
             return Response.status(status).type("application/json").entity("{\"msg\":\"Reservation succesfully canceled.\"}").build();
 
         } catch (SQLException | ClassNotFoundException ex) {
@@ -492,11 +495,14 @@ public class RoomReservationAPIResource {
             System.out.println("Json reservation: " + gson.toJson(r));
 
             EditReservationTable ert = new EditReservationTable();
+            Reservation prevInfo = ert.getReservationInfo(r.getReservationID());
             ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.isAccepted(), r.isTmp());
             // Notify employees for the change
             EditEmployeeTable eet = new EditEmployeeTable();
             ArrayList<Employee> active_employees = eet.getAllActiveEmployees();
-            ManageEmails.notifyEmployees("rescheduled.", r.getReservationID(), active_employees);
+            EditRoomTable eroomt = new EditRoomTable();
+            ManageEmails.notifyEmployees(eroomt.get_Room_Name(prevInfo.getRoomID()), prevInfo.getReservationDate().toString(), prevInfo.getStart_time(), active_employees);
+
             Response.Status status = Response.Status.OK;
             return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Reservation updated.\"}").build();
         } catch (SQLException | ClassNotFoundException ex) {

@@ -74,7 +74,7 @@ public class EditReservationTable {
         return null;
     }
 
-    public Reservation getReservation(Date reservationDate, String start_time,  int roomID) throws SQLException, ClassNotFoundException {
+    public Reservation getReservation(Date reservationDate, String start_time, int roomID) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
 
@@ -83,7 +83,7 @@ public class EditReservationTable {
             rs = stmt.executeQuery("SELECT * FROM reservations WHERE reservationDate = '" + reservationDate + "' AND start_time = '" + start_time + "' AND roomID =" + roomID);
             rs.next();
             String json = DB_Connection.getResultsToJSON(rs);
-            System.out.println("New reservation: "+ json);
+            System.out.println("New reservation: " + json);
             Gson gson = new Gson();
             Reservation r = gson.fromJson(json, Reservation.class);
             return r;
@@ -95,7 +95,7 @@ public class EditReservationTable {
         con.close();
         return null;
     }
-    
+
     // Get reservations that have neither been accepted nor rejected
     public ArrayList<Reservation> getPendingRequests() throws ClassNotFoundException {
         try {
@@ -292,8 +292,26 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
-    
-    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted, int tmp) throws SQLException, ClassNotFoundException, IOException {        Connection con = DB_Connection.getConnection();
+
+    public Reservation getReservationInfo(int reservationID) throws SQLException, ClassNotFoundException, IOException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        Reservation reservation = null;
+        String query = "SELECT * from reservations WHERE reservationID = '" + reservationID + "'";
+        ResultSet rs = stmt.executeQuery(query);
+        if (rs.next()) {
+            String json = DB_Connection.getResultsToJSON(rs);
+            System.out.println(json);
+            Gson gson = new Gson();
+            reservation = gson.fromJson(json, Reservation.class);
+        }
+        stmt.close();
+        con.close();
+        return reservation;
+    }
+
+    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted, int tmp) throws SQLException, ClassNotFoundException, IOException {
+        Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
         String update = "UPDATE reservations SET reservationDate='" + newDate + "', start_time='" + startTime + "', end_time='" + end_time + "', accepted='" + accepted + "', tmp='" + tmp + "' WHERE reservationID = '" + reservationID + "'";
         stmt.executeUpdate(update);

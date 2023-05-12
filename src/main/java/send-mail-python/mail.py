@@ -3,11 +3,11 @@ from email.message import EmailMessage
 import ssl
 import smtplib
 
-def send_mail(email_receiver, reason, reservation_id):
+def send_mail(email_receiver, room, reservation_date, reservation_time):
     email_sender = 'dum4378my@gmail.com'
     email_password = 'kpibzzfsuuwoqhiv'
     email_start = "We would like to inform you that "
-    email_end =  "reservation #" + reservation_id + " has been " + reason  
+    email_end =  "room " + room + " is now available on " + reservation_date + ", " + reservation_time  
     subject = 'Reservation Update'
     body = email_start + email_end
     em = EmailMessage()
@@ -23,4 +23,4 @@ def send_mail(email_receiver, reason, reservation_id):
         smtp.sendmail(email_sender, email_receiver, em.as_string()) 
 
 
-send_mail(sys.argv[1], sys.argv[2], sys.argv[3])
+send_mail(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
