@@ -293,7 +293,7 @@ public class EditReservationTable {
         con.close();
     }
     
-    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted) throws SQLException, ClassNotFoundException, IOException {        Connection con = DB_Connection.getConnection();
+    public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted, int tmp) throws SQLException, ClassNotFoundException, IOException {        Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
         String update = "UPDATE reservations SET reservationDate='" + newDate + "', start_time='" + startTime + "', end_time='" + end_time + "', accepted='" + accepted + "', tmp='" + tmp + "' WHERE reservationID = '" + reservationID + "'";
         stmt.executeUpdate(update);

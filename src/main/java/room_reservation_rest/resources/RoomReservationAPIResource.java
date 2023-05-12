@@ -492,7 +492,7 @@ public class RoomReservationAPIResource {
             System.out.println("Json reservation: " + gson.toJson(r));
 
             EditReservationTable ert = new EditReservationTable();
-            ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.isAccepted());
+            ert.updateReservationInfo(r.getReservationID(), r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.isAccepted(), r.isTmp());
             // Notify employees for the change
             EditEmployeeTable eet = new EditEmployeeTable();
             ArrayList<Employee> active_employees = eet.getAllActiveEmployees();
