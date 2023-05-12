@@ -1024,7 +1024,6 @@ function cancel_reservation(reservationID) {
                                     send_notification(data["msg"]);
                                 }
                             };
-                            sendEmail();
                             xhr.open("DELETE", "http://localhost:8080/room_reservation/api/reservation");
                             xhr.setRequestHeader("Accept", "application/json");
                             xhr.setRequestHeader("Content-Type", "application/json");
