@@ -72,8 +72,9 @@ public class EditRoomTable {
             ArrayList<Room> rooms = new ArrayList<Room>();
 
             rs = stmt.executeQuery("SELECT * FROM rooms ORDER BY capacity DESC");
-            System.out.println(rs);
+
             while (rs.next()) {
+                System.out.println(rs);
                 String json = DB_Connection.getResultsToJSON(rs);
                 System.out.println(json);
                 Gson gson = new Gson();
@@ -113,8 +114,7 @@ public class EditRoomTable {
         con.close();
         return null;
     }
-    
-    
+
     public String get_Room_Name(int id) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();

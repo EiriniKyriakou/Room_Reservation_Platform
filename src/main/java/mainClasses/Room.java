@@ -1,7 +1,5 @@
 package mainClasses;
 
-import java.util.List;
-
 public class Room {
 
     private int roomID, depID;
@@ -51,17 +49,5 @@ public class Room {
 
     public void setCapacity(int value) {
         this.capacity = value;
-    }
-
-    public boolean see_availability(int roomID, String date) {
-        return false;
-    }
-
-    public Room search_room(int roomID) {
-        return null;
-    }
-
-    public List<Room> search_available_rooms(String date) {
-        return null;
     }
 }

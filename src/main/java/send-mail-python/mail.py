@@ -7,7 +7,7 @@ def send_mail(email_receiver, room, reservation_date, reservation_time):
     email_sender = 'dum4378my@gmail.com'
     email_password = 'kpibzzfsuuwoqhiv'
     email_start = "We would like to inform you that "
-    email_end =  "room " + room + " is now available on " + reservation_date + ", " + reservation_time  
+    email_end =  "room " + room + " is now available on " + reservation_date + ", " + reservation_time +'.\nBest Regards' 
     subject = 'Reservation Update'
     body = email_start + email_end
     em = EmailMessage()

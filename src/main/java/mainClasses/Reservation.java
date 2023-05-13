@@ -1,8 +1,6 @@
 package mainClasses;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class Reservation {
 
@@ -85,17 +83,4 @@ public class Reservation {
     void setTmp(int value) {
         this.tmp = value;
     }
-
-    public Reservation make_reservation(String date, String start_time, String end_time) {
-        return null;
-    }
-
-    public boolean update_reservation(int reservationID) {
-        return false;
-    }
-
-    public boolean cancel_reservation(int reservationID) {
-        return false;
-    }
-
 }
