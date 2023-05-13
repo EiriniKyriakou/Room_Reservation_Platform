@@ -19,7 +19,9 @@ const Content = {
     employee_edit_reservation: "content_employee_edit_reservation",
     employee_past_reservations: "content_employee_past_reservations"
 };
+// variable used to count login attempts from the same user
 var login_attemts = ["email", 0];
+// initializes reservtion form
 var reserve_form = {
     roomID: "",
     roomName: "",
@@ -151,7 +153,7 @@ function displayContent(id) {
 
 }
 
-//HTML Components
+//HTML Components - Each function displays the content we want to display using html 
 function navBarOptions(options, actions, name) {
     let html = "";
     for (let i = 0; i < Object.keys(options).length; i++) {
@@ -265,7 +267,7 @@ function reserveRoomCard(id, name, type, number, button) {
     html += `</div>`;
     return html;
 }
-
+// card used to reserve a room
 function cardRoomReservation(reservation, button, img_src) {
     const user = JSON.parse(localStorage.getItem("logedIn"));
     let status = "";
@@ -397,7 +399,7 @@ function makeReservationForm() {
                 <img src="img/button-plus-deep-purple.png" width="25" height="25" onclick="add_reservation_from()">
                 <h6>add more reservations</h6>
             </div></div>
-            <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="multy_reservations()">Complete Reservation</button>`;
+            <button class="btn-dark purple-dark back_button" style="margin: 0 auto;" onclick="multi_reservations()">Complete Reservation</button>`;
     return html;
 }
 
@@ -485,7 +487,7 @@ function reviewReservationForm() {
     
     </div>`;
 }
-
+// card used to review a reservation
 function employeeReviewReservation() {
     return `
     <div class="box" style="flex-flow: column;" >
@@ -541,7 +543,8 @@ function employeeReviewReservation() {
     </div>`;
 }
 
-//Requests
+//  Requests
+// Function used to create a database
 function creat_database() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -554,6 +557,7 @@ function creat_database() {
     xhr.send();
 }
 
+// Function used to drop a database
 function drop_database() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -565,7 +569,7 @@ function drop_database() {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send();
 }
-
+// Function used to login
 function login() {
     var jsonData = JSON.stringify(
             {
@@ -620,7 +624,7 @@ function login() {
     document.getElementById("login_email").value = "";
     document.getElementById("login_pass").value = "";
 }
-
+// Function used to display all rooms sorted by capacity
 function topCapacity() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -640,6 +644,7 @@ function topCapacity() {
     xhr.send();
 }
 
+// Function used to display the pending reqests for the admin
 function pendingRequests() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -659,6 +664,7 @@ function pendingRequests() {
     xhr.send();
 }
 
+// Function used to display an employee's active reservations
 function employeeActiveReservations() {
     const xhr = new XMLHttpRequest();
     const user = JSON.parse(localStorage.getItem("logedIn"));
@@ -684,6 +690,7 @@ function employeeActiveReservations() {
     xhr.send(jsonData);
 }
 
+// Function used to display an employee's past reservations
 function employeePastReservations() {
     const xhr = new XMLHttpRequest();
     const user = JSON.parse(localStorage.getItem("logedIn"));
@@ -709,6 +716,7 @@ function employeePastReservations() {
     xhr.send(jsonData);
 }
 
+// Function used to display all active reservations for admin only
 function allActiveReservations() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -728,6 +736,7 @@ function allActiveReservations() {
     xhr.send();
 }
 
+// Function used to display all past reservations for admin only
 function allPastReservations() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -747,6 +756,8 @@ function allPastReservations() {
     xhr.send();
 }
 
+
+// Function used to implement the search algorithm when an employee looks for rooms with specific options
 function search() {
     var jsonData = {
         roomName: document.getElementById("room_name").value,
@@ -787,6 +798,9 @@ function search() {
     xhr.send(jsonData);
 }
 
+
+// Function used to make the i-th reservation
+// In this function, we take into account if a reservation is temporary (we give employees a little time before actually reserving the room)
 function make_reservation(i) {
     const user = JSON.parse(localStorage.getItem("logedIn"));
     var jsonData;
@@ -836,7 +850,6 @@ function make_reservation(i) {
                 reservation_return_count--;
                 reservation_tmp_id = data["id"];
                 console.log(reservation_tmp_id);
-//                remainingTime = setTimeout(delete_tmp_reservation, 300000 /*milliseconds in 5 minutes*/);
                 startTimer(5);
             } else if (reservation_return_count === reservations_count) {
                 send_notification("Request was sent, wait for admin to verify");
@@ -865,6 +878,7 @@ function make_reservation(i) {
 
 }
 
+// Function used to delete a temporary reservation when time has expired
 function delete_tmp_reservation() {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -883,6 +897,7 @@ function delete_tmp_reservation() {
     xhr.send(JSON.stringify({reservationID: parseInt(reservation_tmp_id)}));
 }
 
+// Function used to get a specific room
 function get_room_info(roomID) {
     const xhRoom = new XMLHttpRequest();
     xhRoom.onload = function () {
@@ -902,6 +917,7 @@ function get_room_info(roomID) {
     xhRoom.send(JSON.stringify({roomID: roomID}));
 }
 
+// Function to diplay the review functionality of a reservation for admin only
 function review_reservation(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status) {
     displayContent(Content.admin_review_reservation);
     $('#reservationID').html(reservationID);
@@ -936,6 +952,7 @@ function review_reservation(reservationID, employeeID, roomID, reservationDate, 
     get_room_info(roomID);
 }
 
+// Function used to update the status of a reservation (pending, accepted, rejected)
 function update_reservation_status(reservationID, status) {
     var jsonData = JSON.stringify(
             {
@@ -959,6 +976,7 @@ function update_reservation_status(reservationID, status) {
     xhr.send(jsonData);
 }
 
+// Function used to verify that an employee or the admin wants to cancel a reservation and ask for employee's password for security reasons
 function cancel_reservation(reservationID) {
 //Pop up for if you want to cancel the reservation
     Swal.fire({
@@ -1037,6 +1055,7 @@ function cancel_reservation(reservationID) {
 
 }
 
+// Function used to give the option to an employee to review a reservation
 function review_reservation_employee(reservationID, employeeID, roomID, reservationDate, start_time, end_time, status) {
     displayContent(Content.employee_review_reservation);
     $('#reservationID').html(reservationID);
@@ -1050,6 +1069,7 @@ function review_reservation_employee(reservationID, employeeID, roomID, reservat
     get_room_info(roomID);
 }
 
+// Function used to edit the info of a reservation either by admin or by employee
 function edit_reservation() {
     const user = JSON.parse(localStorage.getItem("logedIn"));
     if (user["adminID"] !== undefined) {
@@ -1091,6 +1111,7 @@ function edit_reservation() {
     }
 }
 
+// Function that asks for employee's password when they want to update their reservation for security reasons
 function update_reservation() {
     Swal.fire({
         title: 'Confirm Password',
@@ -1156,6 +1177,7 @@ function update_reservation() {
     });
 }
 
+// Function used to display the available slots when employee wants to make the i-th reservation (multiple reservations)
 function available_slots(i) {
     let date = document.getElementById("date_" + i).value;
     if (date === undefined) {
@@ -1189,6 +1211,7 @@ function available_slots(i) {
     xhr.send(jsonData);
 }
 
+// Function used to display the available slots when either employee or admin wants to update their reservation(s)
 function available_slots_update_reservation(reservationDate, roomID, start_time) {
     var jsonData = JSON.stringify(
             {
@@ -1215,6 +1238,7 @@ function available_slots_update_reservation(reservationDate, roomID, start_time)
 }
 
 //Helpful Functions
+// We use this function to send specific notifications to the user during their time on the platform
 function send_notification(text) {
     document.getElementById("info_span").innerHTML = text;
     document.getElementById("notification").style.display = "block";
@@ -1223,7 +1247,7 @@ function send_notification(text) {
 function hide_notification() {
     document.getElementById("notification").style.display = "none";
 }
-
+// Function to verify a user's login and send a message
 function isLoggedIn() {
     const user = JSON.parse(localStorage.getItem("logedIn"));
     if (user !== null) {
@@ -1238,13 +1262,14 @@ function isLoggedIn() {
         displayContent(Content.guest);
     }
 }
-
+// Function to logout
 function logout() {
     localStorage.clear();
     send_notification("Logout completed successfully");
     isLoggedIn();
 }
 
+// Function to fill room related fields in the reservation form
 function fill_reserve_form_vars(id, name, type, number) {
     reserve_form.roomID = id;
     reserve_form.roomName = name;
@@ -1252,17 +1277,20 @@ function fill_reserve_form_vars(id, name, type, number) {
     reserve_form.roomCapacity = number;
 }
 
+// Function to fill reservation related fields in the reservation form
 function fill_reserve_form_vars_time() {
     reserve_form.reservationDate = document.getElementById("date").value;
     reserve_form.start_time = document.getElementById("start_time").value;
 }
 
-function multy_reservations() {
+// Function used to give user the option to make multiple reservations at once
+function multi_reservations() {
     for (let i = 1; i <= reservations_count; i++) {
         make_reservation(i);
     }
 }
 
+// Function that sets a timer when we give an employee some time to either reserve a room or to undo a cancallation of a previous reservation
 function startTimer(minute) {
 
     $('#titleRow').append(
