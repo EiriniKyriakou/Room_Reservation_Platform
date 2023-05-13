@@ -10,7 +10,6 @@ import database.tables.EditRoomTable;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +37,7 @@ import mainClasses.Room;
 @Path("api")
 public class RoomReservationAPIResource {
 
+    // A post method that creates the database when it is triggered from the platform
     @POST
     @Path("/database")
     @Produces({MediaType.APPLICATION_JSON})
@@ -56,6 +56,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A delete method that creates the database when it is triggered from the platform
     @DELETE
     @Path("/database")
     @Produces(MediaType.APPLICATION_JSON)
@@ -74,6 +75,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A post method that logins user to the platform depending on its role (administrator or employee)
     @POST
     @Path("/login")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -116,6 +118,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A put method that locks a user's account after some not successful login trials for security reasons
     @PUT
     @Path("/lock_account")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -136,7 +139,7 @@ public class RoomReservationAPIResource {
                 return Response.status(status).type("application/json").entity(gson.toJson(e_result)).build();
             } else {
                 Response.Status status = Response.Status.UNAUTHORIZED;
-                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No user with those credentials in DataBase.\"}").build();
+                return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"No user with those credentials in the database.\"}").build();
 
             }
         } catch (SQLException | ClassNotFoundException ex) {
@@ -145,6 +148,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A get method that returns all the rooms to be displayed sorted by capacity
     @GET
     @Path("/top_capacity")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -171,6 +175,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A get method that shows all the pending requests to the administrator after logging in the platform or choosing to review them
     @GET
     @Path("/pending_requests")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -197,6 +202,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A post method that returns all the user's search results when wanting to make one or more reservations
     @POST
     @Path("/employee_search")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -234,6 +240,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A get method triggered when admin wants to see all active reservations
     @GET
     @Path("/all_active_reservations")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -261,6 +268,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A post method triggered when employees want to see their active reservations
     @POST
     @Path("/employee_active_reservations")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -291,6 +299,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A get method triggered when admin wants to see all past reservations
     @GET
     @Path("/all_past_reservations")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -318,6 +327,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A post method triggered when employees want to see their past reservations
     @POST
     @Path("/employee_past_reservations")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -345,6 +355,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A post method used when employees decide to make a reservation
     @POST
     @Path("/make_reservation")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -356,16 +367,16 @@ public class RoomReservationAPIResource {
             );
             EditReservationTable edt = new EditReservationTable();
 //            check the availability (not correct)
-            ArrayList<Reservation> res = edt.chechAvailability(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID());
+            ArrayList<Reservation> res = edt.checkAvailability(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID());
 
             if (res == null || res.isEmpty()) {
 //            make the reservation
                 Reservation result = edt.addNewReservation(r.getReservationDate(), r.getStart_time(), r.getEnd_time(), r.getRoomID(), r.getEmployeeID(), r.isTmp(), 0);
                 Response.Status status = Response.Status.OK;
                 if (result != null) {
-                    return Response.status(status).type("application/json").entity("{\"id\":\"" + result.getReservationID() + "\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
+                    return Response.status(status).type("application/json").entity("{\"id\":\"" + result.getReservationID() + "\",\"msg\":\"Request was sent, wait for admin to verify\"}").build();
                 }
-                return Response.status(status).type("application/json").entity("{\"id\":\"" + null + "\",\"msg\":\"Request was send, wait for admin to verify\"}").build();
+                return Response.status(status).type("application/json").entity("{\"id\":\"" + null + "\",\"msg\":\"Request was sent, wait for admin to verify\"}").build();
             } else {
                 Response.Status status = Response.Status.UNAUTHORIZED;
                 return Response.status(status).type("application/json").entity("{\"type\":\"\",\"msg\":\"Dateand time not available.\"}").build();
@@ -380,6 +391,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A post method that returns an employee using the employeeID provided
     @POST
     @Path("/employee")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -407,6 +419,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    //A post method that returns a room entry using the roomID provided
     @POST
     @Path("/room")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -434,6 +447,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A put method that changed the status of a reservation (pending, accepted, rejected)
     @PUT
     @Path("/reservation_status")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -455,6 +469,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A delete method triggered when an employee or an administrator wants to cancel one or more reservations
     @DELETE
     @Path("/reservation")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -474,7 +489,7 @@ public class RoomReservationAPIResource {
             ArrayList<Employee> active_employees = eet.getAllActiveEmployees();
             EditRoomTable eroomt = new EditRoomTable();
             ManageEmails.notifyEmployees(eroomt.get_Room_Name(prevInfo.getRoomID()), prevInfo.getReservationDate().toString(), prevInfo.getStart_time(), active_employees);
-            return Response.status(status).type("application/json").entity("{\"msg\":\"Reservation succesfully canceled.\"}").build();
+            return Response.status(status).type("application/json").entity("{\"msg\":\"Reservation succesfully cancelled.\"}").build();
 
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RoomReservationAPIResource.class.getName()).log(Level.SEVERE, null, ex);
@@ -483,6 +498,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+// A put method triggered when an employee wants to update their reservation(s)
     @PUT
     @Path("/reservation")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -512,6 +528,7 @@ public class RoomReservationAPIResource {
         }
     }
 
+    // A put method that displays all the available time slots for employees to make reservations
     @PUT
     @Path("/available_slots")
     @Consumes({MediaType.APPLICATION_JSON})

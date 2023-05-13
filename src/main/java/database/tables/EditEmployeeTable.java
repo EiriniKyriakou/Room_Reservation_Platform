@@ -16,9 +16,9 @@ import mainClasses.Employee;
  * @author eirin
  */
 public class EditEmployeeTable {
+    // We create the employee table for the database 
 
     public void createEmployeeTable() throws SQLException, ClassNotFoundException {
-
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
 
@@ -39,6 +39,7 @@ public class EditEmployeeTable {
         con.close();
     }
 
+    // We add an employee to the database
     public void addNewEmployee(String firstName, String lastName, String email, String corp_email, String phone, String password, int active, int depID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
@@ -69,6 +70,7 @@ public class EditEmployeeTable {
         }
     }
 
+    // Given a corporate email and a password we get the employee entry they correspond to 
     public Employee databaseToEmployee(String corp_email, String password) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -90,6 +92,7 @@ public class EditEmployeeTable {
         return null;
     }
 
+    // Given a corporate email we get the employee entry it corresponds to 
     public Employee databaseToEmployeeCorpEmail(String corp_email) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -109,7 +112,8 @@ public class EditEmployeeTable {
         con.close();
         return null;
     }
-
+    
+    // We get all active employees from the database
     public ArrayList<Employee> getAllActiveEmployees() throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -134,7 +138,8 @@ public class EditEmployeeTable {
         con.close();
         return null;
     }
-
+    
+    //Given attributes to change, we update the employee entry in the databse
     public void updateEmployee(String corp_email, String key, String value) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -143,7 +148,7 @@ public class EditEmployeeTable {
         stmt.close();
         con.close();
     }
-
+    // Given an employee id we get the employee entry from the database
     public Employee databaseToEmployeeID(int id) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();

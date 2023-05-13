@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ManageEmails {
-
+    // For every active employee, we generate an automated email which includes a date, a time and a room that are now available after update/cancellation of previous reservation
+    // The email is sent using a python script called mail.py
     public static void notifyEmployees(String room, String prevDate, String prevTime, ArrayList<Employee> Employees) throws IOException {
         ProcessBuilder builder;
    

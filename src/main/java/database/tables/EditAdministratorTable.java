@@ -16,8 +16,8 @@ import mainClasses.Administrator;
  */
 public class EditAdministratorTable {
 
+    // We create the administrator table for the database 
     public void createAdministratorTable() throws SQLException, ClassNotFoundException {
-
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
 
@@ -37,6 +37,7 @@ public class EditAdministratorTable {
         con.close();
     }
 
+    // We add an administrator to the database
     public void addNewAdministrator(String firstName, String lastName, String email, String corp_email, String phone, String password, int depID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
@@ -65,7 +66,8 @@ public class EditAdministratorTable {
             Logger.getLogger(EditAdministratorTable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    // Given a corporate email and a password, we get the administatrator they correspond to
     public Administrator databaseToAdministrator(String corp_email, String password) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -87,6 +89,7 @@ public class EditAdministratorTable {
         return null;
     }
     
+    // Given a corporate email, we get the administatrator it corresponds to    
     public Administrator databaseToAdministratorCorpEmail(String corp_email) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();

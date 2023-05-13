@@ -13,16 +13,9 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
-
 public class InitDatabase {
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-//        InitDatabase init = new InitDatabase();
-//        init.initDatabase();
-        
-    }
-
+    // We create the database
     public void initDatabase() throws SQLException, ClassNotFoundException {
         Connection conn = getInitialConnection();
         Statement stmt = conn.createStatement();
@@ -32,6 +25,7 @@ public class InitDatabase {
         initTables();
     }
 
+    // We drop the database (delete all tables and data)
     public void dropDatabase() throws SQLException, ClassNotFoundException {
         Connection conn = getInitialConnection();
         Statement stmt = conn.createStatement();
@@ -40,6 +34,7 @@ public class InitDatabase {
         conn.close();
     }
 
+    // We initialize all tables needed for the databaase and put some reservation, employee, admin data to start
     public void initTables() throws SQLException, ClassNotFoundException {
         EditCompanyTable ect = new EditCompanyTable();
         ect.createCompanyTable();

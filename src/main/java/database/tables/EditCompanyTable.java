@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * @author eirin
  */
 public class EditCompanyTable {
-    
+    // We create the company table for the database 
     public void createCompanyTable() throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -26,7 +26,8 @@ public class EditCompanyTable {
         stmt.close();
         con.close();
     }
-
+    
+    // We add a company to the database
     public void addNewCompany(String name, String location) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();

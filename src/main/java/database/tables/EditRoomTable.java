@@ -18,6 +18,7 @@ import mainClasses.Room;
 public class EditRoomTable {
 
     ArrayList<Room> rooms, rooms_to_remove;
+    // We create the room table for the database 
 
     public void createRoomTable() throws SQLException, ClassNotFoundException {
 
@@ -38,6 +39,7 @@ public class EditRoomTable {
         con.close();
     }
 
+    // We add a room to the database
     public void addNewRoom(String roomName, String roomType, int capacity, int depID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
@@ -64,6 +66,7 @@ public class EditRoomTable {
         }
     }
 
+    // We get all the rooms sorted by capacity from the database
     public ArrayList<Room> getTopCapacityRooms() throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
@@ -94,6 +97,7 @@ public class EditRoomTable {
         return null;
     }
 
+    // Given a room id we get the entry that it corresponds to
     public Room databaseToRoomID(int id) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -115,6 +119,7 @@ public class EditRoomTable {
         return null;
     }
 
+    // Given a room id we get only the name of the entry that it corresponds to
     public String get_Room_Name(int id) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -136,6 +141,7 @@ public class EditRoomTable {
         return null;
     }
 
+    // We get the query results referring to room information only
     public ArrayList<Room> getRoomQueryResults(ArrayList<String> search_options, ArrayList<String> keys, String query, Connection con, Statement stmt) {
         ResultSet rs;
         String room_query = "SELECT * FROM rooms WHERE ";
@@ -176,6 +182,7 @@ public class EditRoomTable {
         return rooms;
     }
 
+    // We get the query results referring to reservation information only
     public ArrayList<Room> getReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, String query, Connection con, Statement stmt) {
         String reservation_query = "SELECT * FROM reservations WHERE ";
         String rest_of_reservation_query = "";
@@ -204,7 +211,6 @@ public class EditRoomTable {
 
             System.out.println(reservation_query + rest_of_reservation_query);
             try {
-//                System.out.println("Checking roomID " + rooms.get().getRoomID());
                 System.out.println(reservation_query + rest_of_reservation_query);
                 rs1 = stmt.executeQuery(reservation_query + rest_of_reservation_query); // search for rooms that have not been reserved for the date+time user has chosen
 
@@ -232,7 +238,6 @@ public class EditRoomTable {
 
                 if (reservation_slots > 11) { // 12 slots per day (7am-6pm)
                     //remove it here so as not to change initial structure of arraylist
-//                    System.out.println(" We need to remove rooms now. Reservation slots are " + reservation_slots);
                     for (int i = 0; i < rooms_to_remove.size(); ++i) {
                         for (int j = 0; j < rooms.size(); ++j) {
                             if (rooms.get(j).getRoomID() == rooms_to_remove.get(i).getRoomID()) {
@@ -260,7 +265,8 @@ public class EditRoomTable {
         }
         return rooms;
     }
-
+    
+    // We get the query results referring to room and reservation information
     public ArrayList<Room> getRoomReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, Connection con, Statement stmt) {
         System.out.println("In combined query case");
         String reservation_query = "SELECT * FROM reservations WHERE ";
@@ -300,7 +306,6 @@ public class EditRoomTable {
 
             if (query_case == 2 || (query_case == 1 && reservation_slots > 11)) {
                 //remove it here so as not to change initial structure of arraylist
-//                System.out.println(" We need to remove rooms now.");
                 for (int i = 0; i < rooms_to_remove.size(); ++i) {
                     for (int j = 0; j < rooms.size(); ++j) {
                         if (rooms.get(j).getRoomID() == rooms_to_remove.get(i).getRoomID()) {
@@ -319,9 +324,8 @@ public class EditRoomTable {
         }
         return rooms;
     }
-// Get reservations that have been accepted and their date < current_date
-// For search options we have (indexes) 0: roomName, 1: roomType, 2: roomCapacity, 3: reservationDate, 4: reservationStartTime
 
+// For search options we have (indexes) 0: roomName, 1: roomType, 2: roomCapacity, 3: reservationDate, 4: reservationStartTime
     public ArrayList<Room> getEmployeeSearchResults(ArrayList<String> search_options) throws ClassNotFoundException {
         try {
             rooms = new ArrayList<Room>();
@@ -340,7 +344,6 @@ public class EditRoomTable {
 
             String query = "";
             //we start by building the room query
-            //limit: keys.size() - 2(= 3) because we then have to build the reservation query
             rooms = getRoomQueryResults(search_options, keys, query, con, stmt);
 
             // check if we need to search further
@@ -353,7 +356,7 @@ public class EditRoomTable {
             }
             boolean empty_room_query = (search_options.get(0).equals("") && search_options.get(1).equals("") && search_options.get(2).equals(""));
 
-            // only date + time data
+            // only date + time data in search
             if (rooms.size() == 0 && empty_room_query) {
                 rooms = getReservationQueryResults(search_options, keys, "", con, stmt);
                 return rooms;

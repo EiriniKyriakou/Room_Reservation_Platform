@@ -42,7 +42,7 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
-
+    // We add a reservation to the database
     public Reservation addNewReservation(Date reservationDate, String start_time, String end_time, int roomID, int employeeID, int tmp, int accepted) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
@@ -73,7 +73,8 @@ public class EditReservationTable {
         }
         return null;
     }
-
+    
+    // Given a date, a time and an id, we get the reservation they correspond to from the database
     public Reservation getReservation(Date reservationDate, String start_time, int roomID) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -96,7 +97,7 @@ public class EditReservationTable {
         return null;
     }
 
-    // Get reservations that have neither been accepted nor rejected
+    // Get reservations that have neither been accepted nor rejected from the database
     public ArrayList<Reservation> getPendingRequests() throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
@@ -156,7 +157,7 @@ public class EditReservationTable {
         return null;
     }
 
-    // Get reservations  for specific employee that have been accepted and their date >= current_date
+    // Get reservations for specific employee that have been accepted and their date >= current_date
     public ArrayList<Reservation> getEmployeeActiveReservations(String employee_id) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
@@ -215,7 +216,7 @@ public class EditReservationTable {
         return null;
     }
 
-    // Get reservations for specific employee that have been accepted and their date < current_date // Get reservations  for specific employee that have been accepted and their date >= current_date
+   // Get reservations  for specific employee that have been accepted and their date >= current_date
     public ArrayList<Reservation> getEmployeePastReservations(String employee_id) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
@@ -244,8 +245,8 @@ public class EditReservationTable {
         }
         return null;
     }
-
-    public ArrayList<Reservation> chechAvailability(Date reservationDate, String start_time, String end_time, int roomID) throws ClassNotFoundException {
+    // Given a date, a start + end time, and a roomID, we get the reservations that match this information in order to prevent employees from making reservations with that information
+    public ArrayList<Reservation> checkAvailability(Date reservationDate, String start_time, String end_time, int roomID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
             Statement stmt = con.createStatement();
@@ -262,7 +263,7 @@ public class EditReservationTable {
                 Reservation reservation = gson.fromJson(json, Reservation.class);
                 reservations.add(reservation);
             }
-            System.out.println("# Ckech Availability");
+            System.out.println("# Check Availability");
 
             stmt.close();
             con.close();
@@ -274,7 +275,8 @@ public class EditReservationTable {
         }
         return null;
     }
-
+    
+   // We update a reservation by setting the attributes to change
     public void updateReservation(int reservationID, String key, int value) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -283,7 +285,7 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
-
+    // We delete a reservation
     public void deleteReservation(int reservationID) throws SQLException, ClassNotFoundException, IOException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -292,7 +294,7 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
-
+    // Given a reservationID, we get the corresponding reservation  
     public Reservation getReservationInfo(int reservationID) throws SQLException, ClassNotFoundException, IOException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -309,7 +311,7 @@ public class EditReservationTable {
         con.close();
         return reservation;
     }
-
+   // Given the attributes we pass as parameters, we update the reservation info  
     public void updateReservationInfo(int reservationID, Date newDate, String startTime, String end_time, int accepted, int tmp) throws SQLException, ClassNotFoundException, IOException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -318,7 +320,8 @@ public class EditReservationTable {
         stmt.close();
         con.close();
     }
-
+    
+    // We remove unavailable slots so as not to show them as options to employees
     public ArrayList<String> availableSlots(Date reservationDate, int roomID) {
         String[] allSlots = {"09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"};
         try {

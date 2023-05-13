@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * @author eirin
  */
 public class EditDepartmentTable {
-   
+   // We create the department table for the database 
     public void createDepartmentTable() throws SQLException, ClassNotFoundException {
 
         Connection con = DB_Connection.getConnection();
@@ -29,7 +29,7 @@ public class EditDepartmentTable {
         stmt.close();
         con.close();
     }
-
+    // We add a department to the database
     public void addNewDepartment(String name, String location, int compID) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();

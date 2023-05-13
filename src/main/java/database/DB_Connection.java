@@ -26,12 +26,12 @@ public class DB_Connection {
         Class.forName("com.mysql.jdbc.Driver");
         return DriverManager.getConnection(url + ":" + port + "/" + databaseName, username, password);
     }
-    
+    // Ιnitializes connection with the jdbc driver
     public static Connection getInitialConnection() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
         return DriverManager.getConnection(url + ":" + port, username, password);
     }
-
+    // Converts a resultset to json data  
     public static String getResultsToJSON(ResultSet rs) throws SQLException {
         ResultSetMetaData metadata = rs.getMetaData();
         int columnCount = metadata.getColumnCount();
@@ -45,7 +45,8 @@ public class DB_Connection {
         }
         return object.toString();
     }
-
+    
+    // Prints results from a result set
     public static void printResults(ResultSet rs) throws SQLException {
         ResultSetMetaData metadata = rs.getMetaData();
         int columnCount = metadata.getColumnCount();

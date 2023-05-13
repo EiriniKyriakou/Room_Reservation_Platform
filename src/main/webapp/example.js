@@ -839,7 +839,7 @@ function make_reservation(i) {
 //                remainingTime = setTimeout(delete_tmp_reservation, 300000 /*milliseconds in 5 minutes*/);
                 startTimer(5);
             } else if (reservation_return_count === reservations_count) {
-                send_notification("Request was send, wait for admin to verify");
+                send_notification("Request was sent, wait for admin to verify");
                 displayContent(Content.employee_home);
             }
         } else {
