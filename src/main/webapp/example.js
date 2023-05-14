@@ -393,7 +393,7 @@ function add_reservation_from() {
 
 function makeReservationForm() {
 
-    html = `<div style="display:flex; flex-flow: column;"><div id="reservation">${reserveRoomCard(reserve_form.roomID, reserve_form.roomName, reserve_form.roomType, reserve_form.roomCapacity, false)}`;
+    html = `<div style="display:flex; flex-flow: column;"><div style="display:flex; flex-flow: row wrap;" id="reservation">${reserveRoomCard(reserve_form.roomID, reserve_form.roomName, reserve_form.roomType, reserve_form.roomCapacity, false)}`;
     html += `<div id="reserve_from"></div> </div>`;
     html += `<div style="display: flex; gap:15px; padding: 35px; justify-content:center">
                 <img src="img/button-plus-deep-purple.png" width="25" height="25" onclick="add_reservation_from()">
