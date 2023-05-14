@@ -23,7 +23,7 @@ public class Reservation {
         return this.reservationID;
     }
 
-    void setReservationID(int value) {
+    public void setReservationID(int value) {
         this.reservationID = value;
     }
 
@@ -31,7 +31,7 @@ public class Reservation {
         return this.accepted;
     }
 
-    void setAccepted(int value) {
+    public void setAccepted(int value) {
         this.accepted = value;
     }
 
@@ -40,7 +40,7 @@ public class Reservation {
         return reservationDate;
     }
 
-    void setReservationDate(String value) {
+    public void setReservationDate(String value) {
         this.reservationDate = value;
     }
 
@@ -48,7 +48,7 @@ public class Reservation {
         return this.start_time;
     }
 
-    void setStart_time(String value) {
+    public void setStart_time(String value) {
         this.start_time = value;
     }
 
@@ -64,7 +64,7 @@ public class Reservation {
         return this.roomID;
     }
 
-    void setRoomID(int value) {
+    public void setRoomID(int value) {
         this.roomID = value;
     }
 
@@ -72,7 +72,7 @@ public class Reservation {
         return this.employeeID;
     }
 
-    void setEmployeeID(int value) {
+    public void setEmployeeID(int value) {
         this.employeeID = value;
     }
 
@@ -80,7 +80,7 @@ public class Reservation {
         return this.tmp;
     }
 
-    void setTmp(int value) {
+    public void setTmp(int value) {
         this.tmp = value;
     }
 }

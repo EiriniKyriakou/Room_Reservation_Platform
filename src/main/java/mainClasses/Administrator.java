@@ -14,19 +14,19 @@ public class Administrator extends Person {
         this.phone = phone;
     }
 
-    int getAdminID() {
+    public int getAdminID() {
         return this.adminID;
     }
 
-    void setAdminID(int value) {
+    public void setAdminID(int value) {
         this.adminID = value;
     }
     
-    int getDepID() {
+    public int getDepID() {
         return this.depID;
     }
 
-    void setDepID(int value) {
+    public void setDepID(int value) {
         this.depID = value;
     }
 
@@ -34,15 +34,15 @@ public class Administrator extends Person {
         return this.corp_email;
     }
 
-    void setEmail(String value) {
+    public void setEmail(String value) {
         this.corp_email = value;
     }
 
-    String getPhone() {
+    public String getPhone() {
         return this.phone;
     }
 
-    void setPhone(String value) {
+    public void setPhone(String value) {
         this.phone = value;
     }
 
@@ -50,7 +50,7 @@ public class Administrator extends Person {
         return this.password;
     }
 
-    void setPassword(String value) {
+    public void setPassword(String value) {
         this.password = value;
     }
 }

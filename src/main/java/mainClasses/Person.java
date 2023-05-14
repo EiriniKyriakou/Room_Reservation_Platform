@@ -15,31 +15,31 @@ public class Person {
         return this.firstName;
     }
 
-    void setFirstName(String value) {
+    public void setFirstName(String value) {
         this.firstName = value;
     }
 
-    int getPersonID() {
+    public int getPersonID() {
         return this.personID;
     }
 
-    void setPersonID(int value) {
+    public void setPersonID(int value) {
         this.personID = value;
     }
 
-    String getLastName() {
+    public String getLastName() {
         return this.lastName;
     }
 
-    void setLastName(String value) {
+    public void setLastName(String value) {
         this.lastName = value;
     }
 
-    String getEmail() {
+    public String getEmail() {
         return this.email;
     }
 
-    void setEmail(String value) {
+    public void setEmail(String value) {
         this.email = value;
     }
 

@@ -10,35 +10,35 @@ public class Department {
         this.location = location;
     }
 
-    int getDepID() {
+    public int getDepID() {
         return this.depID;
     }
 
-    void setDepID(int value) {
+    public void setDepID(int value) {
         this.depID = value;
     }
-    
-    int getCompID() {
+
+    public int getCompID() {
         return this.compID;
     }
 
-    void setCompID(int value) {
+    public void setCompID(int value) {
         this.compID = value;
     }
 
-    String getName() {
+    public String getName() {
         return this.name;
     }
 
-    void setName(String value) {
+    public void setName(String value) {
         this.name = value;
     }
 
-    String getLocation() {
+    public String getLocation() {
         return this.location;
     }
 
-    void setLocation(String value) {
+    public void setLocation(String value) {
         this.location = value;
     }
 

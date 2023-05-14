@@ -14,11 +14,11 @@ public class Employee extends Person {
         this.password = password;
     }
 
-    String getPhone() {
+    public String getPhone() {
         return this.phone;
     }
 
-    void setPhone(String value) {
+    public void setPhone(String value) {
         this.phone = value;
     }
 
@@ -26,15 +26,15 @@ public class Employee extends Person {
         return this.employeeID;
     }
 
-    void setEmployeeID(int value) {
+    public void setEmployeeID(int value) {
         this.employeeID = value;
     }
     
-    int getDepID() {
+    public int getDepID() {
         return this.depID;
     }
 
-    void setDepID(int value) {
+    public void setDepID(int value) {
         this.depID = value;
     }
 
@@ -42,7 +42,7 @@ public class Employee extends Person {
         return this.corp_email;
     }
 
-    void setEmail(String value) {
+    public void setEmail(String value) {
         this.corp_email = value;
     }
 
@@ -50,7 +50,7 @@ public class Employee extends Person {
         return this.active;
     }
 
-    void setActive(int value) {
+    public void setActive(int value) {
         this.active = value;
     }
 
@@ -58,7 +58,7 @@ public class Employee extends Person {
         return this.password;
     }
 
-    void setPassword(String value) {
+    public void setPassword(String value) {
         this.password = value;
     }
 }
