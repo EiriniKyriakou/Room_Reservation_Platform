@@ -151,9 +151,7 @@ public class EditRoomTable {
                     continue;
                 }
 
-                if (!search_options.get(i).equals("")) {
-                    query += keys.get(i) + "='" + search_options.get(i) + "'";
-                }
+                query += keys.get(i) + "='" + search_options.get(i) + "'";
 
                 // i = 2 means we are in the last concatenation before the reservation query (which we don't know if it is empty)
                 if (!search_options.get(i + 1).equals("") && (i < 2)) {

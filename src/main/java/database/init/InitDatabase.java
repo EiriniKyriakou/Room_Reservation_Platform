@@ -57,12 +57,13 @@ public class InitDatabase {
 
         EditAdministratorTable eat = new EditAdministratorTable();
         eat.createAdministratorTable();
-        eat.addNewAdministrator("Eirini", "Kyriakou", "e@email.com", "csdXXXX@csd.uoc.gr", "69", "eirini", 1);
+        eat.addNewAdministrator("Eleni", "Papadaki", "eleni@email.com", "papadaki@email.gr", "6922222222", "eirini", 1);
 
         EditEmployeeTable eet = new EditEmployeeTable();
         eet.createEmployeeTable();
-        eet.addNewEmployee("Ast", "Sel", "a@email.com", "keletzit@gmail.com", "69", "eirini", 1, 1);
-
+        eet.addNewEmployee("Eirini", "Kyriakou", "eirini@email.com", "eirinikyr99@gmail.com", "6900000000", "eirini", 1, 1);
+        eet.addNewEmployee("Tarso", "Keletzi", "tarso@email.com", "keletzit@gmail.com", "6911111111", "eirini", 1, 1);
+        
         EditReservationTable ert = new EditReservationTable();
         ert.createReservationTable();
         Date upcoming_date = Date.valueOf("2025-03-31");
