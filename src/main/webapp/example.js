@@ -32,6 +32,7 @@ var reserve_form = {
 };
 
 var reservation_tmp = false;
+var reservation_edit = false;
 var reservation_tmp_id = null;
 var reservations_count = 0;
 var reservation_return_count = 0;
@@ -47,6 +48,7 @@ var readySlots = false;
 //Depending on the page we want to desplay, this function chooses what to insert in the html code
 //The main idea is that we have a NavBar, and the main_content div, in which we put the content
 function displayContent(id) {
+    reservation_edit = false;
     $('#main_content').html("");
     const user = JSON.parse(localStorage.getItem("logedIn"));
     let options, actions;
@@ -1051,6 +1053,7 @@ function review_reservation_employee(reservationID, employeeID, roomID, reservat
 
 // Function used to display the "Edit Reservation" page 
 function edit_reservation() {
+    reservation_edit = true;
     const user = JSON.parse(localStorage.getItem("logedIn"));
     if (user["adminID"] !== undefined) {
         var jsonData =
@@ -1317,12 +1320,12 @@ function checkSlots() {
     if (readySlots === false) {
         window.setTimeout(checkSlots, 100); /* this checks the flag every 100 milliseconds*/
     } else {
-        console.log("reserve_form.start_time =" + reserve_form.start_time)
+        console.log("reserve_form.start_time =" + reserve_form.start_time);
         document.getElementById('start_time_1').value = reserve_form.start_time;
         document.getElementById('end_time_1').innerHTML = allSlots[allSlots.indexOf(reserve_form.start_time) + 1];
         readySlots = false;
         if (reserve_form.reservationDate !== "") {
-            console.log(document.getElementById('start_time_1').value)
+            console.log(document.getElementById('start_time_1').value);
             checkStartTime();
         }
     }
@@ -1332,7 +1335,7 @@ function checkSlots() {
 function checkStartTime() {
     if (document.getElementById('start_time_1').value === "") {
         window.setTimeout(checkStartTime, 100); /* this checks the flag every 100 milliseconds*/
-    } else {
+    } else if (reservation_edit === false){
         reservation_tmp = true;
         make_reservation(1);
     }
