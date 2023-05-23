@@ -146,15 +146,20 @@ public class EditRoomTable {
         ResultSet rs;
         String room_query = "SELECT * FROM rooms WHERE ";
         try {
+            boolean first_and_last_option_only = !search_options.get(0).equals("") && !search_options.get(2).equals("") && search_options.get(1).equals("");
             for (int i = 0; i < 3; ++i) {
                 if (search_options.get(i).equals("")) {
                     continue;
                 }
-
-                query += keys.get(i) + "='" + search_options.get(i) + "'";
-
                 // i = 2 means we are in the last concatenation before the reservation query (which we don't know if it is empty)
                 if (!search_options.get(i + 1).equals("") && (i < 2)) {
+                    query += keys.get(i) + "='" + search_options.get(i) + "'";
+                    query += " AND ";
+                } else {
+                    query += keys.get(i) + "='" + search_options.get(i) + "'";
+                }
+
+                if (i == 0 && first_and_last_option_only) {
                     query += " AND ";
                 }
             }
@@ -263,7 +268,7 @@ public class EditRoomTable {
         }
         return rooms;
     }
-    
+
     // We get the query results referring to room and reservation information
     public ArrayList<Room> getRoomReservationQueryResults(ArrayList<String> search_options, ArrayList<String> keys, Connection con, Statement stmt) {
         System.out.println("In combined query case");
