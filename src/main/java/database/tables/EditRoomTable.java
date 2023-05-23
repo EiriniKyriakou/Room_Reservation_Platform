@@ -287,7 +287,8 @@ public class EditRoomTable {
                     rest_of_reservation_query += " reservationDate IN (SELECT reservationDate FROM reservations WHERE roomID='" + rooms.get(i).getRoomID() + "' AND accepted!='-1')";
                     query_case = 1;
                 } else { // we care about both
-                    rest_of_reservation_query += "(reservationDate,start_time) IN (SELECT reservationDate,start_time FROM reservations WHERE roomID='" + rooms.get(i).getRoomID() + "' AND accepted!='-1')";
+                    reservation_query = " SELECT * FROM reservations WHERE roomID IN (SELECT roomID FROM reservations WHERE reservationDate='"
+                            + search_options.get(3) + "' AND " + "start_time='" + search_options.get(4) + "' AND " + "accepted!='-1'" + " AND " + "roomID='" + rooms.get(i).getRoomID() + "'" + ")";
                     query_case = 2;
                 }
                 System.out.println(reservation_query + rest_of_reservation_query);
@@ -299,8 +300,8 @@ public class EditRoomTable {
                 while (rs1.next()) {
                     if (query_case == 1 || query_case == 2) {
                         reservation_slots++;
+                        rooms_to_remove.add(rooms.get(i)); // so as not to show it as a result (does not match user options)
                     }
-                    rooms_to_remove.add(rooms.get(i)); // so as not to show it as a result (does not match user options)
                     json = DB_Connection.getResultsToJSON(rs1);
                     System.out.println(json);
                     continue;
