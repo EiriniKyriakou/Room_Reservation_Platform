@@ -2,7 +2,7 @@ package mainClasses;
 
 public class Department {
 
-    private int depID, compID;
+    private int depID;
     private String name, location;
 
     public Department(String name, String location) {
@@ -10,35 +10,27 @@ public class Department {
         this.location = location;
     }
 
-    public int getDepID() {
+    int getDepID() {
         return this.depID;
     }
 
-    public void setDepID(int value) {
+    void setDepID(int value) {
         this.depID = value;
     }
 
-    public int getCompID() {
-        return this.compID;
-    }
-
-    public void setCompID(int value) {
-        this.compID = value;
-    }
-
-    public String getName() {
+    String getName() {
         return this.name;
     }
 
-    public void setName(String value) {
+    void setName(String value) {
         this.name = value;
     }
 
-    public String getLocation() {
+    String getLocation() {
         return this.location;
     }
 
-    public void setLocation(String value) {
+    void setLocation(String value) {
         this.location = value;
     }
 

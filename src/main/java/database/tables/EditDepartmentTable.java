@@ -12,36 +12,33 @@ import java.util.logging.Logger;
  * @author eirin
  */
 public class EditDepartmentTable {
-   // We create the department table for the database 
+   
     public void createDepartmentTable() throws SQLException, ClassNotFoundException {
 
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
 
-        String query = "CREATE TABLE departments"
+        String query = "CREATE TABLE departmants"
                 + "(depID INTEGER not NULL AUTO_INCREMENT, "
                 + "    name VARCHAR(30) not null unique,"
                 + "    location VARCHAR(30) not null unique,"
-                + "    compID INTEGER not NULL,"
-                + " PRIMARY KEY (depID),"
-                + " FOREIGN KEY (compID) REFERENCES companies(compID))";
+                + " PRIMARY KEY ( depID))";
         stmt.execute(query);
         stmt.close();
         con.close();
     }
-    // We add a department to the database
-    public void addNewDepartment(String name, String location, int compID) throws ClassNotFoundException {
+
+    public void addNewDepartment(String name, String location) throws ClassNotFoundException {
         try {
             Connection con = DB_Connection.getConnection();
 
             Statement stmt = con.createStatement();
 
             String insertQuery = "INSERT INTO "
-                    + " departments (name,location,compID)"
+                    + " departmants (name,location)"
                     + " VALUES ("
                     + "'" + name + "',"
-                    + "'" + location + "',"
-                    + "'" + compID + "'"
+                    + "'" + location + "'"
                     + ")";
             System.out.println(insertQuery);
             stmt.executeUpdate(insertQuery);

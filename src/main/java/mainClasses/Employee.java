@@ -1,8 +1,10 @@
 package mainClasses;
 
+import java.util.List;
+
 public class Employee extends Person {
 
-    private int employeeID, depID;
+    private int employeeID;
     private String corp_email, phone, password;
     private int active;
 
@@ -14,51 +16,55 @@ public class Employee extends Person {
         this.password = password;
     }
 
-    public String getPhone() {
+    String getPhone() {
         return this.phone;
     }
 
-    public void setPhone(String value) {
+    void setPhone(String value) {
         this.phone = value;
     }
 
-    public int getEmployeeID() {
+    int getEmployeeID() {
         return this.employeeID;
     }
 
-    public void setEmployeeID(int value) {
+    void setEmployeeID(int value) {
         this.employeeID = value;
     }
-    
-    public int getDepID() {
-        return this.depID;
-    }
 
-    public void setDepID(int value) {
-        this.depID = value;
-    }
-
-    public String getCorp_email() {
+    String getEmail() {
         return this.corp_email;
     }
 
-    public void setEmail(String value) {
+    void setEmail(String value) {
         this.corp_email = value;
     }
 
-    public int isActive() {
+    int isActive() {
         return this.active;
     }
 
-    public void setActive(int value) {
+    void setActive(int value) {
         this.active = value;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return this.password;
     }
 
-    public void setPassword(String value) {
+    void setPassword(String value) {
         this.password = value;
     }
+
+    public List<Reservation> reservations(int personID) {
+        return null;
+    }
+
+    public Employee login(String email, String password) {
+        return null;
+    }
+
+    public void logout(boolean p1) {
+    }
+
 }

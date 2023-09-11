@@ -10,28 +10,28 @@ public class Company {
         this.name = name;
     }
 
-    public String getLocation() {
+    String getLocation() {
         return this.location;
     }
 
-    public void setLocation(String value) {
+    void setLocation(String value) {
         this.location = value;
     }
 
-    public int getCompID() {
+    int getCompID() {
         return this.compID;
     }
 
-    public void setCompID(int value) {
+    void setCompID(int value) {
         this.compID = value;
     }
 
-    public String getName() {
+    String getName() {
         return this.name;
     }
 
-    public void setName(String value) {
+    void setName(String value) {
         this.name = value;
     }
-    
+
 }

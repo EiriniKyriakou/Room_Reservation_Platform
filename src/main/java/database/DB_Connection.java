@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class DB_Connection {
     
     private static final String url = "jdbc:mysql://localhost";
-    private static final String databaseName = "HY351_Room_Reservations";
+    private static final String databaseName = "HY351_Room_Reservation";
     private static final int port = 3306;
     private static final String username = "root";
     private static final String password = "";
@@ -26,12 +26,12 @@ public class DB_Connection {
         Class.forName("com.mysql.jdbc.Driver");
         return DriverManager.getConnection(url + ":" + port + "/" + databaseName, username, password);
     }
-    // Ιnitializes connection with the jdbc driver
+    
     public static Connection getInitialConnection() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
         return DriverManager.getConnection(url + ":" + port, username, password);
     }
-    // Converts a resultset to json data  
+
     public static String getResultsToJSON(ResultSet rs) throws SQLException {
         ResultSetMetaData metadata = rs.getMetaData();
         int columnCount = metadata.getColumnCount();
@@ -45,8 +45,7 @@ public class DB_Connection {
         }
         return object.toString();
     }
-    
-    // Prints results from a result set
+
     public static void printResults(ResultSet rs) throws SQLException {
         ResultSetMetaData metadata = rs.getMetaData();
         int columnCount = metadata.getColumnCount();

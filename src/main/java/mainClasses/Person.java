@@ -11,35 +11,35 @@ public class Person {
         this.email = email;
     }
 
-    public String getFirstName() {
+    String getFirstName() {
         return this.firstName;
     }
 
-    public void setFirstName(String value) {
+    void setFirstName(String value) {
         this.firstName = value;
     }
 
-    public int getPersonID() {
+    int getPersonID() {
         return this.personID;
     }
 
-    public void setPersonID(int value) {
+    void setPersonID(int value) {
         this.personID = value;
     }
 
-    public String getLastName() {
+    String getLastName() {
         return this.lastName;
     }
 
-    public void setLastName(String value) {
+    void setLastName(String value) {
         this.lastName = value;
     }
 
-    public String getEmail() {
+    String getEmail() {
         return this.email;
     }
 
-    public void setEmail(String value) {
+    void setEmail(String value) {
         this.email = value;
     }
 

@@ -1,58 +1,59 @@
 package mainClasses;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Reservation {
 
     private int reservationID;
-    private String reservationDate;
+    private Date reservationDate;
     private String start_time, end_time;
-    private int roomID, employeeID;
+    private int roomID, personID;
     private int tmp, accepted;
 
-    public Reservation(String reservationDate, String start_time, String end_time, int roomID, int employeeID, int tmp, int accepted) {
+    public Reservation(Date reservationDate, String start_time, String end_time, int roomID, int personID, int tmp, int accepted) {
         this.reservationDate = reservationDate;
         this.start_time = start_time;
         this.end_time = end_time;
         this.roomID = roomID;
-        this.employeeID = employeeID;
+        this.personID = personID;
         this.tmp = tmp;
     }
 
-    public int getReservationID() {
+    int getReservationID() {
         return this.reservationID;
     }
 
-    public void setReservationID(int value) {
+    void setReservationID(int value) {
         this.reservationID = value;
     }
 
-    public int isAccepted() {
+    int isAccepted() {
         return this.accepted;
     }
 
-    public void setAccepted(int value) {
+    void setAccepted(int value) {
         this.accepted = value;
     }
 
-    public Date getReservationDate() {
-        Date reservationDate = java.sql.Date.valueOf(this.reservationDate);
-        return reservationDate;
+    Date getReservationDate() {
+        return this.reservationDate;
     }
 
-    public void setReservationDate(String value) {
+    void setReservationDate(Date value) {
         this.reservationDate = value;
     }
 
-    public String getStart_time() {
+    String getStart_time() {
         return this.start_time;
     }
 
-    public void setStart_time(String value) {
+    void setStart_time(String value) {
         this.start_time = value;
     }
 
-    public String getEnd_time() {
+    String getEnd_time() {
         return this.end_time;
     }
 
@@ -60,27 +61,40 @@ public class Reservation {
         this.end_time = value;
     }
 
-    public int getRoomID() {
+    int getRoomID() {
         return this.roomID;
     }
 
-    public void setRoomID(int value) {
+    void setRoomID(int value) {
         this.roomID = value;
     }
 
-    public int getEmployeeID() {
-        return this.employeeID;
+    int getPersonID() {
+        return this.personID;
     }
 
-    public void setEmployeeID(int value) {
-        this.employeeID = value;
+    void setPersonID(int value) {
+        this.personID = value;
     }
 
-    public int isTmp() {
+    int isTmp() {
         return this.tmp;
     }
 
-    public void setTmp(int value) {
+    void setTmp(int value) {
         this.tmp = value;
     }
+
+    public Reservation make_reservation(String date, String start_time, String end_time) {
+        return null;
+    }
+
+    public boolean update_reservation(int reservationID) {
+        return false;
+    }
+
+    public boolean cancel_reservation(int reservationID) {
+        return false;
+    }
+
 }

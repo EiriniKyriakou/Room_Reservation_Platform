@@ -1,8 +1,10 @@
 package mainClasses;
 
+import java.util.List;
+
 public class Administrator extends Person {
 
-    private int adminID, depID;
+    private int adminID;
     private String corp_email;
     private String phone;
     private String password;
@@ -14,43 +16,64 @@ public class Administrator extends Person {
         this.phone = phone;
     }
 
-    public int getAdminID() {
+    int getAdminID() {
         return this.adminID;
     }
 
-    public void setAdminID(int value) {
+    void setAdminID(int value) {
         this.adminID = value;
     }
-    
-    public int getDepID() {
-        return this.depID;
-    }
 
-    public void setDepID(int value) {
-        this.depID = value;
-    }
-
-    public String getCorp_email() {
+    String getEmail() {
         return this.corp_email;
     }
 
-    public void setEmail(String value) {
+    void setEmail(String value) {
         this.corp_email = value;
     }
 
-    public String getPhone() {
+    String getPhone() {
         return this.phone;
     }
 
-    public void setPhone(String value) {
+    void setPhone(String value) {
         this.phone = value;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return this.password;
     }
 
-    public void setPassword(String value) {
+    void setPassword(String value) {
         this.password = value;
     }
+
+    public Reservation search_reservation_request(int reservationID) {
+        return null;
+    }
+
+    public boolean accept_reservation_request(int reservationID) {
+        return false;
+    }
+
+    public boolean reject_reservation_request(int resrvationID) {
+        return false;
+    }
+
+    public List<Reservation> see_reservations() {
+        return null;
+    }
+
+    public List<Reservation> see_reservation_requests(boolean accepted) {
+        return null;
+    }
+
+    public Administrator login(String email, String password) {
+        return null;
+    }
+
+    public boolean logout() {
+        return false;
+    }
+
 }
